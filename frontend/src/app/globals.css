@@ -1,0 +1,196 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 38 33% 98%;
+    --foreground: 28 41% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 28 41% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 28 41% 15%;
+
+    --primary: 28 41% 30%;
+    --primary-foreground: 38 33% 96%;
+
+    --secondary: 38 33% 96%;
+    --secondary-foreground: 28 41% 30%;
+
+    --muted: 38 20% 90%;
+    --muted-foreground: 28 10% 40%;
+
+    --accent: 38 20% 90%;
+    --accent-foreground: 28 41% 30%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 28 15% 85%;
+    --input: 28 15% 85%;
+    --ring: 28 41% 30%;
+
+    --radius: 0.5rem;
+    --chart-1: 12 76% 61%;
+    --chart-2: 173 58% 39%;
+    --chart-3: 197 37% 24%;
+    --chart-4: 43 74% 66%;
+    --chart-5: 27 87% 67%;
+
+    /* Semantic Colors */
+    --success: 142 76% 36%;
+    --success-foreground: 355 100% 97%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 48 96% 89%;
+
+    --error: 0 84% 60%;
+    --error-foreground: 210 40% 98%;
+
+    --info: 217 91% 60%;
+    --info-foreground: 210 40% 98%;
+
+    /* Premium Gradient Tokens */
+    --gradient-primary: linear-gradient(135deg, #6b4a2d, #8b6a4e);
+    --gradient-hover: linear-gradient(135deg, #5a3e26, #6b4a2d);
+    --gradient-heading: linear-gradient(135deg, #3e2a1d, #6b4a2d, #a67c52);
+  }
+
+  .dark {
+    --background: 28 20% 8%;
+    --foreground: 38 33% 97%;
+
+    --card: 28 20% 10%;
+    --card-foreground: 38 33% 97%;
+
+    --popover: 28 20% 10%;
+    --popover-foreground: 38 33% 97%;
+
+    --primary: 28 41% 40%;
+    --primary-foreground: 38 33% 97%;
+
+    --secondary: 28 20% 15%;
+    --secondary-foreground: 38 33% 97%;
+
+    --muted: 28 20% 15%;
+    --muted-foreground: 28 15% 65%;
+
+    --accent: 28 20% 15%;
+    --accent-foreground: 38 33% 97%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 38 33% 97%;
+
+    --border: 28 20% 18%;
+    --input: 28 20% 18%;
+    --ring: 28 41% 45%;
+
+    --success: 142 70% 50%;
+    --success-foreground: 144 100% 10%;
+
+    --warning: 48 96% 89%;
+    --warning-foreground: 38 92% 10%;
+
+    --error: 0 84% 60%;
+    --error-foreground: 210 40% 98%;
+
+    --info: 217 91% 60%;
+    --info-foreground: 210 40% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.section-heading {
+  font-size: 1.125rem;
+  color: #6b4a2d;
+}
+
+.section-subheading {
+  font-size: 3rem;
+  color: #6b4a2d;
+}
+
+.brand-primary {
+  color: #6b4a2d !important;
+}
+
+.light-text {
+  color: #a39b8b !important;
+}
+
+.vertical-text {
+  writing-mode: vertical-rl;
+}
+
+/* Premium Gradient Utilities */
+.heading-gradient {
+  background: var(--gradient-heading);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.btn-premium {
+  background: var(--gradient-primary);
+  color: white;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.btn-premium:hover {
+  background: var(--gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(107, 74, 45, 0.2);
+}
+
+.bg-brand-premium {
+  background: var(--gradient-primary);
+}
+
+.bg-gradient-variant-2{
+
+  background: linear-gradient(to right, #b45309, #92400e, #78350f); /* amber-700 -> 900 */
+
+} 
+
+.bg-gradient-variant-2 {
+  background: var(--gradient-primary);
+  color: white;
+  transition: all 0.3s ease;
+  border: none;
+}
+
+.bg-gradient-variant-2:hover {
+  background: var(--gradient-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 20px rgba(107, 74, 45, 0.2);
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 4px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(107, 74, 45, 0.1);
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(107, 74, 45, 0.2);
+}
