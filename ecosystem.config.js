@@ -2,7 +2,8 @@ module.exports = {
   apps: [
     {
       name: "kangpack-backend",
-      script: "backend/dist/server.js",
+      script: "dist/server.js", // path is relative to cwd
+      cwd: "backend",          // Explicitly set the folder
       instances: 1,
       exec_mode: "cluster",
       env: {
@@ -10,12 +11,13 @@ module.exports = {
       }
     },
     {
-  name: "kangpack-frontend",
-  script: "frontend/.next/standalone/server.js", // Direct path
-  env: {
-    NODE_ENV: "production",
-    PORT: 3000
-  }
-}
+      name: "kangpack-frontend",
+      script: ".next/standalone/server.js", // path is relative to cwd
+      cwd: "frontend",                      // Explicitly set the folder
+      env: {
+        NODE_ENV: "production",
+        PORT: 3000
+      }
+    }
   ]
 };
