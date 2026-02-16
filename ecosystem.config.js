@@ -10,13 +10,14 @@ module.exports = {
         NODE_ENV: "production"
       }
     },
-    {
+        {
       name: "kangpack-frontend",
-      script: ".next/standalone/server.js", // path is relative to cwd
-      cwd: "frontend",                      // Explicitly set the folder
+      cwd: "frontend/.next/standalone", // RUN FROM INSIDE STANDALONE
+      script: "server.js",               // RUN THE SERVER DIRECTLY
       env: {
         NODE_ENV: "production",
-        PORT: 3000
+        PORT: 3000,
+        HOSTNAME: "127.0.0.1"            // Important for some EC2 setups
       }
     }
   ]
