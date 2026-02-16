@@ -42,8 +42,8 @@ const FAQ: React.FC = () => {
   ];
 
   return (
-    <section className="bg-transparent py-24 md:py-32 xl:py-48 2xl:py-60 px-6">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 lg:gap-24 items-start">
+    <section className="bg-transparent py-16 md:py-24 px-6">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
         {/* Left Header Section */}
         <div className="lg:w-[450px] lg:sticky lg:top-32 w-full">
           {/* Badge */}
@@ -54,10 +54,10 @@ const FAQ: React.FC = () => {
             </span>
           </div>
 
-          <h2 className="text-[clamp(1.8rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] leading-[0.95] mb-8 xl:mb-12 tracking-tighter">
-            <span className="heading-gradient font-bold">FAQ's</span>
+          <h2 className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tighter font-bold">
+            <span className="heading-gradient">FAQ's</span>
             <br />
-            <span className="text-[#B8AFA1] font-bold">Asked</span>
+            <span className="text-[#B8AFA1]">Asked</span>
           </h2>
           <p className="light-text text-[16px] md:text-lg xl:text-xl leading-relaxed max-w-[400px] mb-10 lg:mb-0">
             Find quick answers to common questions about Kangpack usage, care,

@@ -26,10 +26,10 @@ const Stats: React.FC = () => {
   ];
 
   return (
-    <section className="bg-[#F8F5F1] py-24 md:py-32 xl:py-48 2xl:py-60 px-6 overflow-hidden">
+    <section className="bg-[#F8F5F1] py-16 md:py-24 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="flex flex-col lg:flex-row gap-8 lg:gap-20 xl:gap-8 2xl:gap-24 mb-16 md:mb-24 xl:mb-32">
+        <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 mb-12 md:mb-16">
           {/* Badge Column */}
           <div className="w-full lg:w-1/4">
             <motion.div
@@ -52,13 +52,13 @@ const Stats: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="text-[clamp(1.8rem,5vw,3.5rem)] md:text-[3rem] xl:text-[3.5rem] 2xl:text-[4.5rem] leading-[1.1] tracking-tight text-left max-w-4xl"
+              className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.2] tracking-tight text-left max-w-4xl"
             >
-              <span className="heading-gradient font-bold underline decoration-primary/20 underline-offset-8">
+              <span className="heading-gradient underline decoration-primary/20 underline-offset-8">
                 We engineer freedom for modern professionals where mobility
                 meets real productivity.{" "}
               </span>
-              <span className="text-[#B8AFA1] font-bold">
+              <span className="text-[#B8AFA1]">
                 Every detail is designed to remove friction, boost comfort, and
                 keep you moving without slowing down.
               </span>
@@ -67,7 +67,7 @@ const Stats: React.FC = () => {
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16 lg:gap-20 xl:gap-4 2xl:gap-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 lg:gap-16">
           {statsData.map((stat, index) => (
             <motion.div
               key={index}
@@ -75,10 +75,10 @@ const Stats: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1, duration: 0.8 }}
-              className={`group ${index === 2 ? "sm:col-span-2 lg:col-span-1" : ""}`}
+              className={`group ${index === 2 ? "md:col-span-1" : ""}`}
             >
               {/* Number and Suffix */}
-              <div className="text-[clamp(4rem,12vw,10rem)] md:text-[8rem] xl:text-[10rem] 2xl:text-[12rem] font-black text-[#6B4A2D] leading-[0.8] mb-8 md:mb-10 xl:mb-12 flex items-baseline">
+              <div className="text-6xl md:text-7xl lg:text-8xl font-black text-[#6B4A2D] leading-none mb-6 flex items-baseline">
                 <SlotCounter
                   value={stat.value}
                   duration={2}
@@ -87,17 +87,17 @@ const Stats: React.FC = () => {
                     rootMargin: "0px 0px -100px 0px",
                   }}
                 />
-                <span className="ml-[1px] md:ml-[2px]">{stat.suffix}</span>
+                <span className="ml-1">{stat.suffix}</span>
               </div>
 
               {/* Divider Line */}
-              <div className="w-full h-[1px] bg-[#6B4A2D]/10 mb-6 lg:mb-4 xl:mb-2" />
+              <div className="w-full h-[1px] bg-[#6B4A2D]/10 mb-6" />
 
               {/* Label and Description */}
-              <h4 className="text-[20px] md:text-[24px] xl:text-[28px] font-bold text-[#6B4A2D] mb-4 xl:mb-6 tracking-tight">
+              <h4 className="text-lg md:text-xl font-bold text-[#6B4A2D] mb-2 tracking-tight">
                 {stat.label}
               </h4>
-              <p className="text-[16px] md:text-[18px] xl:text-[20px] text-[#B8AFA1] font-medium leading-relaxed max-w-sm">
+              <p className="text-sm md:text-base text-[#B8AFA1] font-medium leading-relaxed max-w-sm">
                 {stat.description}
               </p>
             </motion.div>

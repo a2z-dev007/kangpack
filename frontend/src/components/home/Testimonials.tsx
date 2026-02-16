@@ -127,8 +127,8 @@ const Testimonials: React.FC = () => {
   );
 
   return (
-    <section className="py-24 md:py-32 xl:py-48 2xl:py-60 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 mb-16">
+    <section className="py-16 md:py-24 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 mb-12">
         {/* Header */}
         <div className="text-center">
           {/* Badge */}
@@ -139,9 +139,9 @@ const Testimonials: React.FC = () => {
             </span>
           </div>
 
-          <h2 className="text-[clamp(1.8rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] leading-[1.1] font-normal mb-8 xl:mb-12 tracking-tight">
-            <span className="heading-gradient font-bold">Trusted By </span>
-            <span className="text-[#B8AFA1] font-bold">Experts.</span>
+          <h2 className="text-3xl md:text-5xl leading-[1.2] font-bold mb-6 tracking-tight">
+            <span className="heading-gradient">Trusted By </span>
+            <span className="text-[#B8AFA1]">Experts.</span>
           </h2>
 
           {/* Description */}

@@ -14,7 +14,7 @@ const InAction: React.FC = () => {
   } = useLightbox();
 
   return (
-    <section className="bg-brand-beige py-24 md:py-32 xl:py-48 2xl:py-60 flex flex-col items-center">
+    <section className="bg-brand-beige py-16 md:py-24 flex flex-col items-center">
       {/* Badge */}
       <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6 text-center">
         <Play className="w-3 h-3 brand-primary" />
@@ -24,8 +24,8 @@ const InAction: React.FC = () => {
       </div>
 
       {/* Heading */}
-      <h2 className="text-[clamp(2.2rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] leading-[1.1] mb-8 xl:mb-12 tracking-tight text-center">
-        <span className="heading-gradient font-bold">In Action.</span>
+      <h2 className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tight text-center font-bold">
+        <span className="heading-gradient">In Action.</span>
       </h2>
 
       {/* Description */}

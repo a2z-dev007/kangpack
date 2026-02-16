@@ -25,15 +25,15 @@ const TechSpecs: React.FC = () => {
   ];
 
   return (
-    <section className="bg-transparent py-24 md:py-32 xl:py-48 2xl:py-60 px-6">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-start">
+    <section className="bg-transparent py-16 md:py-24 px-6">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-start">
         {/* Left Column: Image & Intro */}
         <div className="flex-1 w-full lg:sticky lg:top-24">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
-            className="rounded-[32px] overflow-hidden shadow-xl mb-10 h-[600px] xl:h-[650px] 2xl:h-[750px] group"
+            className="rounded-[32px] overflow-hidden shadow-xl mb-10 h-[500px] md:h-[600px] group"
           >
             <ParallaxImage
               src={ASSETS.TICKERS.FIRST}
@@ -47,7 +47,7 @@ const TechSpecs: React.FC = () => {
             viewport={{ once: false }}
             className="max-w-lg"
           >
-            <h3 className="text-[1.87rem] md:text-[2.2rem] xl:text-[2.5rem] leading-[1.3] text-[#6B4A2D] font-normal">
+            <h3 className="text-2xl md:text-3xl leading-[1.3] text-[#6B4A2D] font-normal">
               <span className="font-bold">Designed for</span>{" "}
               <span className="text-[#8B7E6F]">work anywhere.</span> Built for{" "}
               <span className="font-bold">comfort</span>,{" "}
@@ -81,7 +81,7 @@ const TechSpecs: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: false }}
-              className="text-[clamp(2.5rem,6vw,4.5rem)] md:text-[5rem] xl:text-[6rem] 2xl:text-[7rem] leading-[0.95] tracking-tight flex flex-col font-bold"
+              className="text-4xl md:text-6xl leading-[1] tracking-tight flex flex-col font-bold"
             >
               <span className="heading-gradient">Technical</span>
               <span className="text-[#B8AFA1]">Specifications</span>

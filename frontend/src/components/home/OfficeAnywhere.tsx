@@ -66,10 +66,10 @@ const OfficeAnywhere: React.FC = () => {
   };
 
   return (
-    <section className=" py-24 md:py-32 xl:py-48 2xl:py-60 overflow-hidden">
+    <section className="py-16 md:py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className="text-center mb-12 md:mb-16">
+        <div className="text-center mb-10 md:mb-12">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -87,7 +87,7 @@ const OfficeAnywhere: React.FC = () => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false }}
-            className="text-[clamp(2.2rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] leading-[1.1] mb-8 xl:mb-12 tracking-tight font-bold"
+            className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tight font-bold"
           >
             <span className="heading-gradient">Your Office Anywhere</span>
           </motion.h2>

@@ -15,7 +15,7 @@ const WhyChoose: React.FC = () => {
   ];
 
   return (
-    <section className="bg-[#F8F5F0] py-24 md:py-32 xl:py-48 2xl:py-60 px-4 sm:px-6 relative overflow-hidden">
+    <section className="bg-[#F8F5F0] py-16 md:py-24 px-4 sm:px-6 relative overflow-hidden">
       {/* Background Blobs */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40">
         <div className="absolute top-[10%] left-[-5%] w-[40%] h-[60%] bg-[#E8E2DA] rounded-full blur-[100px] transform -rotate-12"></div>
@@ -24,7 +24,7 @@ const WhyChoose: React.FC = () => {
 
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Header Section */}
-        <div className="text-center mb-12 md:mb-16 xl:mb-4">
+        <div className="text-center mb-10 md:mb-12">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -42,10 +42,10 @@ const WhyChoose: React.FC = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false }}
-            className="text-[clamp(1.8rem,5vw,3.5rem)] md:text-[3rem] xl:text-[3.5rem] 2xl:text-[4.5rem] leading-[1.1] mb-6 xl:mb-8 tracking-tight"
+            className="text-3xl md:text-5xl leading-[1.2] mb-6 tracking-tight font-bold"
           >
-            <span className="text-primary font-bold">Why Choose </span>
-            <span className="heading-gradient font-bold px-1">Kangpack?</span>
+            <span className="text-primary">Why Choose </span>
+            <span className="heading-gradient px-1">Kangpack?</span>
           </motion.h2>
 
           {/* Description */}

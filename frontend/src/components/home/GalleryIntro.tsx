@@ -21,17 +21,17 @@ const GalleryIntro: React.FC = () => {
   } = useLightbox();
 
   return (
-    <section className="bg-brand-beige py-24 md:py-32 xl:py-48 2xl:py-60 px-6 md:px-16 relative">
+    <section className="bg-brand-beige py-16 md:py-24 px-6 md:px-16 relative">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
-        <div className="text-center mb-16 md:mb-24">
+        <div className="text-center mb-12 md:mb-16">
           <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6">
             <div className="w-1.5 h-1.5 bg-[#6B4A2D] rounded-full"></div>
             <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
               Craftsmanship
             </span>
           </div>
-          <h2 className="text-[clamp(1.8rem,5vw,3.5rem)] md:text-[3rem] xl:text-[3.5rem] 2xl:text-[4.5rem] leading-[1.1] tracking-tight font-bold">
+          <h2 className="text-3xl md:text-5xl leading-[1.2] tracking-tight font-bold">
             <span className="heading-gradient">Elegance in Every Detail</span>
           </h2>
         </div>

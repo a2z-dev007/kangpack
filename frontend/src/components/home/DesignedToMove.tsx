@@ -31,7 +31,7 @@ const InlineImage = ({
 
 const DesignedToMove: React.FC = () => {
   return (
-    <section className="py-24 md:py-32 xl:py-48 2xl:py-60 bg-[#F9F7F4] overflow-hidden">
+    <section className="py-16 md:py-24 bg-[#F9F7F4] overflow-hidden">
       {/* Top Divider */}
       <div className="max-w-7xl mx-auto px-6 mb-24">
         <div className="relative flex items-center justify-center">

@@ -42,9 +42,9 @@ const Pricing: React.FC = () => {
   ];
 
   return (
-    <section className="bg-transparent py-24 md:py-32 xl:py-48 2xl:py-60 px-6 overflow-hidden relative">
+    <section className="bg-transparent py-16 md:py-24 px-6 overflow-hidden relative">
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="text-center flex flex-col items-center mb-16">
+        <div className="text-center flex flex-col items-center mb-12">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-8">
             <Briefcase className="w-3.5 h-3.5 brand-primary" />
@@ -53,8 +53,8 @@ const Pricing: React.FC = () => {
             </span>
           </div>
 
-          <h2 className="text-[clamp(1.8rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] leading-[1] mb-8 xl:mb-12 tracking-tight">
-            <span className="heading-gradient font-bold underline decoration-primary/10 underline-offset-[12px]">
+          <h2 className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tight font-bold">
+            <span className="heading-gradient underline decoration-primary/10 underline-offset-[12px]">
               Choose Your Edition
             </span>
           </h2>

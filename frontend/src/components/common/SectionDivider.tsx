@@ -5,7 +5,7 @@ import { motion } from 'framer-motion';
 
 const SectionDivider: React.FC = () => {
     return (
-        <div className="w-full flex items-center justify-center py-10 px-6 md:px-16 overflow-hidden">
+        <div className="w-full flex items-center justify-center py-4 px-6 md:px-16 overflow-hidden">
             <div className="relative w-full flex items-center justify-center">
                 {/* Left Line */}
                 <motion.div

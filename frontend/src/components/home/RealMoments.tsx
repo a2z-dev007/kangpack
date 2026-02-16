@@ -36,10 +36,10 @@ const RealMoments: React.FC = () => {
   } = useLightbox();
 
   return (
-    <section className="py-24 md:py-32 xl:py-48 2xl:py-60 overflow-hidden bg-[#FDFCFB]">
+    <section className="py-16 md:py-24 overflow-hidden bg-[#FDFCFB]">
       <div className="max-w-7xl mx-auto px-6 ">
         {/* Header */}
-        <div className="text-center flex flex-col items-center  mb-16">
+        <div className="text-center flex flex-col items-center mb-12">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
@@ -57,7 +57,7 @@ const RealMoments: React.FC = () => {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: false }}
-            className="text-[clamp(1.8rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] leading-[1] mb-8 xl:mb-12 tracking-tight font-bold"
+            className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tight font-bold"
           >
             <span className="heading-gradient">Designed for Real Life</span>
           </motion.h2>

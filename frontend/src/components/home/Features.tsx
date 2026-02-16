@@ -40,7 +40,7 @@ const Features: React.FC = () => {
   ];
 
   return (
-    <section className="bg-brand-beige py-24 md:py-32 xl:py-48 2xl:py-60 px-6 md:px-16 relative overflow-hidden">
+    <section className="bg-brand-beige py-16 md:py-24 px-6 md:px-16 relative overflow-hidden">
       {/* Background Blobs */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40">
         <div className="absolute top-[10%] left-[-5%] w-[40%] h-[60%] bg-[#E8E2DA] rounded-full blur-[100px] transform -rotate-12"></div>
@@ -48,12 +48,12 @@ const Features: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row md:justify-center mb-20 xl:mb-8">
+        <div className="flex flex-col md:flex-row md:justify-center mb-12 md:mb-16">
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: false }}
-            className="w-full md:w-1/3 mb-10 md:mb-0"
+            className="w-full md:w-1/3 mb-8 md:mb-0"
           >
             <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg">
               <div className="w-1.5 h-1.5 bg-[#6B4A2D] rounded-full"></div>
@@ -63,13 +63,13 @@ const Features: React.FC = () => {
             </div>
           </motion.div>
           <div className="w-full ">
-            <h2 className="text-[clamp(1.8rem,5vw,3.5rem)] md:text-[3rem] xl:text-[3.5rem] 2xl:text-[4.5rem] leading-[1.05] tracking-tight">
+            <h2 className="text-3xl md:text-5xl leading-[1.2] tracking-tight font-bold">
               <motion.span
                 initial={{ opacity: 0, scale: 0.98 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: false }}
                 transition={{ duration: 0.8 }}
-                className="inline-block mb-2 heading-gradient font-bold"
+                className="inline-block mb-2 heading-gradient"
               >
                 We turn mobility into productivity, redefining how modern
                 professionals work on the move.
@@ -79,7 +79,7 @@ const Features: React.FC = () => {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: false }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-[#B8AFA1] font-bold"
+                className="text-[#B8AFA1]"
               >
                 A wearable workstation designed for comfort, focus, and freedom
                 anywhere.

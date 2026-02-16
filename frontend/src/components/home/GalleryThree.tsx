@@ -147,7 +147,7 @@ const GalleryThree: React.FC = () => {
     <div ref={containerRef} className="relative" style={{ height: "400vh" }}>
       {/* Sticky container that stays fixed while scrolling */}
       <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
-        <section className="w-full py-24 md:py-32 xl:py-48 2xl:py-60 px-4 sm:px-6">
+        <section className="w-full py-12 md:py-16 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <div className="text-center mb-8 sm:mb-12 md:mb-20 flex flex-col items-center">
