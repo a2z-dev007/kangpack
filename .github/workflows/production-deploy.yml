@@ -29,7 +29,7 @@ jobs:
             # Setup Node.js if needed (handled by nvm on server)
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use 18
+            nvm use 22
 
             # Build Backend
             echo "🚀 Building Backend..."
