@@ -51,6 +51,11 @@ jobs:
             npm install
             # Ensure production env is used during build with memory limit
             NODE_OPTIONS="--max-old-space-size=1536" npm run build
+            
+            # CRITICAL: Copy public and static assets for Standalone mode
+            echo "📂 Syncing assets to standalone folder..."
+            cp -r public .next/standalone/
+            cp -r .next/static .next/standalone/.next/
             cd ..
 
             # Restart with PM2
