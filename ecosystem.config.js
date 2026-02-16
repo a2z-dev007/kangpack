@@ -10,14 +10,12 @@ module.exports = {
       }
     },
     {
-      name: "kangpack-frontend",
-      script: "npm",
-      args: "start",
-      cwd: "frontend",
-      env: {
-        NODE_ENV: "production",
-        PORT: 3000
-      }
-    }
+  name: "kangpack-frontend",
+  script: "frontend/.next/standalone/server.js", // Direct path
+  env: {
+    NODE_ENV: "production",
+    PORT: 3000
+  }
+}
   ]
 };
