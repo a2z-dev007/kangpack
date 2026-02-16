@@ -1,0 +1,54 @@
+name: Production Deployment
+
+on:
+  push:
+    branches:
+      - main  # Set this to your production branch name
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            # Navigate to project directory
+            cd ~/kanpack
+
+            # Pull latest changes
+            git pull origin main
+
+            # Setup Node.js if needed (handled by nvm on server)
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            nvm use 18
+
+            # Build Backend
+            echo "🚀 Building Backend..."
+            cd backend
+            npm install
+            npm run build
+            cd ..
+
+            # Build Frontend
+            echo "🚀 Building Frontend..."
+            cd frontend
+            npm install
+            # Ensure production env is used during build
+            npm run build
+            cd ..
+
+            # Restart with PM2
+            echo "🔄 Restarting Applications..."
+            pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
+            pm2 save
+
+            echo "✅ Deployment Successful!"
