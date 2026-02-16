@@ -107,7 +107,7 @@ NODE_OPTIONS="--max-old-space-size=1536" npm run build
 ### Start with PM2 (Initial Setup)
 Go to the root of the project where `ecosystem.config.js` is located:
 ```bash
-cd ~/kanpack
+cd /var/www/kangpack
 pm2 start ecosystem.config.js
 pm2 save
 pm2 startup
