@@ -3,7 +3,7 @@ module.exports = {
     {
       name: "kangpack-backend",
       script: "backend/dist/server.js",
-      instances: "max",
+      instances: 1,
       exec_mode: "cluster",
       env: {
         NODE_ENV: "production"

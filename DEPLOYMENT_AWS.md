@@ -99,6 +99,9 @@ npm run build
 cd ../frontend
 npm install
 npm run build
+#Important for EC2
+cd /var/www/kangpack/frontend
+NODE_OPTIONS="--max-old-space-size=1536" npm run build
 ```
 
 ### Start with PM2 (Initial Setup)
