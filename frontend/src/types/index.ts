@@ -48,6 +48,8 @@ export interface Product {
     unit?: 'cm' | 'm' | 'in' | 'ft';
   };
   
+
+  // test
   // Status & Visibility
   isActive: boolean;
   isFeatured: boolean;
