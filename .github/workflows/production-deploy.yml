@@ -20,16 +20,23 @@ jobs:
           username: ${{ secrets.EC2_USER }}
           key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            # Navigate to project directory
-            cd /var/www/kangpack
-
-            # Pull latest changes
-            git pull origin main
-
-            # Setup Node.js if needed (handled by nvm on server)
+            # Use bash to ensure consistency
             export NVM_DIR="$HOME/.nvm"
-            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-            nvm use 22
+            # Load NVM if it exists
+            if [ -s "$NVM_DIR/nvm.sh" ]; then
+                . "$NVM_DIR/nvm.sh"
+                nvm use 22 || nvm install 22
+            fi
+
+            # Navigate to project directory
+            echo "📂 Navigating to /var/www/kangpack..."
+            cd /var/www/kangpack || { echo "❌ Directory not found"; exit 1; }
+
+            # Reset local changes to prevent pull conflicts
+            echo "🔄 Refreshing code from GitHub..."
+            git fetch origin main
+            git reset --hard origin/main
+            git clean -fd
 
             # Build Backend
             echo "🚀 Building Backend..."
@@ -47,7 +54,9 @@ jobs:
             cd ..
 
             # Restart with PM2
-            echo "🔄 Restarting Applications..."
+            echo "🔄 Restarting Applications with PM2..."
+            # Check if PM2 is in path, if not load it from npm global
+            export PATH=$PATH:$(npm config get prefix)/bin
             pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
             pm2 save
 
