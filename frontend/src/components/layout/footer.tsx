@@ -35,8 +35,6 @@ const footerNav = {
     { label: "Shipping Policy", href: "/shipping-policy" },
     { label: "Warranty Policy", href: "/warranty-policy" },
     { label: "Refund Cancellation", href: "/refund-cancellation" },
-
-    { label: "Shipping & Returns", href: "/shipping-and-returns" },
   ],
 };
 
