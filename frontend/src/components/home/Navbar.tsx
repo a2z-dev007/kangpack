@@ -42,11 +42,18 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
   const [cartCount, setCartCount] = useState(0);
   const router = useRouter();
 
-  // ... (useEffect hooks) ...
+  // Scroll track for background transparency
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      // The Hero section is 300vh, so we only show the background 
+      // when the user scrolls past the cinematic experience.
+      const heroHeight = window.innerHeight * 2.8; 
+      setScrolled(window.scrollY > heroHeight);
     };
+    
+    // Check initial scroll position
+    handleScroll();
+    
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
