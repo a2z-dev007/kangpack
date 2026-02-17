@@ -26,14 +26,15 @@ import OurProducts from '@/components/home/OurProducts';
 import SectionDivider from '@/components/common/SectionDivider';
 import { Footer } from '@/components/layout/footer';
 import { ASSETS } from '@/constants/assets';
-import PrimaryButton from '@/components/common/PrimaryButton';
 import ScrollSection, { ParallaxImage } from '@/components/common/ScrollSection';
+import GlobalVideoModal from '@/components/common/GlobalVideoModal';
 
 
 const HomePage: React.FC = () => {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-brand-beige">
       <Navbar />
+      <GlobalVideoModal />
       <main className="flex-grow">
         <ScrollSection>
           <Hero />
@@ -72,11 +73,7 @@ const HomePage: React.FC = () => {
         </ScrollSection>
 
         <SectionDivider />
-
-        <ScrollSection>
-          <WearableSection />
-        </ScrollSection>
-
+        <WearableSection />
         <SectionDivider />
 
         <ScrollSection>

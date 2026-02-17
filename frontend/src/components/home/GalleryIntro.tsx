@@ -3,6 +3,7 @@ import { ASSETS } from "@/constants/assets";
 import React from "react";
 import { Lightbox, useLightbox } from "@/components/ui/Lightbox";
 import { ParallaxImage } from "@/components/common/ScrollSection";
+import { Lens } from "../ui/lens";
 
 const GalleryIntro: React.FC = () => {
   const images = [
@@ -38,34 +39,40 @@ const GalleryIntro: React.FC = () => {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 xl:gap-4">
           <div
-            className="aspect-[16/9] md:aspect-[4/3] xl:aspect-[16/10] 2xl:aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer group shadow-lg"
+            className="aspect-[16/9] md:aspect-[4/3] xl:aspect-[16/10] 2xl:aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer group "
             onClick={() => openLightbox(images, 0)}
           >
-            <ParallaxImage
-              src={ASSETS.TICKERS.SECOND}
-              className="w-full h-full"
-              alt="Bag Close-up"
-            />
+            <Lens className="w-full h-full">
+              <ParallaxImage
+                src={ASSETS.TICKERS.SECOND}
+                className="w-full h-full"
+                alt="Bag Close-up"
+              />
+            </Lens>
           </div>
           <div
-            className="aspect-[16/9] md:aspect-[4/3] xl:aspect-[16/10] 2xl:aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer group shadow-lg"
+            className="aspect-[16/9] md:aspect-[4/3] xl:aspect-[16/10] 2xl:aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer group"
             onClick={() => openLightbox(images, 1)}
           >
-            <ParallaxImage
+           <Lens className="w-full h-full">
+             <ParallaxImage
               src={ASSETS.TICKERS.MAIN2}
               className="w-full h-full"
               alt="Harness Close-up"
             />
+           </Lens>
           </div>
           <div
-            className="aspect-[16/9] md:aspect-[4/3] xl:aspect-[16/10] 2xl:aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer group shadow-lg"
+            className="aspect-[16/9] md:aspect-[4/3] xl:aspect-[16/10] 2xl:aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer group"
             onClick={() => openLightbox(images, 2)}
           >
+           <Lens className="w-full h-full">
             <ParallaxImage
               src={ASSETS.TICKERS.SIDE}
               className="w-full h-full"
               alt="Side Close-up"
             />
+           </Lens>
           </div>
         </div>
       </div>
