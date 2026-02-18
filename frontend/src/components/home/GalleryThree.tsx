@@ -144,13 +144,13 @@ const GalleryThree: React.FC = () => {
   return (
     // Wrapper with extra height to create scroll distance for pinning effect
     // Increased to 400vh for longer hold time at the end
-    <div ref={containerRef} className="relative" style={{ height: "400vh" }}>
+    <div ref={containerRef} className="relative " style={{ height: "400vh" }}>
       {/* Sticky container that stays fixed while scrolling */}
       <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
-        <section className="w-full py-12 md:py-16 px-4 sm:px-6">
+        <section className="w-full py-20 md:py-32 lg:py-40 px-4 sm:px-6">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
-            <div className="text-center mb-8 sm:mb-12 md:mb-20 flex flex-col items-center">
+            <div className="text-center mb-8   flex flex-col items-center">
               {/* Badge */}
               <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg mb-4 sm:mb-6">
                 <div className="w-1.5 h-1.5 bg-[#6B4A2D] rounded-full"></div>
@@ -176,7 +176,7 @@ const GalleryThree: React.FC = () => {
 
             {/* Images Grid - Cinematic 3D Choreographed Animation */}
             <div
-              className="relative flex items-center justify-center max-w-6xl mx-auto h-[280px] sm:h-[320px] md:h-[450px] xl:h-[600px] 2xl:h-[700px]"
+              className="relative flex items-center justify-center max-w-6xl mx-auto h-[220px] sm:h-[260px] md:h-[380px] xl:h-[500px] 2xl:h-[600px]"
               style={{ perspective: "1500px" }}
             >
               {/* Image 1 - Front - Starts CENTER, moves LEFT when Image 2 appears */}
@@ -191,7 +191,7 @@ const GalleryThree: React.FC = () => {
                   rotateZ: image1RotateZ,
                   transformStyle: "preserve-3d",
                 }}
-                className="absolute left-1/2 -translate-x-1/2 w-[45%] sm:w-[40%] md:w-[500px] xl:w-[650px] 2xl:w-[750px] h-[65%] sm:h-[70%] md:h-[340px] xl:h-[480px] 2xl:h-[550px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.15)] md:shadow-[0_25px_70px_rgba(0,0,0,0.2)] z-10 cursor-pointer will-change-transform"
+                className="absolute left-1/2 -translate-x-1/2 w-[38%] sm:w-[35%] md:w-[420px] xl:w-[550px] 2xl:w-[650px] h-[65%] sm:h-[70%] md:h-[280px] xl:h-[400px] 2xl:h-[480px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.15)] md:shadow-[0_25px_70px_rgba(0,0,0,0.2)] z-10 cursor-pointer will-change-transform"
                 onClick={() => openLightbox(images, 0)}
               >
                 <img
@@ -213,7 +213,7 @@ const GalleryThree: React.FC = () => {
                   rotateZ: image2RotateZ,
                   transformStyle: "preserve-3d",
                 }}
-                className="absolute left-1/2 -translate-x-1/2 w-[52%] sm:w-[48%] md:w-[520px] xl:w-[680px] 2xl:w-[780px] h-[75%] sm:h-[78%] md:h-[370px] xl:h-[520px] 2xl:h-[600px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_18px_50px_rgba(0,0,0,0.2)] md:shadow-[0_30px_80px_rgba(0,0,0,0.25)] z-20 cursor-pointer will-change-transform"
+                className="absolute left-1/2 -translate-x-1/2 w-[42%] sm:w-[38%] md:w-[440px] xl:w-[580px] 2xl:w-[680px] h-[75%] sm:h-[78%] md:h-[310px] xl:h-[440px] 2xl:h-[520px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_18px_50px_rgba(0,0,0,0.2)] md:shadow-[0_30px_80px_rgba(0,0,0,0.25)] z-20 cursor-pointer will-change-transform"
                 onClick={() => openLightbox(images, 1)}
               >
                 <img
@@ -235,7 +235,7 @@ const GalleryThree: React.FC = () => {
                   rotateZ: image3RotateZ,
                   transformStyle: "preserve-3d",
                 }}
-                className="absolute left-1/2 -translate-x-1/2 w-[60%] sm:w-[55%] md:w-[540px] xl:w-[700px] 2xl:w-[800px] h-[85%] sm:h-[88%] md:h-[410px] xl:h-[580px] 2xl:h-[650px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.25)] md:shadow-[0_35px_90px_rgba(0,0,0,0.3)] z-30 cursor-pointer will-change-transform"
+                className="absolute left-1/2 -translate-x-1/2 w-[48%] sm:w-[45%] md:w-[460px] xl:w-[600px] 2xl:w-[700px] h-[85%] sm:h-[88%] md:h-[350px] xl:h-[500px] 2xl:h-[580px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.25)] md:shadow-[0_35px_90px_rgba(0,0,0,0.3)] z-30 cursor-pointer will-change-transform"
                 onClick={() => openLightbox(images, 2)}
               >
                 <img

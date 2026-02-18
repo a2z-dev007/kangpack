@@ -73,7 +73,11 @@ const HomePage: React.FC = () => {
         </ScrollSection>
 
         <SectionDivider />
+
+        <ScrollSection>
         <WearableSection />
+        </ScrollSection>
+
         <SectionDivider />
 
         <ScrollSection>

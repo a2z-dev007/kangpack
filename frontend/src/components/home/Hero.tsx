@@ -191,7 +191,8 @@ const Hero: React.FC = () => {
         </div>
 
         {/* --- CONTENT LAYER --- */}
-        <div className="relative z-30 container mx-auto px-6 h-full flex flex-col items-center justify-center -mt-20 md:mt-[-5vh] lg:mt-0">
+        <div className="relative z-30 container mx-auto px-6 h-full flex flex-col items-center pt-20 md:pt-2 lg:pt-2">
+          <div className="flex-grow flex flex-col items-center justify-center w-full relative">
           
           {/* Pre-title Reveal */}
           <div className="overflow-hidden mb-4 md:mb-6">
@@ -214,18 +215,18 @@ const Hero: React.FC = () => {
           </div>
 
           {/* Titles & Hero Text */}
-          <div className="relative text-center mb-4 md:mb-12">
+          <div className="relative text-center mb-1 md:mb-3 lg:mb-4">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`title-${activeSlide}`}
                 className="flex flex-col items-center"
               >
                 <motion.h1 
-                  className="text-[18vw] md:text-[14vw] font-black leading-[0.8] tracking-tighter uppercase mb-4 opacity-[0.02] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap z-0"
+                  className="text-[18vw] md:text-[clamp(8rem,12vh+3vw,12rem)] font-black leading-[0.8] tracking-tighter uppercase mb-2 md:mb-4 opacity-[0.012] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap z-0 pointer-events-none"
                 >
                   KANGPACK
                 </motion.h1>
-                <h2 className="text-5xl md:text-8xl lg:text-9xl xl:text-[10rem] font-bold tracking-tighter md:tracking-tight mb-2 md:mb-6 leading-[0.9] md:leading-[1] z-10 flex flex-col">
+                <h2 className="text-5xl md:text-3xl lg:text-5xl xl:text-6xl font-bold tracking-tighter md:tracking-tight mb-1 md:mb-2 lg:mb-4 leading-[0.9] md:leading-[1] z-10 flex flex-col">
                   <span className="block overflow-hidden">
                     <motion.span 
                       initial={{ y: "100%" }}
@@ -237,7 +238,7 @@ const Hero: React.FC = () => {
                       {slide.title1}
                     </motion.span>
                   </span>
-                  <span className="block overflow-hidden -mt-2 md:-mt-4 relative">
+                  <span className="block overflow-hidden relative">
                     <motion.span 
                       initial={{ y: "100%" }}
                       animate={{ y: 0 }}
@@ -255,7 +256,7 @@ const Hero: React.FC = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.8 }}
-                  className="mb-6 px-4 py-1.5 rounded-full bg-[#a67c52]/10 border border-[#a67c52]/20 backdrop-blur-md"
+                  className="mb-3 md:mb-4 lg:mb-6 px-4 py-1.5 rounded-full bg-[#a67c52]/10 border border-[#a67c52]/20 backdrop-blur-md"
                 >
                   <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-[#a67c52]">
                     {slide.highlight}
@@ -267,7 +268,7 @@ const Hero: React.FC = () => {
                    animate={{ opacity: 1, y: 0 }}
                    exit={{ opacity: 0, y: -10 }}
                    transition={{ delay: 0.4 }}
-                   className="text-[10px] md:text-[1.1rem] text-white/40 max-w-2xl mx-auto font-light leading-relaxed tracking-wide px-10 md:px-6"
+                   className="text-[10px] md:text-[clamp(0.9rem,2vh,1.1rem)] text-white/40 max-w-2xl mx-auto font-light leading-relaxed tracking-wide px-10 md:px-6"
                 >
                   {slide.description}
                 </motion.p>
@@ -276,7 +277,7 @@ const Hero: React.FC = () => {
           </div>
 
           {/* --- PRODUCT SHOWCASE --- */}
-          <div className="relative w-full max-w-5xl aspect-[16/8] mt-[-3rem] md:mt-[-5rem] lg:mt-[-4rem] z-40">
+          <div className="relative w-full max-w-5xl aspect-[16/8] max-h-[25vh] md:max-h-[35vh] mt-[-1rem] md:mt-[-2rem] lg:mt-[-3rem] z-40">
             <AnimatePresence mode="wait">
               <motion.div
                 key={`product-${activeSlide}`}
@@ -291,23 +292,16 @@ const Hero: React.FC = () => {
                 transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                 className="w-full h-full flex items-center justify-center relative perspective-[2000px] mt-4 md:mt-0"
               >
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[60%] bg-[#a67c52]/10 blur-[130px] rounded-full" />
-                <Lens 
-                  className="w-full h-full flex items-center justify-center"
-                  zoomFactor={2} 
-                  lensSize={300} 
-                  lensColor="#a67c52"
-                >
-                  <img
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] bg-[#a67c52]/10 blur-[130px] rounded-full" />
+                <img
                     src={slide.image}
                     alt="Kangpack Prototype"
-                    className="w-[85%] md:w-[75%] h-auto object-contain z-10 scale-100 md:scale-110"
+                    className="w-[85%] md:w-[min(70%,55vh)] h-auto object-contain z-10 mt-12 scale-100 md:scale-105 transition-transform duration-700"
                   />
-                </Lens>
                 
                 
                 {/* Floating Feature Tags */}
-                <div className="absolute inset-0 z-20 hidden lg:block">
+                <div className="absolute inset-0 z-20 hidden lg:block pointer-events-none">
                   {slide.features.map((feature, i) => (
                     <motion.div
                       key={`${activeSlide}-${i}`}
@@ -315,9 +309,9 @@ const Hero: React.FC = () => {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 1 + i * 0.2 }}
                       style={{ 
-                        top: `${20 + i * 25}%`, 
-                        left: i % 2 === 0 ? '10%' : 'auto',
-                        right: i % 2 !== 0 ? '10%' : 'auto'
+                        top: `${30 + i * 20}%`, 
+                        left: i % 2 === 0 ? '5%' : 'auto',
+                        right: i % 2 !== 0 ? '5%' : 'auto'
                       }}
                       className="absolute flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl"
                     >
@@ -329,38 +323,39 @@ const Hero: React.FC = () => {
               </motion.div>
             </AnimatePresence>
           </div>
+          </div>
         </div>
 
         {/* --- BOTTOM INTERFACE --- */}
-        <div className="absolute inset-x-0 bottom-6 md:bottom-12 z-50 px-4 md:px-8 container mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-6 md:gap-12 border-t border-white/5 pt-6 md:pt-12">
+        <div className="absolute inset-x-0 bottom-4 md:bottom-8 z-50 px-4 md:px-8 container mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 border-t border-white/5 pt-3 md:pt-6">
             
             {/* Stats */}
             <AnimatePresence mode="wait">
               <motion.div 
                 key={`stats-${activeSlide}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="grid grid-cols-3 gap-6 md:gap-20"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 1.2 }}
+                className="grid grid-cols-3 gap-6 md:gap-14 xl:gap-20"
               >
                 {slide.stats.map((stat, i) => (
-                  <div key={i} className="flex flex-col items-center md:items-start gap-1 group">
-                    <span className="text-[#a67c52] font-black text-lg md:text-2xl tracking-tighter group-hover:scale-110 transition-transform origin-left">{stat.value}</span>
-                    <span className="text-[7px] md:text-[9px] uppercase tracking-[0.2em] md:tracking-[0.3em] font-bold text-white/20 group-hover:text-white/40 transition-colors">{stat.label}</span>
+                  <div key={i} className="flex flex-col items-center gap-0 group">
+                    <span className="text-[10px] md:text-[clamp(0.9rem,2.5vh,1.3rem)] font-black text-[#a67c52] tracking-tighter">{stat.value}</span>
+                    <span className="text-[7px] md:text-[8px] uppercase tracking-[0.2em] md:tracking-[0.3em] font-bold text-white/20 group-hover:text-white/40 transition-colors whitespace-nowrap">{stat.label}</span>
                   </div>
                 ))}
               </motion.div>
             </AnimatePresence>
 
              {/* CTA Group */}
-            <div className="flex items-center gap-4 md:gap-8">
+            <div className="flex items-center gap-4 md:gap-8 mt-2 md:mt-4 lg:mt-6">
               <Link href="/products">
                 <PrimaryButton 
                   circleColor="#a67c52"
                   textColor="#ffffff"
                   hoverTextColor="#000000"
-                  className="pl-2 md:pl-3 pr-8 md:pr-12 py-2 md:py-3 bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl text-[10px] md:text-sm"
+                  className="h-12 md:h-12 bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl text-[10px] md:text-xs xl:text-sm"
                 >
                   Explore Collection
                 </PrimaryButton>
@@ -383,7 +378,7 @@ const Hero: React.FC = () => {
         </div>
 
         {/* --- GLOBAL DOT NAV --- */}
-        <div className="hidden xl:flex fixed left-12 top-1/2 -translate-y-1/2 z-50 flex-col gap-10">
+        <div className="hidden xl:flex fixed left-12 top-1/2 -translate-y-1/2 z-50 flex-col gap-4 md:gap-6 lg:gap-10">
            {SLIDES.map((_, i) => (
              <div 
                key={i} 
@@ -396,7 +391,7 @@ const Hero: React.FC = () => {
                 <span className={`text-[10px] font-black transition-all ${activeSlide === i ? 'text-[#a67c52] scale-150' : 'text-white/20 group-hover:text-white/40'}`}>
                   0{i + 1}
                 </span>
-                <div className={`h-[2px] transition-all duration-700 ${activeSlide === i ? 'w-12 bg-[#a67c52]' : 'w-4 bg-white/10 group-hover:w-8 group-hover:bg-white/20'}`} />
+                <div className={`h-[1px] md:h-[2px] transition-all duration-700 ${activeSlide === i ? 'w-8 md:w-12 bg-[#a67c52]' : 'w-2 md:w-4 bg-white/10 group-hover:w-8 group-hover:bg-white/20'}`} />
              </div>
            ))}
         </div>
