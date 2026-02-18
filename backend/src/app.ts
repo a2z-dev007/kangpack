@@ -10,15 +10,7 @@ import { corsOptions } from './config/cors';
 import { v1Routes } from './routes/v1.routes';
 import { generalRateLimit } from './common/middlewares/rateLimit.middleware';
 import { errorHandler, notFoundHandler } from './common/middlewares/error.middleware';
-import cloudinary from 'cloudinary';
 const app = express();
-
-// Cloudinary configuration
-cloudinary.v2.config({
-  cloud_name: env.CLOUDINARY_CLOUD_NAME,
-  api_key: env.CLOUDINARY_API_KEY,
-  api_secret: env.CLOUDINARY_API_SECRET,
-});
 
 // Security middleware
 app.use(helmet({

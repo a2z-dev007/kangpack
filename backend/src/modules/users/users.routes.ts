@@ -9,7 +9,7 @@ import {
   updateProfileSchema,
   addressSchema,
 } from './users.validation';
-import { uploadFile } from '../../multer/localUpload';
+import { uploadSingle } from '../../multer/storage';
 
 const router = Router();
 
@@ -17,8 +17,8 @@ const router = Router();
 router.get('/', authenticate, requireAdminOrStaff, UsersController.getUsers);
 router.get('/stats', authenticate, requireAdmin, UsersController.getUserStats);
 router.get('/:id', authenticate, requireAdminOrStaff, UsersController.getUserById);
-router.post('/', authenticate, requireAdmin, uploadFile, validateSchema(createUserSchema), UsersController.createUser);
-router.put('/:id', authenticate, requireAdmin, uploadFile, validateSchema(updateUserSchema), UsersController.updateUser);
+router.post('/', authenticate, requireAdmin, uploadSingle, validateSchema(createUserSchema), UsersController.createUser);
+router.put('/:id', authenticate, requireAdmin, uploadSingle, validateSchema(updateUserSchema), UsersController.updateUser);
 router.delete('/:id', authenticate, requireAdmin, UsersController.deleteUser);
 
 // User profile routes

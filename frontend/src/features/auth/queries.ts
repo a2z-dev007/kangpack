@@ -81,11 +81,11 @@ export function useLogout() {
 
   return useMutation({
     mutationFn: () => authApi.logout(),
-    onSuccess: () => {
+    onSettled: () => {
       setUser(null);
       queryClient.clear();
       toast.success('Logged out successfully');
-      router.push(ROUTES.LOGIN);
+      window.location.href = ROUTES.LOGIN;
     },
   });
 }

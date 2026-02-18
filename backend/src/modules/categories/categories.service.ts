@@ -21,9 +21,12 @@ export interface CreateCategoryData {
 export class CategoriesService {
   public static async getCategories(includeInactive: boolean = false) {
     const query = includeInactive ? {} : { isActive: true };
+    const populateOptions = includeInactive 
+      ? 'subcategories' 
+      : { path: 'subcategories', match: { isActive: true } };
     
     const categories = await Category.find(query)
-      .populate('subcategories')
+      .populate(populateOptions)
       .sort({ sortOrder: 1, name: 1 })
       .lean();
 
@@ -156,9 +159,8 @@ export class CategoriesService {
       throw new AppError('Cannot delete category with subcategories', HTTP_STATUS.BAD_REQUEST);
     }
 
-    // Soft delete by deactivating
-    category.isActive = false;
-    await category.save();
+    // Hard delete from database
+    await Category.findByIdAndDelete(categoryId);
   }
 
   public static async reorderCategories(categoryOrders: { id: string; sortOrder: number }[]): Promise<void> {

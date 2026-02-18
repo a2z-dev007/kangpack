@@ -249,6 +249,10 @@ export interface PaginationParams {
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   status?: string;
+  category?: string;
+  stockStatus?: string;
+  minPrice?: string | number;
+  maxPrice?: string | number;
 }
 
 export interface PaginatedResponse<T> {

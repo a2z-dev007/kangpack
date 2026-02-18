@@ -38,7 +38,7 @@ export default function AdminCMS() {
 
   const confirmDelete = () => {
     if (selectedPage) {
-      deletePage(selectedPage._id, {
+      deletePage(selectedPage.id || selectedPage._id, {
         onSuccess: () => {
           setDeleteModalOpen(false);
           setSelectedPage(null);
@@ -84,7 +84,7 @@ export default function AdminCMS() {
           ) : (
             <div className="space-y-4">
               {pages.map((page: any) => (
-                <div key={page._id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors group">
+                <div key={page.id || page._id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors group">
                   <div className="flex items-center gap-4">
                     <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 group-hover:text-primary transition-colors">
                       <FileText className="h-6 w-6" />

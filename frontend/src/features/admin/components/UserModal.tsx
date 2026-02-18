@@ -86,7 +86,7 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 
     if (isEditing) {
       updateUser(
-        { id: user._id, data },
+        { id: user.id || user._id, data },
         {
           onSuccess: () => {
             onClose();

@@ -108,7 +108,7 @@ export default function AdminInventory() {
             <div className="space-y-2">
               {lowStock.map((product: any) => (
                 <div
-                  key={product._id}
+                  key={product.id}
                   className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div>
@@ -149,7 +149,7 @@ export default function AdminInventory() {
             <div className="space-y-2">
               {outOfStock.map((product: any) => (
                 <div
-                  key={product._id}
+                  key={product.id}
                   className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
                 >
                   <div>
@@ -192,7 +192,7 @@ export default function AdminInventory() {
                 .filter((p: any) => p.stock > 10)
                 .map((product: any) => (
                   <div
-                    key={product._id}
+                    key={product.id}
                     className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
                   >
                     <div>

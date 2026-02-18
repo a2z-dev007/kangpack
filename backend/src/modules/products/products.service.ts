@@ -3,8 +3,7 @@ import { AppError } from '../../common/middlewares/error.middleware';
 import { HTTP_STATUS, MESSAGES } from '../../common/constants';
 import { PaginationUtils, SlugUtils } from '../../common/utils';
 import { PaginationQuery, FilterQuery } from '../../common/types';
-import getDataUrl from '../../common/utils/bufferGenerator';
-import cloudinary from 'cloudinary';
+import { S3Service } from '../../common/services/s3.service';
 export interface CreateProductData {
   name: string;
   slug?: string;
@@ -210,23 +209,11 @@ export class ProductsService {
       slug,
     });
 
-    // Upload images to Cloudinary
-    const cloudinaryImages: string[] = [];
-
+    // Upload images to S3
     if (files && Array.isArray(files) && files.length > 0) {
-      for (const file of files) {
-        const imgBuffer = getDataUrl(file);
-
-        const uploadCloud = await cloudinary.v2.uploader.upload(imgBuffer.content!, {
-          folder: 'products',
-          resource_type: 'image',
-        });
-
-        cloudinaryImages.push(uploadCloud.secure_url);
-      }
-
-      console.log('✓ Uploaded', cloudinaryImages.length, 'images to Cloudinary');
-      product.images = cloudinaryImages;
+      const imageUrls = await S3Service.uploadMultiple(files, 'products');
+      console.log('✓ Uploaded', imageUrls.length, 'images to S3');
+      product.images = imageUrls;
     }
 
     await product.save();
@@ -250,23 +237,11 @@ export class ProductsService {
     }
 
 
-    // Upload images to Cloudinary
+    // Upload images to S3
     if (files && Array.isArray(files) && files.length > 0) {
-      const cloudinaryImages: string[] = [];
-
-      for (const file of files) {
-        const imgBuffer = getDataUrl(file);
-
-        const uploadCloud = await cloudinary.v2.uploader.upload(imgBuffer.content!, {
-          folder: 'products',
-          resource_type: 'image',
-        });
-
-        cloudinaryImages.push(uploadCloud.secure_url);
-      }
-
-      console.log('✓ Uploaded', cloudinaryImages.length, 'images to Cloudinary');
-      (data as any).images = cloudinaryImages;
+      const imageUrls = await S3Service.uploadMultiple(files, 'products');
+      console.log('✓ Uploaded', imageUrls.length, 'images to S3');
+      (data as any).images = imageUrls;
     }
 
     const product = await Product.findByIdAndUpdate(
@@ -286,6 +261,13 @@ export class ProductsService {
     const product = await Product.findById(productId);
     if (!product) {
       throw new AppError(MESSAGES.PRODUCT_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+    }
+
+    // Optional: Clean up images from S3 when product is deactivated or deleted
+    if (product.images && product.images.length > 0) {
+      for (const imageUrl of product.images) {
+        await S3Service.deleteFile(imageUrl);
+      }
     }
 
     // Soft delete by deactivating

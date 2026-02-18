@@ -60,7 +60,7 @@ export default function AdminCustomers() {
 
   const confirmDelete = () => {
     if (selectedUser) {
-      deleteUser(selectedUser._id, {
+      deleteUser(selectedUser.id || selectedUser._id, {
         onSuccess: () => {
           setDeleteModalOpen(false);
           setSelectedUser(null);
@@ -125,7 +125,7 @@ export default function AdminCustomers() {
               </div>
 
               {users.map((user: any) => (
-                <div key={user._id} className="grid grid-cols-5 gap-4 items-center py-3 border-b last:border-0 hover:bg-muted/50 transition-colors px-2 rounded-lg group">
+                <div key={user.id || user._id} className="grid grid-cols-5 gap-4 items-center py-3 border-b last:border-0 hover:bg-muted/50 transition-colors px-2 rounded-lg group">
                   <div className="col-span-2">
                     <p className="font-medium">{user.name}</p>
                     <p className="text-sm text-muted-foreground">{user.email}</p>
@@ -151,7 +151,7 @@ export default function AdminCustomers() {
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          onClick={() => updateUser({ id: user._id, data: { role: user.role === 'user' ? 'staff' : 'user' } })}
+                          onClick={() => updateUser({ id: user.id || user._id, data: { role: user.role === 'user' ? 'staff' : 'user' } })}
                         >
                           {user.role === 'user' ? 'Promote to Staff' : 'Demote to User'}
                         </DropdownMenuItem>

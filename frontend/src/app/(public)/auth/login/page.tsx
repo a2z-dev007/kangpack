@@ -49,7 +49,7 @@ export default function LoginPage() {
       // Normalize user data
       const normalizedUser = {
         ...user,
-        id: user._id || user.id,
+        id: user.id,
         name:
           user.name || `${user.firstName || ""} ${user.lastName || ""}`.trim(),
       };

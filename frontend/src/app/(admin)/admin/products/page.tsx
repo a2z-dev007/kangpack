@@ -22,9 +22,22 @@ import {
   Filter,
   Download,
   Eye,
+  RefreshCw,
+  RotateCcw,
 } from "lucide-react";
-import { formatCurrency } from "@/lib/utils";
+import { formatPrice, cn } from "@/lib/utils";
 import Image from "next/image";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { SideDrawer } from "@/components/ui/SideDrawer";
+import { useAdminCategories } from "@/features/admin/queries";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -35,10 +48,18 @@ import {
 import { Checkbox } from "@/components/ui/checkbox";
 import { ProductModal } from "@/features/admin/components/ProductModal";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
-
 export default function AdminProducts() {
-  const [page, setPage] = useState(1);
-  const [search, setSearch] = useState("");
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+
+  // Helper to initialize state from URL
+  const getInitialParam = (key: string, defaultVal: string) => {
+    return searchParams.get(key) || defaultVal;
+  };
+
+  const [page, setPage] = useState(Number(getInitialParam("page", "1")) || 1);
+  const [search, setSearch] = useState(getInitialParam("search", ""));
   const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
   const [isClient, setIsClient] = useState(false);
 
@@ -47,11 +68,65 @@ export default function AdminProducts() {
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
+  // Advanced Filter States
+  const [isFilterOpen, setFilterOpen] = useState(false);
+  const [activeFilters, setActiveFilters] = useState({
+    category: getInitialParam("category", "all"),
+    status: getInitialParam("status", "all"),
+    stockStatus: getInitialParam("stockStatus", "all"),
+    minPrice: getInitialParam("minPrice", ""),
+    maxPrice: getInitialParam("maxPrice", ""),
+  });
+
+  const [pendingFilters, setPendingFilters] = useState(activeFilters);
+
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const { data, isLoading } = useAdminProducts({ page, limit: 10, search });
+  // Sync state to URL whenever filters change
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (page > 1) params.set("page", page.toString());
+    else params.delete("page");
+
+    if (search) params.set("search", search);
+    else params.delete("search");
+
+    Object.entries(activeFilters).forEach(([key, value]) => {
+      if (value && value !== "all") {
+        params.set(key, String(value));
+      } else {
+        params.delete(key);
+      }
+    });
+
+    const newUrl = `${pathname}?${params.toString()}`;
+    router.replace(newUrl, { scroll: false });
+  }, [page, search, activeFilters, pathname, router]);
+
+  // Sync pending filters when drawer opens
+  useEffect(() => {
+    if (isFilterOpen) {
+      setPendingFilters(activeFilters);
+    }
+  }, [isFilterOpen, activeFilters]);
+
+  const { data, isLoading } = useAdminProducts({
+    page,
+    limit: 10,
+    search,
+    category: activeFilters.category !== "all" ? activeFilters.category : undefined,
+    status: activeFilters.status !== "all" ? activeFilters.status : undefined,
+    stockStatus: activeFilters.stockStatus !== "all" ? activeFilters.stockStatus : undefined,
+    minPrice: activeFilters.minPrice || undefined,
+    maxPrice: activeFilters.maxPrice || undefined,
+  });
+
+  const { data: categoriesData } = useAdminCategories();
+  const categories = categoriesData?.data || [];
+
   const { mutate: deleteProduct, isPending: isDeleting } = useDeleteProduct();
   const { mutate: bulkDelete, isPending: isBulkDeleting } =
     useBulkDeleteProducts();
@@ -137,6 +212,26 @@ export default function AdminProducts() {
     }
   };
 
+  const applyFilters = () => {
+    setActiveFilters(pendingFilters);
+    setFilterOpen(false);
+    setPage(1);
+  };
+
+  const resetFilters = () => {
+    const defaultFilters = {
+      category: "all",
+      status: "all",
+      stockStatus: "all",
+      minPrice: "",
+      maxPrice: "",
+    };
+    setPendingFilters(defaultFilters);
+    setActiveFilters(defaultFilters);
+    setSearch("");
+    setPage(1);
+  };
+
   // Show loading skeleton on initial render to prevent hydration issues
   if (!isClient) {
     return (
@@ -172,7 +267,7 @@ export default function AdminProducts() {
   }
 
   return (
-    <div className="min-h-screen p-6">
+    <div className="space-y-8">
       <div className="max-w-10xl mx-auto space-y-8">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
@@ -294,14 +389,42 @@ export default function AdminProducts() {
                 <Input
                   placeholder="Search products by name or SKU..."
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                    setPage(1);
+                  }}
                   className="pl-10 border-border focus:border-primary focus:ring-primary/20"
                 />
               </div>
-              <Button variant="outline" size="sm" className="hidden sm:flex">
+              <Button
+                variant="outline"
+                size="sm"
+                className={cn(
+                  "hidden sm:flex rounded-xl h-10 px-4",
+                  Object.values(activeFilters).some(
+                    (v) => v !== "all" && v !== "",
+                  ) && "border-primary text-primary bg-primary/5",
+                )}
+                onClick={() => setFilterOpen(true)}
+              >
                 <Filter className="mr-2 h-4 w-4" />
                 Filters
               </Button>
+
+              {(search ||
+                Object.values(activeFilters).some(
+                  (val) => val !== "all" && val !== "",
+                )) && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={resetFilters}
+                  className="text-destructive hover:text-destructive/80 hover:bg-destructive/5"
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" />
+                  Reset
+                </Button>
+              )}
               {selectedProducts.length > 0 && (
                 <div className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg border border-border">
                   <span className="text-sm font-medium text-foreground">
@@ -466,12 +589,12 @@ export default function AdminProducts() {
                       {/* Price */}
                       <div>
                         <p className="font-bold text-foreground text-lg">
-                          {formatCurrency(product.price)}
+                          {formatPrice(product.price)}
                         </p>
                         {product.comparePrice &&
                           product.comparePrice > product.price && (
                             <p className="text-sm text-muted-foreground line-through">
-                              {formatCurrency(product.comparePrice)}
+                              {formatPrice(product.comparePrice)}
                             </p>
                           )}
                       </div>
@@ -636,6 +759,138 @@ export default function AdminProducts() {
           description={`Are you sure you want to delete "${selectedProduct?.name}"? This action cannot be undone.`}
           isLoading={isDeleting}
         />
+
+        {/* Filters Side Drawer */}
+        <SideDrawer
+          isOpen={isFilterOpen}
+          onClose={() => setFilterOpen(false)}
+          title="Advanced Filters"
+          description="Refine your product catalog with detailed criteria."
+          icon={<Filter className="h-6 w-6" />}
+          footer={
+            <div className="flex flex-col gap-3 w-full">
+              <Button
+                onClick={applyFilters}
+                className="w-full h-12 rounded-xl bg-[#6B4A2D] hover:bg-[#5A3E25] font-bold"
+              >
+                Apply Filters
+              </Button>
+              <Button
+                variant="outline"
+                onClick={resetFilters}
+                className="w-full h-12 rounded-xl border-slate-200 text-slate-500 font-bold"
+              >
+                <RefreshCw className="h-4 w-4 mr-2" />
+                Reset Everything
+              </Button>
+            </div>
+          }
+        >
+          <div className="space-y-8">
+            {/* Category Filter */}
+            <div className="space-y-3">
+              <Label className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2">
+                Category
+              </Label>
+              <Select
+                value={pendingFilters.category}
+                onValueChange={(val) =>
+                  setPendingFilters((prev) => ({ ...prev, category: val }))
+                }
+              >
+                <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-medium">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-slate-200 bg-white shadow-xl">
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map((cat: any) => (
+                    <SelectItem key={cat.id} value={cat.id}>
+                      {cat.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Status Filter */}
+            <div className="space-y-3">
+              <Label className="text-xs font-black uppercase text-slate-400 tracking-wider">
+                Status
+              </Label>
+              <Select
+                value={pendingFilters.status}
+                onValueChange={(val) =>
+                  setPendingFilters((prev) => ({ ...prev, status: val }))
+                }
+              >
+                <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-medium">
+                  <SelectValue placeholder="All Status" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-slate-200 bg-white shadow-xl">
+                  <SelectItem value="all">All Status</SelectItem>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Stock Status Filter */}
+            <div className="space-y-3">
+              <Label className="text-xs font-black uppercase text-slate-400 tracking-wider">
+                Stock Status
+              </Label>
+              <Select
+                value={pendingFilters.stockStatus}
+                onValueChange={(val) =>
+                  setPendingFilters((prev) => ({ ...prev, stockStatus: val }))
+                }
+              >
+                <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-medium">
+                  <SelectValue placeholder="All Stock Status" />
+                </SelectTrigger>
+                <SelectContent className="rounded-xl border-slate-200 bg-white shadow-xl">
+                  <SelectItem value="all">All Stock Status</SelectItem>
+                  <SelectItem value="in_stock">In Stock</SelectItem>
+                  <SelectItem value="low_stock">Low Stock</SelectItem>
+                  <SelectItem value="out_of_stock">Out of Stock</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Price Range Filter */}
+            <div className="space-y-3">
+              <Label className="text-xs font-black uppercase text-slate-400 tracking-wider">
+                Price Range (₹)
+              </Label>
+              <div className="grid grid-cols-2 gap-3">
+                <Input
+                  type="number"
+                  placeholder="Min"
+                  value={pendingFilters.minPrice}
+                  onChange={(e) =>
+                    setPendingFilters((prev) => ({
+                      ...prev,
+                      minPrice: e.target.value,
+                    }))
+                  }
+                  className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-medium"
+                />
+                <Input
+                  type="number"
+                  placeholder="Max"
+                  value={pendingFilters.maxPrice}
+                  onChange={(e) =>
+                    setPendingFilters((prev) => ({
+                      ...prev,
+                      maxPrice: e.target.value,
+                    }))
+                  }
+                  className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-medium"
+                />
+              </div>
+            </div>
+          </div>
+        </SideDrawer>
       </div>
     </div>
   );

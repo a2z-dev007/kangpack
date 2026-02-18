@@ -7,20 +7,35 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { useAdminCategories, useDeleteCategory } from '@/features/admin/queries';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Plus, Search, Trash2, Edit, FolderTree } from 'lucide-react';
+import { Plus, Search, Trash2, Edit, FolderTree, ChevronDown, ChevronRight } from 'lucide-react';
 import { CategoryModal } from '@/features/admin/components/CategoryModal';
 import { ConfirmModal } from '@/components/ui/confirm-modal';
+import { cn } from '@/lib/utils';
 
 export default function AdminCategories() {
   const [search, setSearch] = useState('');
   const [isCategoryModalOpen, setCategoryModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<any>(null);
+  const [expandedCategories, setExpandedCategories] = useState<string[]>([]);
 
   const { data, isLoading } = useAdminCategories({ search });
   const { mutate: deleteCategory, isPending: isDeleting } = useDeleteCategory();
 
-  const categories = data?.data || [];
+  const allCategories = data?.data || [];
+  
+  // Filter for root categories if no search is active, otherwise show flat list
+  const displayCategories = search 
+    ? allCategories 
+    : allCategories.filter((c: any) => !c.parentCategory);
+
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(categoryId) 
+        ? prev.filter(id => id !== categoryId) 
+        : [...prev, categoryId]
+    );
+  };
 
   const openAddModal = () => {
     setSelectedCategory(null);
@@ -39,13 +54,67 @@ export default function AdminCategories() {
 
   const confirmDelete = () => {
     if (selectedCategory) {
-      deleteCategory(selectedCategory._id, {
+      deleteCategory(selectedCategory.id, {
         onSuccess: () => {
           setDeleteModalOpen(false);
           setSelectedCategory(null);
         }
       });
     }
+  };
+
+  const CategoryItem = ({ category, isSubCategory = false }: { category: any, isSubCategory?: boolean }) => {
+    const isExpanded = expandedCategories.includes(category.id);
+    const hasSubCategories = category.subcategories && category.subcategories.length > 0;
+
+    return (
+      <div className="space-y-2">
+        <div 
+          className={cn(
+            "flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors group",
+            isSubCategory ? "ml-8 bg-muted/20" : "bg-card"
+          )}
+        >
+          <div 
+            className="flex items-center gap-3 flex-1 cursor-pointer"
+            onClick={() => !search && hasSubCategories && toggleCategory(category.id)}
+          >
+            {!search && hasSubCategories ? (
+              isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />
+            ) : (
+              <FolderTree className="h-5 w-5 text-muted-foreground" />
+            )}
+            <div>
+              <p className="font-medium">{category.name}</p>
+              <p className="text-sm text-muted-foreground">{category.slug}</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant={category.isActive ? 'default' : 'secondary'}>
+              {category.isActive ? 'Active' : 'Inactive'}
+            </Badge>
+            <Button variant="ghost" size="icon" onClick={() => openEditModal(category)}>
+              <Edit className="h-4 w-4" />
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => openDeleteModal(category)}
+            >
+              <Trash2 className="h-4 w-4 text-destructive" />
+            </Button>
+          </div>
+        </div>
+        
+        {isExpanded && !search && hasSubCategories && (
+          <div className="space-y-2">
+            {category.subcategories.map((sub: any) => (
+              <CategoryItem key={sub.id} category={sub} isSubCategory={true} />
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
@@ -77,7 +146,7 @@ export default function AdminCategories() {
 
       <Card>
         <CardHeader>
-          <CardTitle>All Categories ({categories.length})</CardTitle>
+          <CardTitle>All Categories ({allCategories.length})</CardTitle>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -86,7 +155,7 @@ export default function AdminCategories() {
                 <Skeleton key={i} className="h-16 w-full" />
               ))}
             </div>
-          ) : categories.length === 0 ? (
+          ) : displayCategories.length === 0 ? (
             <div className="text-center py-12">
               <FolderTree className="mx-auto h-12 w-12 text-muted-foreground" />
               <h3 className="mt-4 text-lg font-semibold">No categories found</h3>
@@ -94,31 +163,8 @@ export default function AdminCategories() {
             </div>
           ) : (
             <div className="space-y-2">
-              {categories.map((category: any) => (
-                <div key={category._id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors group">
-                  <div className="flex items-center gap-3">
-                    <FolderTree className="h-5 w-5 text-muted-foreground" />
-                    <div>
-                      <p className="font-medium">{category.name}</p>
-                      <p className="text-sm text-muted-foreground">{category.slug}</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={category.isActive ? 'default' : 'secondary'}>
-                      {category.isActive ? 'Active' : 'Inactive'}
-                    </Badge>
-                    <Button variant="ghost" size="icon" onClick={() => openEditModal(category)}>
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => openDeleteModal(category)}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                </div>
+              {displayCategories.map((category: any) => (
+                <CategoryItem key={category.id} category={category} />
               ))}
             </div>
           )}

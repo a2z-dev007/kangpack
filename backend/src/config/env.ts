@@ -1,7 +1,13 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
+import path from 'path';
 
-dotenv.config();
+const result = dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+
+if (result.error) {
+  console.error('❌ Error loading .env file:', result.error);
+  process.exit(1);
+}
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -18,9 +24,10 @@ const envSchema = z.object({
   RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).default('100'),
   BCRYPT_SALT_ROUNDS: z.string().transform(Number).default('12'),
   COOKIE_SECRET: z.string().min(16, 'Cookie secret must be at least 16 characters'),
-  CLOUDINARY_CLOUD_NAME: z.string().min(1, 'Cloudinary Cloud Name is required'),
-  CLOUDINARY_API_KEY: z.string().min(1, 'Cloudinary API Key is required'),
-  CLOUDINARY_API_SECRET: z.string().min(1, 'Cloudinary API Secret is required'),
+  AWS_ACCESS_KEY_ID: z.string().min(1, 'AWS Access Key ID is required'),
+  AWS_SECRET_ACCESS_KEY: z.string().min(1, 'AWS Secret Access Key is required'),
+  AWS_REGION: z.string().min(1, 'AWS Region is required'),
+  S3_BUCKET_NAME: z.string().min(1, 'S3 Bucket Name is required'),
 });
 
 const parseEnv = () => {
