@@ -12,7 +12,11 @@ import { generalRateLimit } from './common/middlewares/rateLimit.middleware';
 import { errorHandler, notFoundHandler } from './common/middlewares/error.middleware';
 const app = express();
 
-// Security middleware
+// 1. CORS should be first to handle preflights correctly
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
+// 2. Security middleware
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
   contentSecurityPolicy: {
@@ -24,9 +28,6 @@ app.use(helmet({
     },
   },
 }));
-
-// CORS
-app.use(cors(corsOptions));
 
 // Rate limiting
 app.use(generalRateLimit);

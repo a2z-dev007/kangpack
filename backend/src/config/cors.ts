@@ -3,23 +3,24 @@ import { env } from './env';
 
 export const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
+    // 1. Allow mobile/Postman
     if (!origin) return callback(null, true);
 
     const allowedOrigins = env.CORS_ORIGIN.split(',').map(o => o.trim());
     
-    // Check if origin is allowed explicitly or via wildcard
-    const isAllowed = allowedOrigins.includes(origin) || 
-                      allowedOrigins.includes('*') ||
-                      // Automatically allow any subdomain of kangpack.in in production
-                      (origin.endsWith('kangpack.in') || origin.endsWith('kangpack.in/'));
+    // 2. Check Kangpack domains (both HTTP and HTTPS for safety)
+    const isKangpack = origin.includes('kangpack.in');
+    
+    // 3. Check explicit allowed origins or wildcard
+    const isExplicitlyAllowed = allowedOrigins.includes(origin) || allowedOrigins.includes('*');
 
-    if (isAllowed) {
+    if (isKangpack || isExplicitlyAllowed) {
       return callback(null, true);
     }
 
-    console.warn(`⚠️ CORS blocked request from origin: ${origin}`);
-    return callback(new Error(`Origin ${origin} not allowed by CORS`));
+    console.warn(`[CORS] Blocking unexpected origin: ${origin}`);
+    // Return false instead of Error to avoid server-side error handling during flight check
+    return callback(null, false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -31,8 +32,9 @@ export const corsOptions: CorsOptions = {
     'Authorization',
     'Cache-Control',
     'Pragma',
-    'x-session-id'
+    'x-session-id',
+    'Range'
   ],
-  exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
-  maxAge: 86400, // 24 hours
+  exposedHeaders: ['X-Total-Count', 'X-Page-Count', 'Content-Range', 'Accept-Ranges'],
+  maxAge: 3600,
 };
