@@ -8,17 +8,18 @@ export const corsOptions: CorsOptions = {
 
     const allowedOrigins = env.CORS_ORIGIN.split(',').map(o => o.trim());
     
-    // Allow all origins in development
-    if (env.NODE_ENV === 'development' && allowedOrigins.includes('*')) {
+    // Check if origin is allowed explicitly or via wildcard
+    const isAllowed = allowedOrigins.includes(origin) || 
+                      allowedOrigins.includes('*') ||
+                      // Automatically allow any subdomain of kangpack.in in production
+                      (origin.endsWith('kangpack.in') || origin.endsWith('kangpack.in/'));
+
+    if (isAllowed) {
       return callback(null, true);
     }
 
-    // Check if origin is allowed
-    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
-      return callback(null, true);
-    }
-
-    return callback(new Error('Not allowed by CORS'));
+    console.warn(`⚠️ CORS blocked request from origin: ${origin}`);
+    return callback(new Error(`Origin ${origin} not allowed by CORS`));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],

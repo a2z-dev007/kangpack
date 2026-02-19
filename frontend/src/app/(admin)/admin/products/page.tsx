@@ -46,7 +46,6 @@ import {
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ProductModal } from "@/features/admin/components/ProductModal";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
 export default function AdminProducts() {
   const router = useRouter();
@@ -64,7 +63,6 @@ export default function AdminProducts() {
   const [isClient, setIsClient] = useState(false);
 
   // Modal states
-  const [isProductModalOpen, setProductModalOpen] = useState(false);
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
@@ -156,7 +154,7 @@ export default function AdminProducts() {
     if (selectedProducts.length === products.length) {
       setSelectedProducts([]);
     } else {
-      setSelectedProducts(products.map((p: any) => p.id));
+      setSelectedProducts(products.map((p: any) => p._id || p.id));
     }
   };
 
@@ -185,13 +183,15 @@ export default function AdminProducts() {
   };
 
   const openAddModal = () => {
-    setSelectedProduct(null);
-    setProductModalOpen(true);
+    router.push("/admin/products/new");
   };
 
   const openEditModal = (product: any) => {
-    setSelectedProduct(product);
-    setProductModalOpen(true);
+    router.push(`/admin/products/${product._id || product.id}/edit`);
+  };
+
+  const openViewPage = (id: string) => {
+    router.push(`/admin/products/${id}`);
   };
 
   const openDeleteModal = (product: any) => {
@@ -203,7 +203,7 @@ export default function AdminProducts() {
 
   const confirmDelete = () => {
     if (selectedProduct) {
-      deleteProduct(selectedProduct.id, {
+      deleteProduct(selectedProduct._id || selectedProduct.id, {
         onSuccess: () => {
           setDeleteModalOpen(false);
           setSelectedProduct(null);
@@ -542,19 +542,19 @@ export default function AdminProducts() {
                 {/* Product Rows */}
                 {products.map((product: any, index: number) => (
                   <div
-                    key={product.id}
+                    key={product._id || product.id}
                     className={`flex items-center gap-4 px-6 py-4 hover:bg-muted/30 transition-all duration-200 group ${
                       index % 2 === 0 ? "bg-card" : "bg-muted/10"
                     }`}
                   >
                     <Checkbox
-                      checked={selectedProducts.includes(product.id)}
-                      onCheckedChange={() => handleSelect(product.id)}
+                      checked={selectedProducts.includes(product._id || product.id)}
+                      onCheckedChange={() => handleSelect(product._id || product.id)}
                       className="border-input"
                     />
                     <div className="flex-1 grid grid-cols-5 gap-4 items-center">
                       {/* Product Info */}
-                      <div className="col-span-2 flex items-center gap-4">
+                      <div className="col-span-2 flex items-center gap-4 cursor-pointer" onClick={() => openViewPage(product._id || product.id)}>
                         <div className="relative">
                           {product.images?.[0] ? (
                             <div className="relative w-16 h-16 rounded-xl overflow-hidden shadow-sm border border-border">
@@ -651,6 +651,13 @@ export default function AdminProducts() {
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
                           <DropdownMenuItem
+                            onClick={() => openViewPage(product._id || product.id)}
+                            className="cursor-pointer"
+                          >
+                            <Eye className="mr-2 h-4 w-4" />
+                            View Details
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
                             onClick={() => openEditModal(product)}
                             className="cursor-pointer"
                           >
@@ -660,13 +667,13 @@ export default function AdminProducts() {
                           <DropdownMenuItem
                             onClick={() =>
                               bulkUpdate({
-                                ids: [product.id],
+                                ids: [product._id || product.id],
                                 updates: { isActive: !product.isActive },
                               })
                             }
                             className="cursor-pointer"
                           >
-                            <Eye className="mr-2 h-4 w-4" />
+                            <RefreshCw className="mr-2 h-4 w-4" />
                             {product.isActive ? "Deactivate" : "Activate"}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
@@ -744,12 +751,6 @@ export default function AdminProducts() {
             )}
           </CardContent>
         </Card>
-
-        <ProductModal
-          isOpen={isProductModalOpen}
-          onClose={() => setProductModalOpen(false)}
-          product={selectedProduct}
-        />
 
         <ConfirmModal
           isOpen={isDeleteModalOpen}

@@ -142,20 +142,20 @@ const Hero: React.FC = () => {
             transition={{ duration: 1.2, ease: "easeInOut" }}
             className="absolute inset-0 z-0"
           >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.5)_0%,transparent_100%)] z-10" />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.2)_0%,transparent_100%)] z-10" />
             <img
               src={slide.bg}
               alt="Slide Background"
-              className="w-full h-full object-cover opacity-30 scale-110 brightness-[0.3] grayscale-[0.2]"
+              className="w-full h-full object-cover opacity-50 scale-110 brightness-[0.5] grayscale-[0.1]"
             />
             
             {/* Animated Light Leaks */}
             <motion.div 
-              style={{ x: moveX, y: moveY, opacity: 0.3 }}
-              className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-[#6b4a2d]/10 blur-[180px] rounded-full mix-blend-screen"
+              style={{ x: moveX, y: moveY, opacity: 0.5 }}
+              className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-[#a67c52]/20 blur-[180px] rounded-full mix-blend-screen"
             />
             
-            <div className="absolute inset-x-0 bottom-0 h-96 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/90 to-transparent z-20" />
+            <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-transparent z-20" />
           </motion.div>
         </AnimatePresence>
 

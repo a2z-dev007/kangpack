@@ -2,10 +2,11 @@ import dotenv from 'dotenv';
 import { z } from 'zod';
 import path from 'path';
 
-const result = dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+const envFile = process.env.NODE_ENV === 'production' ? '../../.env.production' : '../../.env';
+const result = dotenv.config({ path: path.resolve(__dirname, envFile) });
 
-if (result.error) {
-  console.error('❌ Error loading .env file:', result.error);
+if (result.error && process.env.NODE_ENV !== 'production') {
+  console.error(`❌ Error loading ${envFile} file:`, result.error);
   process.exit(1);
 }
 
