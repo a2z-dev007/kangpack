@@ -18,6 +18,7 @@ export const authRateLimit = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   skipSuccessfulRequests: true, // Don't count successful requests
+  validate: { xForwardedForHeader: false },
 });
 
 export const strictRateLimit = rateLimit({
@@ -26,4 +27,5 @@ export const strictRateLimit = rateLimit({
   message: ResponseUtils.error(MESSAGES.TOO_MANY_REQUESTS),
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
