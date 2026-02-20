@@ -114,7 +114,7 @@ export default function CheckoutPage() {
     city: "",
     state: "",
     postalCode: "",
-    country: "United States",
+    country: "India",
   });
 
   const [createAccount, setCreateAccount] = useState(false);
@@ -594,7 +594,37 @@ export default function CheckoutPage() {
                             className="h-14 rounded-xl border-[#6B4A2D]/10 focus:border-[#6B4A2D] transition-all"
                           />
                         </div>
-                        <div className="space-y-2 col-span-2 md:col-span-1">
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="space-y-2">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
+                            Country
+                          </Label>
+                          <select
+                            name="country"
+                            value={formData.country}
+                            onChange={(e) =>
+                              setFormData({
+                                ...formData,
+                                country: e.target.value,
+                              })
+                            }
+                            required
+                            className="flex h-14 w-full rounded-xl border border-[#6B4A2D]/10 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B4A2D] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all font-medium text-[#6B4A2D]"
+                          >
+                            <option value="India">India</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">
+                              United Kingdom
+                            </option>
+                            <option value="Canada">Canada</option>
+                            <option value="Australia">Australia</option>
+                            <option value="United Arab Emirates">
+                              United Arab Emirates
+                            </option>
+                          </select>
+                        </div>
+                        <div className="space-y-2">
                           <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
                             Postal Code
                           </Label>
@@ -604,6 +634,7 @@ export default function CheckoutPage() {
                             onChange={handleInputChange}
                             required
                             className="h-14 rounded-xl border-[#6B4A2D]/10 focus:border-[#6B4A2D] transition-all"
+                            placeholder="226020"
                           />
                         </div>
                       </div>

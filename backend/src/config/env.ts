@@ -33,6 +33,7 @@ const envSchema = z.object({
   RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).default('100'),
   BCRYPT_SALT_ROUNDS: z.string().transform(Number).default('12'),
   COOKIE_SECRET: z.string().min(16, 'Cookie secret must be at least 16 characters'),
+  FRONTEND_URL: z.string().min(1, 'Frontend URL is required'),
   AWS_ACCESS_KEY_ID: z.string().min(1, 'AWS Access Key ID is required'),
   AWS_SECRET_ACCESS_KEY: z.string().min(1, 'AWS Secret Access Key is required'),
   AWS_REGION: z.string().min(1, 'AWS Region is required'),
