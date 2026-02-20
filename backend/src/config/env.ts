@@ -34,10 +34,10 @@ const envSchema = z.object({
   BCRYPT_SALT_ROUNDS: z.string().transform(Number).default('12'),
   COOKIE_SECRET: z.string().min(16, 'Cookie secret must be at least 16 characters'),
   FRONTEND_URL: z.string().default('https://kangpack.in'),
-  AWS_ACCESS_KEY_ID: z.string().min(1, 'AWS Access Key ID is required'),
-  AWS_SECRET_ACCESS_KEY: z.string().min(1, 'AWS Secret Access Key is required'),
-  AWS_REGION: z.string().min(1, 'AWS Region is required'),
-  S3_BUCKET_NAME: z.string().min(1, 'S3 Bucket Name is required'),
+  AWS_ACCESS_KEY_ID: z.string().default(''),
+  AWS_SECRET_ACCESS_KEY: z.string().default(''),
+  AWS_REGION: z.string().default(''),
+  S3_BUCKET_NAME: z.string().default(''),
 });
 
 const parseEnv = () => {
