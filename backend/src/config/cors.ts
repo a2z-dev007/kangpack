@@ -10,11 +10,12 @@ export const corsOptions: CorsOptions = {
     
     // 2. Check Kangpack domains (both HTTP and HTTPS for safety)
     const isKangpack = origin.includes('kangpack.in');
+    const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
     
     // 3. Check explicit allowed origins or wildcard
     const isExplicitlyAllowed = allowedOrigins.includes(origin) || allowedOrigins.includes('*');
 
-    if (isKangpack || isExplicitlyAllowed) {
+    if (isKangpack || isLocalhost || isExplicitlyAllowed) {
       return callback(null, true);
     }
 

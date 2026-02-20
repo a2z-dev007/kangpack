@@ -12,19 +12,50 @@ import { generalRateLimit } from './common/middlewares/rateLimit.middleware';
 import { errorHandler, notFoundHandler } from './common/middlewares/error.middleware';
 const app = express();
 
-// 1. CORS should be first to handle preflights correctly
+// --- 1. BRUTE FORCE CORS FALLBACK (Production Resilience) ---
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  
+  // Log origins in development to help debugging
+  if (isDevelopment && origin) {
+    console.log(`[CORS] Request from origin: ${origin}`);
+  }
+
+  // Automatically allow any Kangpack domain or localhost
+  if (origin && (origin.includes('kangpack.in') || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+    res.setHeader('Access-Control-Allow-Origin', origin);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Authorization, x-session-id, Range, Accept, Cache-Control, Pragma');
+    res.setHeader('Access-Control-Max-Age', '3600');
+  }
+  
+  // Handle Preflight directly
+  if (req.method === 'OPTIONS') {
+    // If it's an allowed origin, we already set the headers above
+    if (origin && (origin.includes('kangpack.in') || origin.includes('localhost') || origin.includes('127.0.0.1'))) {
+      return res.status(200).end();
+    }
+    // If not matching our brute force, let it fall through to the cors middleware
+  }
+  next();
+});
+
+// 2. Existing CORS Middleware
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 
-// 2. Security middleware
+// 3. Security middleware
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" }, // Fix for subdomain CORS issues
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://api.kangpack.in", "https://kangpack.in", "http://localhost:*"],
     },
   },
 }));

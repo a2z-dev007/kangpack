@@ -2,12 +2,20 @@ import dotenv from 'dotenv';
 import { z } from 'zod';
 import path from 'path';
 
-const envFile = process.env.NODE_ENV === 'production' ? '../../.env.production' : '../../.env';
-const result = dotenv.config({ path: path.resolve(__dirname, envFile) });
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
 
-if (result.error && process.env.NODE_ENV !== 'production') {
-  console.error(`❌ Error loading ${envFile} file:`, result.error);
-  process.exit(1);
+console.log(`[Config] NODE_ENV is ${process.env.NODE_ENV}`);
+console.log(`[Config] Seeking ${envFile}...`);
+
+const cwdPath = path.join(process.cwd(), envFile);
+const relativePath = path.resolve(__dirname, '../../', envFile);
+
+const result = dotenv.config({ path: cwdPath });
+if (result.error) {
+  console.log(`[Config] CWD path failed, trying relative: ${relativePath}`);
+  dotenv.config({ path: relativePath });
+} else {
+  console.log(`[Config] Loaded environment from: ${cwdPath}`);
 }
 
 const envSchema = z.object({
