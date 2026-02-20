@@ -8,6 +8,7 @@ export const generalRateLimit = rateLimit({
   message: ResponseUtils.error(MESSAGES.TOO_MANY_REQUESTS),
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false },
 });
 
 export const authRateLimit = rateLimit({

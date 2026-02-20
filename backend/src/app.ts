@@ -13,7 +13,7 @@ import { errorHandler, notFoundHandler } from './common/middlewares/error.middle
 const app = express();
 
 // Trust proxy for Nginx
-app.set('trust proxy', 1);
+app.set('trust proxy', true);
 
 // --- 1. CONSOLIDATED CORS HANDLING ---
 app.use((req, res, next) => {
