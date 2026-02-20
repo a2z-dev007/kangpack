@@ -21,12 +21,12 @@ export interface CreateCategoryData {
 export class CategoriesService {
   public static async getCategories(includeInactive: boolean = false) {
     const query = includeInactive ? {} : { isActive: true };
-    const populateOptions = includeInactive 
-      ? 'subcategories' 
-      : { path: 'subcategories', match: { isActive: true } };
     
     const categories = await Category.find(query)
-      .populate(populateOptions)
+      .populate({ 
+        path: 'subcategories', 
+        match: includeInactive ? {} : { isActive: true } 
+      })
       .sort({ sortOrder: 1, name: 1 })
       .lean();
 
