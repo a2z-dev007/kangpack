@@ -204,10 +204,10 @@ const PrivacyPolicyPage = () => {
                 <div className="w-1 h-1 rounded-full bg-[#6B4A2D]" />
                 Last Updated: {lastUpdated}
               </div>
-              <h4 className="text-[#6B4A2D] text-3xl md:text-5xl font-black tracking-tight leading-[1.1]">
+              <h4 className="text-[#6B4A2D] text-2xl md:text-5xl font-black tracking-tight leading-[1.1]">
                 Need more <br /> privacy info?
               </h4>
-              <p className="text-[#8B7E6F] text-[18px] max-w-md leading-relaxed font-medium">
+              <p className="text-[#8B7E6F] text-[15px] md:text-[18px] max-w-md leading-relaxed font-medium">
                 Our data protection officer is ready to assist with any specific
                 privacy related concerns.
               </p>
@@ -216,45 +216,45 @@ const PrivacyPolicyPage = () => {
             <div className="grid grid-cols-1 gap-6">
               <a
                 href="mailto:privacy@kangpack.in"
-                className="flex items-center justify-between gap-8 p-8 rounded-3xl bg-white border border-[#6B4A2D]/5 hover:border-[#6B4A2D]/20 shadow-[0_4px_20px_-1px_rgba(107,74,45,0.05)] hover:shadow-[0_10px_40px_-1px_rgba(107,74,45,0.08)] transition-all duration-500 group relative overflow-hidden"
+                className="flex items-center justify-between gap-4 p-5 md:p-8 rounded-3xl bg-white border border-[#6B4A2D]/5 hover:border-[#6B4A2D]/20 shadow-[0_4px_20px_-1px_rgba(107,74,45,0.05)] hover:shadow-[0_10px_40px_-1px_rgba(107,74,45,0.08)] transition-all duration-500 group relative overflow-hidden"
               >
-                <div className="relative z-10 flex items-center gap-10 md:gap-14">
-                  <div className="w-14 h-14 rounded-full bg-[#F9F7F4] flex items-center justify-center text-[#6B4A2D] group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
+                <div className="relative z-10 flex items-center gap-4 md:gap-14">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#F9F7F4] flex items-center justify-center text-[#6B4A2D] group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
                     <Mail className="w-5 h-5" />
                   </div>
-                  <div>
-                    <div className="text-[#6B4A2D]/50 text-[20px] font-bold uppercase tracking-[0.1em] mb-1">
+                  <div className="min-w-0">
+                    <div className="text-[#6B4A2D]/50 text-[12px] md:text-[20px] font-bold uppercase tracking-[0.1em] mb-1">
                       Privacy Support
                     </div>
-                    <div className="text-[18px] font-bold text-[#6B4A2D]">
+                    <div className="text-[14px] md:text-[18px] font-bold text-[#6B4A2D] truncate">
                       privacy@kangpack.in
                     </div>
                   </div>
                 </div>
-                <div className="relative z-10 w-12 h-12 rounded-full border border-[#6B4A2D]/10 flex items-center justify-center group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
-                  <ArrowRight className="w-4 h-4" />
+                <div className="relative z-10 w-8 h-8 md:w-12 md:h-12 rounded-full border border-[#6B4A2D]/10 flex items-center justify-center group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
+                  <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
                 </div>
               </a>
 
               <Link
                 href="/faqs"
-                className="flex items-center justify-between gap-8 p-8 rounded-3xl bg-white border border-[#6B4A2D]/5 hover:border-[#6B4A2D]/20 shadow-[0_4px_20px_-1px_rgba(107,74,45,0.05)] hover:shadow-[0_10px_40px_-1px_rgba(107,74,45,0.08)] transition-all duration-500 group relative overflow-hidden"
+                className="flex items-center justify-between gap-4 p-5 md:p-8 rounded-3xl bg-white border border-[#6B4A2D]/5 hover:border-[#6B4A2D]/20 shadow-[0_4px_20px_-1px_rgba(107,74,45,0.05)] hover:shadow-[0_10px_40px_-1px_rgba(107,74,45,0.08)] transition-all duration-500 group relative overflow-hidden"
               >
-                <div className="relative z-10 flex items-center gap-10 md:gap-14">
-                  <div className="w-14 h-14 rounded-full bg-[#6B4A2D] flex items-center justify-center text-white transition-all duration-500 flex-shrink-0">
+                <div className="relative z-10 flex items-center gap-4 md:gap-14">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#6B4A2D] flex items-center justify-center text-white transition-all duration-500 flex-shrink-0">
                     <HelpCircle className="w-5 h-5" />
                   </div>
-                  <div>
-                    <div className="text-[#6B4A2D]/50 text-[20px] font-bold uppercase tracking-[0.1em] mb-1">
+                  <div className="min-w-0">
+                    <div className="text-[#6B4A2D]/50 text-[12px] md:text-[20px] font-bold uppercase tracking-[0.1em] mb-1">
                       Resource center
                     </div>
-                    <div className="text-[18px] font-bold text-[#6B4A2D]">
+                    <div className="text-[14px] md:text-[18px] font-bold text-[#6B4A2D] truncate">
                       Help Center
                     </div>
                   </div>
                 </div>
-                <div className="relative z-10 w-12 h-12 rounded-full border border-[#6B4A2D]/10 flex items-center justify-center group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
-                  <ArrowRight className="w-4 h-4" />
+                <div className="relative z-10 w-8 h-8 md:w-12 md:h-12 rounded-full border border-[#6B4A2D]/10 flex items-center justify-center group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
+                  <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
                 </div>
               </Link>
             </div>

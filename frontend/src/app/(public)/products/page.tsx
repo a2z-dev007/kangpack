@@ -113,7 +113,7 @@ const ProductCard = ({ product, index }: { product: any; index: number }) => {
 
 export default function ProductsPage() {
   const { data, isLoading } = useQuery({
-    queryKey: [QUERY_KEYS.PRODUCTS],
+    queryKey: [QUERY_KEYS.PRODUCTS, "all"],
     queryFn: () => productsApi.getProducts({ page: 1, limit: 12 }),
   });
 
@@ -187,20 +187,30 @@ export default function ProductsPage() {
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
                     {data.data.map((product: any, index: number) => (
                       <ProductCard
-                        key={product.id}
+                        key={product.id || product._id || index}
                         product={product}
                         index={index}
                       />
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-20">
+                  <div className="text-center py-20 bg-white/50 rounded-3xl border border-[#6B4A2D]/5">
+                    <div className="w-20 h-20 bg-[#6B4A2D]/5 rounded-full flex items-center justify-center mx-auto mb-6 text-[#6B4A2D]/20">
+                      <ShoppingBag className="w-10 h-10" />
+                    </div>
                     <h3 className="text-2xl font-bold text-brand-brown">
                       No products found.
                     </h3>
-                    <p className="text-brand-brown/60 mt-2">
-                      Check back later for new arrivals.
+                    <p className="text-brand-brown/60 mt-2 max-w-xs mx-auto">
+                      We couldn&apos;t find any products in our collection right
+                      now. Please check back later.
                     </p>
+                    <button
+                      onClick={() => window.location.reload()}
+                      className="mt-8 px-8 py-3 bg-[#6B4A2D] text-white rounded-full font-bold uppercase tracking-widest text-xs hover:bg-[#5A3E25] transition-colors"
+                    >
+                      Refresh Page
+                    </button>
                   </div>
                 )}
               </>

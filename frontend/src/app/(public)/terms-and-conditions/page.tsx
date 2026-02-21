@@ -25,63 +25,63 @@ const TermsConditionsPage = () => {
     {
       id: "introduction",
       title: "1. Introduction",
-      icon: <FileText className="w-8 h-8 md:w-10 md:h-10" />,
+      icon: <FileText className="w-6 h-6 md:w-7 md:h-7" />,
       content:
         "Welcome to Kangpack. These Terms and Conditions govern your use of our website and the purchase of our products. By accessing or using our services, you agree to be bound by these terms. If you do not agree with any part of these terms, you must not use our website or purchase our products. We reserve the right to update or modify these terms at any time without prior notice.",
     },
     {
       id: "user-responsibilities",
       title: "2. User Responsibilities",
-      icon: <UserCheck className="w-8 h-8 md:w-10 md:h-10" />,
+      icon: <UserCheck className="w-6 h-6 md:w-7 md:h-7" />,
       content:
         "As a user of our platform, you agree to provide accurate and complete information during your interactions with us. You are responsible for maintaining the confidentiality of your account credentials and for all activities that occur under your account. You must not use our services for any illegal or unauthorized purpose.",
     },
     {
       id: "account-registration",
       title: "3. Account Registration",
-      icon: <ShieldCheck className="w-8 h-8 md:w-10 md:h-10" />,
+      icon: <ShieldCheck className="w-6 h-6 md:w-7 md:h-7" />,
       content:
         "To access certain features of our platform, you may be required to register for an account. You agree to provide current and accurate information and to keep your account details updated. We reserve the right to suspend or terminate accounts that provide false information or engage in fraudulent activities.",
     },
     {
       id: "privacy-policy",
       title: "4. Privacy Policy Reference",
-      icon: <Lock className="w-8 h-8 md:w-10 md:h-10" />,
+      icon: <Lock className="w-6 h-6 md:w-7 md:h-7" />,
       content:
         "Your use of our services is also governed by our Privacy Policy, which explains how we collect, use, and protect your personal data. By using our platform, you consent to the data practices described in our Privacy Policy. Please review it carefully to understand our commitment to your privacy.",
     },
     {
       id: "intellectual-property",
       title: "5. Intellectual Property",
-      icon: <Landmark className="w-8 h-8 md:w-10 md:h-10" />,
+      icon: <Landmark className="w-6 h-6 md:w-7 md:h-7" />,
       content:
         "All content on this website, including text, graphics, logos, images, and software, is the property of Kangpack and is protected by international copyright and trademark laws. You may not reproduce, distribute, or create derivative works from any part of our website without our express written permission.",
     },
     {
       id: "liability",
       title: "6. Limitation of Liability",
-      icon: <AlertCircle className="w-8 h-8 md:w-10 md:h-10" />,
+      icon: <AlertCircle className="w-6 h-6 md:w-7 md:h-7" />,
       content:
         "Kangpack shall not be liable for any direct, indirect, incidental, or consequential damages resulting from the use or inability to use our products or services. While we strive for excellence, we do not warrant that our website will be uninterrupted or error-free.",
     },
     {
       id: "termination",
       title: "7. Termination",
-      icon: <Scale className="w-8 h-8 md:w-10 md:h-10" />,
+      icon: <Scale className="w-6 h-6 md:w-7 md:h-7" />,
       content:
         "We reserve the right to terminate or suspend your access to our services at our sole discretion, without notice, for conduct that we believe violates these Terms and Conditions or is harmful to other users, us, or third parties.",
     },
     {
       id: "governing-law",
       title: "8. Governing Law",
-      icon: <Scale className="w-8 h-8 md:w-10 md:h-10" />,
+      icon: <Scale className="w-6 h-6 md:w-7 md:h-7" />,
       content:
         "These Terms and Conditions are governed by and construed in accordance with the laws of the jurisdiction in which Kangpack operates. Any disputes arising from these terms shall be subject to the exclusive jurisdiction of the courts in that region.",
     },
     {
       id: "contact",
       title: "9. Contact Information",
-      icon: <Mail className="w-8 h-8 md:w-10 md:h-10" />,
+      icon: <Mail className="w-6 h-6 md:w-7 md:h-7" />,
       content:
         "If you have any questions or concerns about these Terms and Conditions, please contact us at support@kangpack.com. Our legal team is available to assist you with any clarifications regarding our policies and procedures.",
     },
@@ -178,10 +178,7 @@ const TermsConditionsPage = () => {
                     {/* Compact Icon Container */}
                     <div className="flex-shrink-0">
                       <div className="w-12 h-12 md:w-16 md:h-16 bg-white rounded-2xl shadow-sm border border-[#6B4A2D]/10 flex items-center justify-center text-[#6B4A2D] group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 ease-out">
-                        {React.cloneElement(
-                          section.icon as React.ReactElement,
-                          { className: "w-5 h-5 md:w-6 md:h-6" },
-                        )}
+                        {section.icon}
                       </div>
                     </div>
 
@@ -208,10 +205,10 @@ const TermsConditionsPage = () => {
                 <div className="w-1 h-1 rounded-full bg-[#6B4A2D]" />
                 Last Updated: {lastUpdated}
               </div>
-              <h4 className="text-[#6B4A2D] text-3xl md:text-5xl font-black tracking-tight leading-[1.1]">
+              <h4 className="text-[#6B4A2D] text-2xl md:text-5xl font-black tracking-tight leading-[1.1]">
                 Still need <br /> clarification?
               </h4>
-              <p className="text-[#8B7E6F] text-[14px] max-w-md leading-relaxed font-medium">
+              <p className="text-[#8B7E6F] text-[15px] md:text-[18px] max-w-md leading-relaxed font-medium">
                 Our specialized legal desk is ready to assist with any specific
                 compliance or policy queries.
               </p>
@@ -220,45 +217,45 @@ const TermsConditionsPage = () => {
             <div className="grid grid-cols-1 gap-6">
               <a
                 href="mailto:support@kangpack.in"
-                className="flex items-center justify-between gap-8 p-8 rounded-3xl bg-white border border-[#6B4A2D]/5 hover:border-[#6B4A2D]/20 shadow-[0_4px_20px_-1px_rgba(107,74,45,0.05)] hover:shadow-[0_10px_40px_-1px_rgba(107,74,45,0.08)] transition-all duration-500 group relative overflow-hidden"
+                className="flex items-center justify-between gap-4 p-5 md:p-8 rounded-3xl bg-white border border-[#6B4A2D]/5 hover:border-[#6B4A2D]/20 shadow-[0_4px_20px_-1px_rgba(107,74,45,0.05)] hover:shadow-[0_10px_40px_-1px_rgba(107,74,45,0.08)] transition-all duration-500 group relative overflow-hidden"
               >
-                <div className="relative z-10 flex items-center gap-10 md:gap-14">
-                  <div className="w-14 h-14 rounded-full bg-[#F9F7F4] flex items-center justify-center text-[#6B4A2D] group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
+                <div className="relative z-10 flex items-center gap-4 md:gap-14">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#F9F7F4] flex items-center justify-center text-[#6B4A2D] group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
                     <Mail className="w-5 h-5" />
                   </div>
-                  <div>
-                    <div className="text-[#6B4A2D]/50 text-[20px] font-bold uppercase tracking-[0.1em] mb-1">
+                  <div className="min-w-0">
+                    <div className="text-[#6B4A2D]/50 text-[12px] md:text-[20px] font-bold uppercase tracking-[0.1em] mb-1">
                       Legal Support
                     </div>
-                    <div className="text-[18px] font-bold text-[#6B4A2D]">
+                    <div className="text-[14px] md:text-[18px] font-bold text-[#6B4A2D] truncate">
                       support@kangpack.in
                     </div>
                   </div>
                 </div>
-                <div className="relative z-10 w-10 h-10 rounded-full border border-[#6B4A2D]/10 flex items-center justify-center group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
-                  <Scale className="w-4 h-4" />
+                <div className="relative z-10 w-8 h-8 md:w-12 md:h-12 rounded-full border border-[#6B4A2D]/10 flex items-center justify-center group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
+                  <Scale className="w-3 h-3 md:w-4 md:h-4" />
                 </div>
               </a>
 
               <Link
                 href="/faqs"
-                className="flex items-center justify-between gap-8 p-8 rounded-3xl bg-white border border-[#6B4A2D]/5 hover:border-[#6B4A2D]/20 shadow-[0_4px_20px_-1px_rgba(107,74,45,0.05)] hover:shadow-[0_10px_40px_-1px_rgba(107,74,45,0.08)] transition-all duration-500 group relative overflow-hidden"
+                className="flex items-center justify-between gap-4 p-5 md:p-8 rounded-3xl bg-white border border-[#6B4A2D]/5 hover:border-[#6B4A2D]/20 shadow-[0_4px_20px_-1px_rgba(107,74,45,0.05)] hover:shadow-[0_10px_40px_-1px_rgba(107,74,45,0.08)] transition-all duration-500 group relative overflow-hidden"
               >
-                <div className="relative z-10 flex items-center gap-10 md:gap-14">
-                  <div className="w-14 h-14 rounded-full bg-[#6B4A2D] flex items-center justify-center text-white transition-all duration-500 flex-shrink-0">
+                <div className="relative z-10 flex items-center gap-4 md:gap-14">
+                  <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#6B4A2D] flex items-center justify-center text-white transition-all duration-500 flex-shrink-0">
                     <HelpCircle className="w-5 h-5" />
                   </div>
-                  <div>
-                    <div className="text-[#6B4A2D]/50 text-[20px] font-bold uppercase tracking-[0.1em] mb-1">
+                  <div className="min-w-0">
+                    <div className="text-[#6B4A2D]/50 text-[12px] md:text-[20px] font-bold uppercase tracking-[0.1em] mb-1">
                       Resource center
                     </div>
-                    <div className="text-[18px] font-bold text-[#6B4A2D]">
+                    <div className="text-[14px] md:text-[18px] font-bold text-[#6B4A2D] truncate">
                       Help Center
                     </div>
                   </div>
                 </div>
-                <div className="relative z-10 w-12 h-12 rounded-full border border-[#6B4A2D]/10 flex items-center justify-center group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
-                  <ArrowRight className="w-4 h-4" />
+                <div className="relative z-10 w-8 h-8 md:w-12 md:h-12 rounded-full border border-[#6B4A2D]/10 flex items-center justify-center group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
+                  <ArrowRight className="w-3 h-3 md:w-4 md:h-4" />
                 </div>
               </Link>
             </div>
