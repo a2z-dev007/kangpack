@@ -41,7 +41,7 @@ const ProductCard = ({ product, index }: { product: any; index: number }) => {
         className="flex-grow flex flex-col"
       >
         {/* Image Container */}
-        <div className="aspect-[4/5] relative overflow-hidden bg-brand-beige/20">
+        <div className="aspect-[16/11] relative overflow-hidden bg-brand-beige/20">
           {product.stock <= 5 && product.stock > 0 && (
             <div className="absolute top-4 left-4 z-10">
               <span className="px-3 py-1 bg-red-500/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white rounded-full">
@@ -72,7 +72,7 @@ const ProductCard = ({ product, index }: { product: any; index: number }) => {
         </div>
 
         {/* Content */}
-        <div className="p-6 flex flex-col flex-grow">
+        <div className="p-5 flex flex-col flex-grow">
           <div className="flex justify-between items-start mb-2">
             <span className="text-xs font-bold text-brand-brown/40 uppercase tracking-widest line-clamp-1">
               {product.category?.name || "Accessories"}

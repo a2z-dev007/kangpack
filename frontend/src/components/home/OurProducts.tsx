@@ -46,7 +46,7 @@ const ProductCard: React.FC<{
         className="flex-grow flex flex-col"
       >
         {/* Image Container */}
-        <div className="aspect-[4/5] relative overflow-hidden bg-brand-beige/20">
+        <div className="aspect-[16/11] relative overflow-hidden bg-brand-beige/20">
           <div className="absolute top-4 left-4 z-10 flex gap-2">
             {tags.map((tag, i) => (
               <span
