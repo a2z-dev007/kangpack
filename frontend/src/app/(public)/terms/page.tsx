@@ -183,22 +183,22 @@ const TermsPage = () => {
             <p className="text-brand-brown/40 text-sm font-bold uppercase tracking-widest">
               Still have questions?
             </p>
-            <div className="flex flex-col sm:flex-row items-center gap-8">
+            <div className="flex flex-col sm:flex-row items-center gap-6 md:gap-12">
               <a
                 href="mailto:support@kangpack.in"
-                className="inline-flex items-center gap-3 text-[#6B4A2D] font-bold hover:underline group"
+                className="inline-flex items-center gap-3 text-[#6B4A2D] font-bold hover:underline group text-[15px] md:text-base"
               >
-                <div className="w-8 h-8 rounded-full bg-brand-brown/5 flex items-center justify-center group-hover:bg-brand-brown/10 transition-colors">
-                  <Mail className="w-4 h-4" />
+                <div className="w-10 h-10 rounded-full bg-brand-brown/5 flex items-center justify-center group-hover:bg-brand-brown/10 transition-colors shrink-0">
+                  <Mail className="w-5 h-5" />
                 </div>
                 Contact Legal Support
               </a>
               <Link
                 href="/faqs"
-                className="inline-flex items-center gap-3 text-[#6B4A2D] font-bold hover:underline group"
+                className="inline-flex items-center gap-3 text-[#6B4A2D] font-bold hover:underline group text-[15px] md:text-base"
               >
-                <div className="w-8 h-8 rounded-full bg-brand-brown/5 flex items-center justify-center group-hover:bg-brand-brown/10 transition-colors">
-                  <HelpCircle className="w-4 h-4" />
+                <div className="w-10 h-10 rounded-full bg-brand-brown/5 flex items-center justify-center group-hover:bg-brand-brown/10 transition-colors shrink-0">
+                  <HelpCircle className="w-5 h-5" />
                 </div>
                 Visit FAQ Center
               </Link>

@@ -149,9 +149,7 @@ export default function LoginPage() {
 
             <div className="max-w-sm mx-auto w-full">
               <div className="mb-10 mt-8 lg:mt-0">
-                <h1 className="text-3xl font-bold text-[#6B4A2D] ">
-                  Sign In
-                </h1>
+                <h1 className="text-3xl font-bold text-[#6B4A2D] ">Sign In</h1>
                 <p className="text-[#8B7E6F]">Please enter your details.</p>
               </div>
 
@@ -203,11 +201,11 @@ export default function LoginPage() {
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center justify-between text-[11px] md:text-sm">
                   <label className="flex items-center gap-2 cursor-pointer text-[#6B4A2D]/80 hover:text-[#6B4A2D]">
                     <input
                       type="checkbox"
-                      className="rounded border-[#6B4A2D]/20 text-[#6B4A2D] focus:ring-[#6B4A2D]"
+                      className="rounded border-[#6B4A2D]/20 text-[#6B4A2D] focus:ring-[#6B4A2D] w-3 h-3 md:w-4 md:h-4"
                     />
                     <span>Remember me</span>
                   </label>
@@ -228,14 +226,14 @@ export default function LoginPage() {
                 </button>
               </form>
 
-              <div className="mt-4 text-center">
-                <p className="text-[#8B7E6F]">
-                  Don't have an account?{" "}
+              <div className="mt-6 text-center">
+                <p className="text-[#8B7E6F] text-sm">
+                  Don&apos;t have an account?{" "}
                   <Link
                     href="/auth/register"
                     className="font-bold text-[#6B4A2D] hover:underline"
                   >
-                    Sign up 
+                    Sign up
                   </Link>
                 </p>
               </div>

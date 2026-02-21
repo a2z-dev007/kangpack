@@ -53,8 +53,8 @@ const Pricing: React.FC = () => {
             </span>
           </div>
 
-          <h2 className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tight font-bold">
-            <span className="heading-gradient underline decoration-primary/10 underline-offset-[12px]">
+          <h2 className="text-4xl md:text-6xl leading-snug md:leading-[1.1] mb-8 md:mb-12 tracking-tight font-bold">
+            <span className="heading-gradient underline decoration-[#6B4A2D]/20 decoration-2 underline-offset-[8px] md:underline-offset-[12px]">
               Choose Your Edition
             </span>
           </h2>
