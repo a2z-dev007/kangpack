@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { formatCurrency, formatDateTime } from "@/lib/utils";
+import { formatPrice, formatDateTime } from "@/lib/utils";
 import { useAddTracking, useUpdateOrderStatus } from "../queries";
 import {
   Loader2,
@@ -239,13 +239,13 @@ export function OrderDetailsModal({
                           </span>
                         )}
                         <span className="text-slate-500">
-                          {item.quantity} × {formatCurrency(item.price)}
+                          {item.quantity} × {formatPrice(item.price)}
                         </span>
                       </p>
                     </div>
                   </div>
                   <p className="font-black text-[#6B4A2D] text-lg">
-                    {formatCurrency(item.total || item.price * item.quantity)}
+                    {formatPrice(item.total || item.price * item.quantity)}
                   </p>
                 </div>
               ))}
@@ -335,14 +335,14 @@ export function OrderDetailsModal({
                 <div className="flex justify-between text-xs font-bold text-slate-500">
                   <span>Subtotal</span>
                   <span className="text-slate-900">
-                    {formatCurrency(order.subtotal)}
+                    {formatPrice(order.subtotal)}
                   </span>
                 </div>
                 {order.taxAmount > 0 && (
                   <div className="flex justify-between text-xs font-bold text-slate-500">
                     <span>Tax (Included)</span>
                     <span className="text-slate-900">
-                      {formatCurrency(order.taxAmount)}
+                      {formatPrice(order.taxAmount)}
                     </span>
                   </div>
                 )}
@@ -350,14 +350,14 @@ export function OrderDetailsModal({
                   <span>Logistic Fee</span>
                   <span className="text-slate-900">
                     {order.shippingAmount > 0
-                      ? formatCurrency(order.shippingAmount)
+                      ? formatPrice(order.shippingAmount)
                       : "Complimentary"}
                   </span>
                 </div>
                 {order.discountAmount > 0 && (
                   <div className="flex justify-between text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl">
                     <span>Promotional Save</span>
-                    <span>-{formatCurrency(order.discountAmount)}</span>
+                    <span>-{formatPrice(order.discountAmount)}</span>
                   </div>
                 )}
                 <div className="pt-4 border-t border-slate-200 mt-2 flex justify-between items-end">
@@ -365,7 +365,7 @@ export function OrderDetailsModal({
                     Total Payable
                   </span>
                   <span className="text-3xl font-black text-[#6B4A2D] leading-none">
-                    {formatCurrency(order.totalAmount || order.total)}
+                    {formatPrice(order.totalAmount || order.total)}
                   </span>
                 </div>
               </div>
@@ -729,7 +729,7 @@ export function OrderDetailsModal({
               <div className="flex justify-between text-xs">
                 <span className="font-bold text-slate-500">Total Amount</span>
                 <span className="font-black text-[#6B4A2D]">
-                  {formatCurrency(order.totalAmount || order.total)}
+                  {formatPrice(order.totalAmount || order.total)}
                 </span>
               </div>
               <div className="flex justify-between text-xs">

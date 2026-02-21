@@ -5,6 +5,7 @@ import { JWTService } from '../../config/jwt';
 import { PasswordUtils } from '../../common/utils';
 import { AppError } from '../../common/middlewares/error.middleware';
 import { HTTP_STATUS, MESSAGES } from '../../common/constants';
+import { env } from '../../config/env';
 import { UserRole } from '../../common/types';
 
 export interface RegisterData {
@@ -54,7 +55,7 @@ export class AuthService {
     await user.save();
 
     // Send verification email
-    const verificationUrl = `${process.env.CORS_ORIGIN || 'http://localhost:3000'}/auth/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
     await MailService.sendVerificationEmail(user.email, verificationUrl);
 
     // Generate tokens
@@ -243,7 +244,7 @@ export class AuthService {
     
     await user.save();
 
-    const resetUrl = `${process.env.CORS_ORIGIN || 'http://localhost:3000'}/auth/reset-password?token=${resetToken}`;
+    const resetUrl = `${env.FRONTEND_URL}/auth/reset-password?token=${resetToken}`;
     
     // Send reset email
     // The sendResetPasswordEmail method handles errors internally (logging them) so we don't crash here.
@@ -308,7 +309,7 @@ export class AuthService {
     await user.save();
 
     // Send verification email
-    const verificationUrl = `${process.env.CORS_ORIGIN || 'http://localhost:3000'}/auth/verify-email?token=${verificationToken}`;
+    const verificationUrl = `${env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
     await MailService.sendVerificationEmail(user.email, verificationUrl);
   }
 }

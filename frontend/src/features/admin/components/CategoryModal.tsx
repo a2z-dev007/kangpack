@@ -19,17 +19,30 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { useCreateCategory, useUpdateCategory } from "../queries";
+import { useAdminCategories, useCreateCategory, useUpdateCategory } from "../queries";
 import { Loader2 } from "lucide-react";
 
 const categorySchema = z.object({
   name: z.string().min(1, "Name is required"),
   description: z.string().optional(),
+  parentCategory: z.string().optional().nullable(),
   isActive: z.boolean().default(true),
+  seo: z.object({
+    metaTitle: z.string().max(60).optional(),
+    metaDescription: z.string().max(160).optional(),
+    metaKeywords: z.string().max(255).optional(),
+  }).optional(),
 });
 
 type CategoryFormValues = z.infer<typeof categorySchema>;
@@ -47,6 +60,9 @@ export function CategoryModal({
 }: CategoryModalProps) {
   const isEditing = !!category;
 
+  const { data: categoriesData } = useAdminCategories();
+  const allCategories = categoriesData?.data || [];
+
   const { mutate: createCategory, isPending: isCreating } = useCreateCategory();
   const { mutate: updateCategory, isPending: isUpdating } = useUpdateCategory();
 
@@ -55,7 +71,13 @@ export function CategoryModal({
     defaultValues: {
       name: "",
       description: "",
+      parentCategory: null,
       isActive: true,
+      seo: {
+        metaTitle: "",
+        metaDescription: "",
+        metaKeywords: "",
+      },
     },
   });
 
@@ -64,13 +86,25 @@ export function CategoryModal({
       form.reset({
         name: category.name,
         description: category.description || "",
+        parentCategory: category.parentCategory || null,
         isActive: category.isActive,
+        seo: {
+          metaTitle: category.seo?.metaTitle || "",
+          metaDescription: category.seo?.metaDescription || "",
+          metaKeywords: category.seo?.metaKeywords || "",
+        },
       });
     } else {
       form.reset({
         name: "",
         description: "",
+        parentCategory: null,
         isActive: true,
+        seo: {
+          metaTitle: "",
+          metaDescription: "",
+          metaKeywords: "",
+        },
       });
     }
   }, [category, form]);
@@ -81,7 +115,13 @@ export function CategoryModal({
       .toLowerCase()
       .replace(/ /g, "-")
       .replace(/[^\w-]+/g, "");
-    const data = { ...values, slug };
+    
+    // Handle null parentCategory for backend
+    const data = { 
+      ...values, 
+      slug,
+      parentCategory: values.parentCategory === "none" ? null : values.parentCategory
+    };
 
     if (isEditing) {
       updateCategory(
@@ -103,9 +143,14 @@ export function CategoryModal({
 
   const isLoading = isCreating || isUpdating;
 
+  // Filter out the current category from potential parents to avoid circular dependency
+  const potentialParents = allCategories.filter((c: any) => 
+    (c.id || c._id) !== (category?.id || category?._id) && !c.parentCategory
+  );
+
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[500px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>
             {isEditing ? "Edit Category" : "Add New Category"}
@@ -130,6 +175,35 @@ export function CategoryModal({
 
             <FormField
               control={form.control}
+              name="parentCategory"
+              render={({ field }: { field: any }) => (
+                <FormItem>
+                  <FormLabel>Parent Category</FormLabel>
+                  <Select 
+                    onValueChange={field.onChange} 
+                    value={field.value || "none"}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select parent category (optional)" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="none">None (Root Category)</SelectItem>
+                      {potentialParents.map((c: any) => (
+                        <SelectItem key={c.id || c._id} value={c.id || c._id}>
+                          {c.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
               name="description"
               render={({ field }: { field: any }) => (
                 <FormItem>
@@ -144,6 +218,36 @@ export function CategoryModal({
                 </FormItem>
               )}
             />
+
+            <div className="space-y-4 pt-4 border-t">
+              <h4 className="font-medium">SEO Settings (Optional)</h4>
+              <FormField
+                control={form.control}
+                name="seo.metaTitle"
+                render={({ field }: { field: any }) => (
+                  <FormItem>
+                    <FormLabel>Meta Title</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Web page title" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="seo.metaDescription"
+                render={({ field }: { field: any }) => (
+                  <FormItem>
+                    <FormLabel>Meta Description</FormLabel>
+                    <FormControl>
+                      <Textarea placeholder="Brief summary for search engines" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
 
             <FormField
               control={form.control}

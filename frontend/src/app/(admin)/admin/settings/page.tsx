@@ -19,7 +19,7 @@ export default function AdminSettings() {
     storeDescription: '',
     email: '',
     phone: '',
-    currency: 'USD',
+    currency: 'INR',
     taxRate: 0,
     shippingFee: 0,
     freeShippingThreshold: 0,
@@ -33,7 +33,7 @@ export default function AdminSettings() {
         storeDescription: settings.storeDescription || '',
         email: settings.email || '',
         phone: settings.phone || '',
-        currency: settings.currency || 'USD',
+        currency: settings.currency || 'INR',
         taxRate: settings.taxRate || 0,
         shippingFee: settings.shippingFee || 0,
         freeShippingThreshold: settings.freeShippingThreshold || 0,
@@ -137,7 +137,7 @@ export default function AdminSettings() {
                   id="currency"
                   value={formData.currency}
                   onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
-                  placeholder="USD"
+                  placeholder="INR"
                 />
               </div>
               <div className="space-y-2">
@@ -164,7 +164,7 @@ export default function AdminSettings() {
           <CardContent className="space-y-4">
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="shippingFee">Shipping Fee ($)</Label>
+                <Label htmlFor="shippingFee">Shipping Fee (₹)</Label>
                 <Input
                   id="shippingFee"
                   type="number"
@@ -175,7 +175,7 @@ export default function AdminSettings() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="freeShippingThreshold">Free Shipping Threshold ($)</Label>
+                <Label htmlFor="freeShippingThreshold">Free Shipping Threshold (₹)</Label>
                 <Input
                   id="freeShippingThreshold"
                   type="number"

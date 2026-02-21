@@ -49,7 +49,7 @@ export default function LoginPage() {
       // Normalize user data
       const normalizedUser = {
         ...user,
-        id: user._id || user.id,
+        id: user.id,
         name:
           user.name || `${user.firstName || ""} ${user.lastName || ""}`.trim(),
       };
@@ -106,7 +106,7 @@ export default function LoginPage() {
     <div className="min-h-screen bg-brand-beige font-sans flex flex-col">
       <Navbar solid />{" "}
       {/* Ensure solid navbar sits on top if needed, or relative */}
-      <div className="flex-grow flex items-center justify-center p-6 relative">
+      <div className="flex-grow flex items-center justify-center p-6  mt-16 relative">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-[#D4CEC4]/20 pointer-events-none" />
 
@@ -142,14 +142,14 @@ export default function LoginPage() {
           <div className="w-full lg:w-1/2 p-8 md:p-16 flex flex-col justify-center relative">
             <Link
               href="/"
-              className="absolute top-8 left-8 text-[#6B4A2D]/60 hover:text-[#6B4A2D] flex items-center gap-2 text-sm font-bold uppercase tracking-wider transition-colors"
+              className="absolute top-4 left-6 text-[#6B4A2D]/60 hover:text-[#6B4A2D] flex items-center gap-2 text-sm font-bold uppercase tracking-wider transition-colors"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Home
             </Link>
 
             <div className="max-w-sm mx-auto w-full">
               <div className="mb-10 mt-8 lg:mt-0">
-                <h1 className="text-3xl font-bold text-[#6B4A2D] mb-2">
+                <h1 className="text-3xl font-bold text-[#6B4A2D] ">
                   Sign In
                 </h1>
                 <p className="text-[#8B7E6F]">Please enter your details.</p>
@@ -228,14 +228,14 @@ export default function LoginPage() {
                 </button>
               </form>
 
-              <div className="mt-8 text-center">
+              <div className="mt-4 text-center">
                 <p className="text-[#8B7E6F]">
                   Don't have an account?{" "}
                   <Link
                     href="/auth/register"
                     className="font-bold text-[#6B4A2D] hover:underline"
                   >
-                    Sign up for free
+                    Sign up 
                   </Link>
                 </p>
               </div>

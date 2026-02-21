@@ -42,7 +42,7 @@ import {
   Plus,
   X,
   Package,
-  DollarSign,
+  IndianRupee,
   Truck,
   Search,
   Tag,
@@ -438,7 +438,7 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
                   Basic
                 </TabsTrigger>
                 <TabsTrigger value="pricing" className="text-xs">
-                  <DollarSign className="h-3 w-3 mr-1" />
+                  <IndianRupee className="h-3 w-3 mr-1" />
                   Pricing
                 </TabsTrigger>
                 <TabsTrigger value="inventory" className="text-xs">
@@ -749,7 +749,7 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>
-                          Sale Price <span className="text-red-500">*</span>
+                          Sale Price (₹) <span className="text-red-500">*</span>
                         </FormLabel>
                         <FormControl>
                           <Input type="number" step="0.01" {...field} />
@@ -763,7 +763,7 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
                     name="compareAtPrice"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Compare Price</FormLabel>
+                        <FormLabel>Compare Price (₹)</FormLabel>
                         <FormControl>
                           <Input type="number" step="0.01" {...field} />
                         </FormControl>
@@ -779,7 +779,7 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
                     name="cost"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Cost</FormLabel>
+                        <FormLabel>Cost (₹)</FormLabel>
                         <FormControl>
                           <Input type="number" step="0.01" {...field} />
                         </FormControl>

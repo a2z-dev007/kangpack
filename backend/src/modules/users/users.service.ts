@@ -3,6 +3,7 @@ import { AppError } from '../../common/middlewares/error.middleware';
 import { HTTP_STATUS, MESSAGES } from '../../common/constants';
 import { PaginationUtils, PasswordUtils } from '../../common/utils';
 import { PaginationQuery, FilterQuery, UserRole } from '../../common/types';
+import { S3Service } from '../../common/services/s3.service';
 
 export interface CreateUserData {
   firstName: string;
@@ -105,7 +106,8 @@ export class UsersService {
       });
 
       if (file) {
-        user.avatar = `/uploads/${file.filename}`;
+        const avatarUrl = await S3Service.uploadFile(file, 'avatars');
+        user.avatar = avatarUrl;
       }
 
       await user.save();
@@ -119,7 +121,14 @@ export class UsersService {
     const updateData: any = { ...data };
 
     if (file) {
-      updateData.avatar = `/uploads/${file.filename}`;
+      // Optional: Delete old avatar if it exists
+      const currentUser = await User.findById(userId);
+      if (currentUser?.avatar) {
+        await S3Service.deleteFile(currentUser.avatar);
+      }
+      
+      const avatarUrl = await S3Service.uploadFile(file, 'avatars');
+      updateData.avatar = avatarUrl;
     }
 
     const user = await User.findByIdAndUpdate(
@@ -139,6 +148,11 @@ export class UsersService {
     const user = await User.findById(userId);
     if (!user) {
       throw new AppError(MESSAGES.USER_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
+    }
+
+    // Optional: Clean up avatar from S3
+    if (user.avatar) {
+      await S3Service.deleteFile(user.avatar);
     }
 
     // Soft delete by deactivating the user

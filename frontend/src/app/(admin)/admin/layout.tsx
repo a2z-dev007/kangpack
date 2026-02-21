@@ -154,7 +154,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen bg-[#F0F5FA] dark:bg-slate-950 font-sans">
+    <div className="flex h-screen w-full overflow-hidden bg-[#F0F5FA] dark:bg-slate-950 font-sans">
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
@@ -166,7 +166,7 @@ export default function AdminLayout({
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-[260px] border-r bg-white dark:bg-slate-900 transition-transform lg:static lg:translate-x-0 shadow-sm",
+          "fixed inset-y-0 left-0 z-50 w-[260px] border-r bg-white dark:bg-slate-900 transition-transform lg:static lg:translate-x-0 shadow-sm flex flex-col",
           sidebarOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
@@ -189,7 +189,7 @@ export default function AdminLayout({
           </Button>
         </div>
 
-        <nav className="flex flex-col gap-6 p-4 h-[calc(100vh-72px)] overflow-y-auto no-scrollbar">
+        <nav className="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-6 p-4">
           {navigationGroups.map((group) => (
             <div key={group.title} className="space-y-1">
               <p className="px-4 text-[11px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase">
@@ -324,7 +324,7 @@ export default function AdminLayout({
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
         <header className="flex h-[72px] items-center justify-between bg-white dark:bg-slate-900 px-6 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-30 shadow-sm shadow-slate-100/50 dark:shadow-none">
           <div className="flex items-center gap-4 flex-1">
@@ -408,8 +408,8 @@ export default function AdminLayout({
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto no-scrollbar">
-          <div className="container max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8">
+        <main className="flex-1 overflow-y-auto no-scrollbar bg-[#F0F5FA] dark:bg-slate-950">
+          <div className="container max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8 min-h-full flex flex-col">
             {children}
           </div>
         </main>

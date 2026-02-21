@@ -3,22 +3,25 @@ import { env } from './env';
 
 export const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
+    // 1. Allow mobile/Postman
     if (!origin) return callback(null, true);
 
     const allowedOrigins = env.CORS_ORIGIN.split(',').map(o => o.trim());
     
-    // Allow all origins in development
-    if (env.NODE_ENV === 'development' && allowedOrigins.includes('*')) {
+    // 2. Check Kangpack domains (both HTTP and HTTPS for safety)
+    const isKangpack = origin.includes('kangpack.in');
+    const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
+    
+    // 3. Check explicit allowed origins or wildcard
+    const isExplicitlyAllowed = allowedOrigins.includes(origin) || allowedOrigins.includes('*');
+
+    if (isKangpack || isLocalhost || isExplicitlyAllowed) {
       return callback(null, true);
     }
 
-    // Check if origin is allowed
-    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
-      return callback(null, true);
-    }
-
-    return callback(new Error('Not allowed by CORS'));
+    console.warn(`[CORS] Blocking unexpected origin: ${origin}`);
+    // Return false instead of Error to avoid server-side error handling during flight check
+    return callback(null, false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
@@ -30,8 +33,9 @@ export const corsOptions: CorsOptions = {
     'Authorization',
     'Cache-Control',
     'Pragma',
-    'x-session-id'
+    'x-session-id',
+    'Range'
   ],
-  exposedHeaders: ['X-Total-Count', 'X-Page-Count'],
-  maxAge: 86400, // 24 hours
+  exposedHeaders: ['X-Total-Count', 'X-Page-Count', 'Content-Range', 'Accept-Ranges'],
+  maxAge: 3600,
 };

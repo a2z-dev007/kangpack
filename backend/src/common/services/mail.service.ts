@@ -1,5 +1,6 @@
 
 import nodemailer from 'nodemailer';
+import { env } from '../../config/env';
 import { AppError } from '../middlewares/error.middleware';
 import { HTTP_STATUS } from '../constants';
 
@@ -216,7 +217,7 @@ export class MailService {
           <p>We've successfully received your payment for order <strong>${order.orderNumber}</strong>.</p>
           <p>Our team is now processing your order for shipment. You will receive another update once your package is on its way.</p>
           <div style="margin-top: 30px; text-align: center;">
-             <a href="${process.env.CORS_ORIGIN || 'http://localhost:3000'}/order-history" style="background-color: #6B4A2D; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">View Order History</a>
+             <a href="${env.FRONTEND_URL}/order-history" style="background-color: #6B4A2D; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">View Order History</a>
           </div>
         </div>
       </div>
@@ -248,7 +249,7 @@ export class MailService {
           <p>${statusMessage}</p>
           ${order.trackingNumber ? `<p><strong>Tracking Number:</strong> ${order.trackingNumber}</p>` : ''}
           <div style="margin-top: 30px; text-align: center;">
-             <a href="${process.env.CORS_ORIGIN || 'http://localhost:3000'}/order-tracking/${order._id}" style="background-color: #6B4A2D; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Track My Order</a>
+             <a href="${env.FRONTEND_URL}/order-tracking/${order._id}" style="background-color: #6B4A2D; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Track My Order</a>
           </div>
           <p style="margin-top: 40px; text-align: center; font-size: 12px; color: #888;">
             &copy; ${new Date().getFullYear()} Kangpack. All rights reserved.
