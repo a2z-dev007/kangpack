@@ -2,78 +2,14 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-
-// Mock data for demonstration
-const mockStats = {
-  orders: {
-    totalRevenue: 39580,
-    deliveredOrders: 4,
-    totalOrders: 15,
-    pendingOrders: 2,
-    processingOrders: 2,
-  },
-  products: {
-    totalProducts: 13,
-    activeProducts: 13,
-    lowStock: 3,
-    outOfStockProducts: 0,
-  },
-  users: {
-    total: 0,
-    newThisMonth: 0,
-    activeUsers: 14,
-  },
-};
-
-const mockActivity = {
-  orders: [
-    {
-      _id: "1",
-      orderNumber: "ORD-1766506504691-012",
-      status: "pending",
-      items: [{ name: "Item 1" }, { name: "Item 2" }, { name: "Item 3" }],
-      totalAmount: 1177,
-    },
-    {
-      _id: "2",
-      orderNumber: "ORD-1766506504688-006",
-      status: "delivered",
-      items: [{ name: "Item 1" }],
-      totalAmount: 540,
-    },
-    {
-      _id: "3",
-      orderNumber: "ORD-1766506501422-003",
-      status: "processing",
-      items: [{ name: "Item 1" }, { name: "Item 2" }],
-      totalAmount: 899,
-    },
-  ],
-  users: [
-    {
-      _id: "1",
-      name: "Shah Hussain",
-      email: "shahhussaindev@gmail.com",
-      role: "user",
-    },
-    {
-      _id: "2",
-      name: "Jane Smith",
-      email: "jane.smith@example.com",
-      role: "user",
-    },
-    {
-      _id: "3",
-      name: "Mike Johnson",
-      email: "mike.johnson@example.com",
-      role: "user",
-    },
-  ],
-};
+import api from "@/lib/api";
+import { toast } from "sonner";
+import { formatPrice } from "@/lib/utils";
 
 /* =======================
    ICONS
 ======================= */
+// ... (icons remain the same)
 const IndianRupeeIcon = () => (
   <svg
     width="20"
@@ -252,10 +188,6 @@ const ClockIcon = () => (
 /* =======================
    UTILS
 ======================= */
-const formatCurrency = (amount: number) => {
-  return `₹${amount.toLocaleString("en-IN")}`;
-};
-
 const getOrderStatusBadge = (status: string) => {
   const statusMap: Record<string, { color: string; bg: string }> = {
     pending: { color: "text-warning", bg: "bg-warning/10" },
@@ -270,22 +202,38 @@ const getOrderStatusBadge = (status: string) => {
    PAGE
 ======================= */
 export default function AdminDashboard() {
-  const [stats, setStats] = useState(mockStats);
-  const [activity, setActivity] = useState(mockActivity);
+  const [stats, setStats] = useState<any>(null);
+  const [activity, setActivity] = useState<any>({ orders: [], users: [] });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setTimeout(() => setIsLoading(false), 500);
+    fetchDashboardData();
   }, []);
 
-  if (isLoading) {
+  const fetchDashboardData = async () => {
+    try {
+      setIsLoading(true);
+      const response = await api.get("/dashboard");
+      if (response.data.success) {
+        setStats(response.data.data.stats);
+        setActivity(response.data.data.activity);
+      }
+    } catch (error: any) {
+      console.error("Dashboard calculation error:", error);
+      toast.error(error.response?.data?.message || "Failed to load dashboard data");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  if (isLoading || !stats) {
     return <DashboardSkeleton />;
   }
 
   const statCards = [
     {
       title: "Total Revenue",
-      value: formatCurrency(Math.ceil(stats?.orders?.totalRevenue || 0)),
+      value: formatPrice(Math.ceil(stats?.orders?.totalRevenue || 0)),
       icon: IndianRupeeIcon,
       description: `${stats?.orders?.deliveredOrders || 0} completed orders`,
       trend: "+12.5%",
@@ -318,7 +266,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-background p-6">
+    <div className="space-y-8">
       <div className="max-w-10xl mx-auto space-y-6">
         {/* HEADER */}
         <div>
@@ -436,15 +384,15 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-3">
-              {activity.orders.map((order) => {
+              {activity.orders.map((order: any) => {
                 const badgeConfig = getOrderStatusBadge(
                   order.status.toLowerCase(),
                 );
 
                 return (
                   <Link
-                    key={order._id}
-                    href={`/admin/orders?id=${order._id}`}
+                    key={order.id}
+                    href={`/admin/orders`}
                     className="block"
                   >
                     <div className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors cursor-pointer">
@@ -466,7 +414,7 @@ export default function AdminDashboard() {
                       </div>
 
                       <p className="text-base font-semibold text-foreground">
-                        {formatCurrency(order.totalAmount)}
+                        {formatPrice(order.totalAmount)}
                       </p>
                     </div>
                   </Link>
@@ -493,10 +441,10 @@ export default function AdminDashboard() {
             </div>
 
             <div className="space-y-3">
-              {activity.users.map((user) => (
+              {activity.users.map((user: any) => (
                 <Link
-                  key={user._id}
-                  href={`/admin/customers?id=${user._id}`}
+                  key={user.id}
+                  href={`/admin/customers?id=${user.id}`}
                   className="block"
                 >
                   <div className="flex items-center gap-3 border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors cursor-pointer">

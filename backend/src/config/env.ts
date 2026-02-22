@@ -1,7 +1,22 @@
 import dotenv from 'dotenv';
 import { z } from 'zod';
+import path from 'path';
 
-dotenv.config();
+const envFile = process.env.NODE_ENV === 'production' ? '.env.production' : '.env';
+
+console.log(`[Config] NODE_ENV is ${process.env.NODE_ENV}`);
+console.log(`[Config] Seeking ${envFile}...`);
+
+const cwdPath = path.join(process.cwd(), envFile);
+const relativePath = path.resolve(__dirname, '../../', envFile);
+
+const result = dotenv.config({ path: cwdPath });
+if (result.error) {
+  console.log(`[Config] CWD path failed, trying relative: ${relativePath}`);
+  dotenv.config({ path: relativePath });
+} else {
+  console.log(`[Config] Loaded environment from: ${cwdPath}`);
+}
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
@@ -18,9 +33,11 @@ const envSchema = z.object({
   RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).default('100'),
   BCRYPT_SALT_ROUNDS: z.string().transform(Number).default('12'),
   COOKIE_SECRET: z.string().min(16, 'Cookie secret must be at least 16 characters'),
-  CLOUDINARY_CLOUD_NAME: z.string().min(1, 'Cloudinary Cloud Name is required'),
-  CLOUDINARY_API_KEY: z.string().min(1, 'Cloudinary API Key is required'),
-  CLOUDINARY_API_SECRET: z.string().min(1, 'Cloudinary API Secret is required'),
+  FRONTEND_URL: z.string().default('https://kangpack.in'),
+  AWS_ACCESS_KEY_ID: z.string().default(''),
+  AWS_SECRET_ACCESS_KEY: z.string().default(''),
+  AWS_REGION: z.string().default(''),
+  S3_BUCKET_NAME: z.string().default(''),
 });
 
 const parseEnv = () => {

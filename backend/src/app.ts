@@ -10,31 +10,71 @@ import { corsOptions } from './config/cors';
 import { v1Routes } from './routes/v1.routes';
 import { generalRateLimit } from './common/middlewares/rateLimit.middleware';
 import { errorHandler, notFoundHandler } from './common/middlewares/error.middleware';
-import cloudinary from 'cloudinary';
 const app = express();
 
-// Cloudinary configuration
-cloudinary.v2.config({
-  cloud_name: env.CLOUDINARY_CLOUD_NAME,
-  api_key: env.CLOUDINARY_API_KEY,
-  api_secret: env.CLOUDINARY_API_SECRET,
+// Trust proxy for Nginx
+app.set('trust proxy', true);
+
+// --- 1. CONSOLIDATED CORS HANDLING ---
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  
+  // Define allowed origins patterns
+  const isAllowedOrigin = origin && (
+    origin.includes('kangpack.in') || 
+    origin.includes('localhost') || 
+    origin.includes('127.0.0.1') ||
+    origin === env.CORS_ORIGIN // Fallback to explicit env value
+  );
+
+  if (isAllowedOrigin) {
+    res.setHeader('Access-Control-Allow-Origin', origin as string);
+    res.setHeader('Access-Control-Allow-Credentials', 'true');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Authorization, x-session-id, Range, Accept, Cache-Control, Pragma, x-refresh-token');
+    res.setHeader('Access-Control-Max-Age', '3600');
+    res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count, X-Page-Count, Content-Range, Accept-Ranges');
+  }
+  
+  // Handle Preflight directly
+  if (req.method === 'OPTIONS') {
+    if (isAllowedOrigin) {
+      return res.status(200).end();
+    }
+    // For non-allowed origins, still return 204 or 403? 
+    // Usually 204/200 but without the headers will cause browser to block.
+    return res.status(204).end();
+  }
+  next();
 });
 
-// Security middleware
+// Remove secondary cors middleware to prevent "multiple header" errors
+// app.use(cors(corsOptions)); 
+
+// Dedicated CORS test route
+app.get('/cors-test', (req, res) => {
+  res.json({ 
+    success: true, 
+    message: 'CORS is working', 
+    receivedOrigin: req.headers.origin,
+    timestamp: new Date().toISOString()
+  });
+});
+
+// 3. Security middleware
 app.use(helmet({
   crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: "cross-origin" }, // Fix for subdomain CORS issues
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
       styleSrc: ["'self'", "'unsafe-inline'"],
       scriptSrc: ["'self'"],
       imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://api.kangpack.in", "https://kangpack.in", "http://localhost:*"],
     },
   },
 }));
-
-// CORS
-app.use(cors(corsOptions));
 
 // Rate limiting
 app.use(generalRateLimit);

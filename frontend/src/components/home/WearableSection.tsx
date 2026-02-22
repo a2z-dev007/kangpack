@@ -99,7 +99,7 @@ const WearableSection: React.FC = () => {
   return (
     <div
       ref={containerRef}
-      className="relative  bg-[#F9F7F2] overflow-hidden"
+      className="relative bg-[#F9F7F2] py-24 md:py-32 overflow-hidden"
     >
       {/* Background Pattern - Topographical / Technical */}
       <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
@@ -121,8 +121,8 @@ const WearableSection: React.FC = () => {
         0{currentSlide + 1}
       </motion.div>
 
-      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden py-12 md:py-20 xl:py-24 2xl:py-32 px-4 md:px-6">
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-14 h-full md:max-h-[850px] xl:max-h-[800px] py-4 md:py-0">
+      <div className="relative w-full flex items-center justify-center px-4 md:px-6">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-14 py-4 md:py-0">
           
           {/* Left Content Card */}
           <div className="relative h-auto min-h-[55%] md:h-[70%] lg:h-full bg-white shadow-[0_40px_100px_rgba(0,0,0,0.08)] rounded-[30px] md:rounded-[50px] flex flex-col justify-between items-start overflow-hidden order-2 lg:order-1 border border-black/5">

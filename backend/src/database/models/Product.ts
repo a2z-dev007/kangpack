@@ -361,12 +361,12 @@ const productSchema = new Schema({
     metaTitle: {
       type: String,
       trim: true,
-      maxlength: 60,
+      maxlength: 200,
     },
     metaDescription: {
       type: String,
       trim: true,
-      maxlength: 160,
+      maxlength: 1000,
     },
     metaKeywords: {
       type: String,

@@ -27,7 +27,7 @@ import {
   ChevronLeft,
   ChevronRight,
 } from "lucide-react";
-import { formatCurrency, formatDateTime } from "@/lib/utils";
+import { formatPrice, formatDateTime } from "@/lib/utils";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -384,7 +384,7 @@ export default function AdminOrders() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {orders.map((order: any) => (
               <Card
-                key={order._id}
+                key={order.id}
                 className="group border-none shadow-sm hover:shadow-xl transition-all duration-300 rounded-[2rem] overflow-hidden bg-white flex flex-col"
               >
                 <div className="p-6 pb-2">
@@ -394,7 +394,7 @@ export default function AdminOrders() {
                         Order #
                       </span>
                       <span className="font-black text-xl text-slate-900 leading-none">
-                        {order.orderNumber || order._id.slice(-6).toUpperCase()}
+                        {order.orderNumber}
                       </span>
                     </div>
                     <Badge
@@ -507,7 +507,7 @@ export default function AdminOrders() {
                         Total Amount
                       </span>
                       <span className="text-xl font-black text-[#6B4A2D] leading-none">
-                        {formatCurrency(order.totalAmount || order.total)}
+                        {formatPrice(order.totalAmount || order.total)}
                       </span>
                     </div>
                   </div>
@@ -552,7 +552,7 @@ export default function AdminOrders() {
                         <DropdownMenuItem
                           key={status}
                           onClick={() =>
-                            updateStatus({ id: order.id || order._id, status })
+                            updateStatus({ id: order.id, status })
                           }
                           className={cn(
                             "capitalize rounded-xl px-3 py-2.5 cursor-pointer font-bold mb-1 last:mb-0 text-xs transition-none",

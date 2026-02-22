@@ -23,7 +23,10 @@ export class CategoriesService {
     const query = includeInactive ? {} : { isActive: true };
     
     const categories = await Category.find(query)
-      .populate('subcategories')
+      .populate({ 
+        path: 'subcategories', 
+        match: includeInactive ? {} : { isActive: true } 
+      })
       .sort({ sortOrder: 1, name: 1 })
       .lean();
 
@@ -156,9 +159,8 @@ export class CategoriesService {
       throw new AppError('Cannot delete category with subcategories', HTTP_STATUS.BAD_REQUEST);
     }
 
-    // Soft delete by deactivating
-    category.isActive = false;
-    await category.save();
+    // Hard delete from database
+    await Category.findByIdAndDelete(categoryId);
   }
 
   public static async reorderCategories(categoryOrders: { id: string; sortOrder: number }[]): Promise<void> {

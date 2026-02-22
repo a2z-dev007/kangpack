@@ -127,7 +127,7 @@ export default function RegisterPage() {
     <div className="min-h-screen bg-brand-beige font-sans flex flex-col">
       <Navbar solid />
 
-      <div className="flex-grow flex items-center justify-center p-6 relative">
+      <div className="flex-grow flex items-center justify-center p-6 relative mt-16">
         {/* Background Pattern */}
         <div className="absolute inset-0 bg-[#D4CEC4]/20 pointer-events-none" />
 
@@ -163,14 +163,14 @@ export default function RegisterPage() {
           <div className="w-full lg:w-1/2 p-8 md:p-12 flex flex-col justify-center relative overflow-y-auto">
             <Link
               href="/"
-              className="absolute top-8 left-8 text-[#6B4A2D]/60 hover:text-[#6B4A2D] flex items-center gap-2 text-sm font-bold uppercase tracking-wider transition-colors"
+              className="absolute top-4 left-6 text-[#6B4A2D]/60 hover:text-[#6B4A2D] flex items-center gap-2 text-sm font-bold uppercase tracking-wider transition-colors"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Home
             </Link>
 
             <div className="max-w-sm mx-auto w-full pt-12 md:pt-0">
               <div className="mb-8">
-                <h1 className="text-3xl font-bold text-[#6B4A2D] mb-2">
+                <h1 className="text-3xl font-bold text-[#6B4A2D]  mt-2">
                   Create Account
                 </h1>
                 <p className="text-[#8B7E6F]">
@@ -315,8 +315,8 @@ export default function RegisterPage() {
                 </button>
               </form>
 
-              <div className="mt-8 text-center pb-8 lg:pb-0">
-                <p className="text-[#8B7E6F]">
+              <div className="mt-4 text-center pb-8 lg:pb-0">
+                <p className="text-[#8B7E6F] text-[13px]">
                   Already have an account?{" "}
                   <Link
                     href="/auth/login"

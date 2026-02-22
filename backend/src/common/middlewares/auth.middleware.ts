@@ -67,3 +67,14 @@ export const optionalAuth = (
     next();
   }
 };
+
+export const authorize = (...roles: string[]) => {
+  return (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+    if (!req.user || !roles.includes(req.user.role)) {
+      return next(
+        new AppError(MESSAGES.FORBIDDEN, HTTP_STATUS.FORBIDDEN)
+      );
+    }
+    next();
+  };
+};

@@ -46,7 +46,7 @@ export default function AdminCoupons() {
 
   const confirmDelete = () => {
     if (selectedCoupon) {
-      deleteCoupon(selectedCoupon._id, {
+      deleteCoupon(selectedCoupon.id || selectedCoupon._id, {
         onSuccess: () => {
           setDeleteModalOpen(false);
           setSelectedCoupon(null);
@@ -108,7 +108,7 @@ export default function AdminCoupons() {
           ) : (
             <div className="space-y-4">
               {coupons.map((coupon: any) => (
-                <div key={coupon._id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors group">
+                <div key={coupon.id || coupon._id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors group">
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3">

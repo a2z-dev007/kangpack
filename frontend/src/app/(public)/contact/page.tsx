@@ -94,7 +94,7 @@ const ContactPage: React.FC = () => {
         <ScrollSection className="py-24 px-6 md:px-16 -mt-20 relative z-30">
           <div className="max-w-7xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col lg:flex-row">
             {/* Contact Info (Left) */}
-            <div className="bg-[#6B4A2D] text-white p-12 lg:w-1/3 flex flex-col justify-between relative overflow-hidden">
+            <div className="bg-[#6B4A2D] text-white p-6 md:p-12 lg:w-1/3 flex flex-col justify-between relative overflow-hidden">
               <div className="absolute top-0 right-0 p-12 opacity-10 pointer-events-none">
                 <svg
                   width="200"
@@ -169,7 +169,7 @@ const ContactPage: React.FC = () => {
             </div>
 
             {/* Contact Form (Right) */}
-            <div className="p-12 lg:w-2/3 bg-white">
+            <div className="p-6 md:p-12 lg:w-2/3 bg-white">
               <h3 className="text-2xl font-bold text-[#6B4A2D] mb-8">
                 Send us a message
               </h3>
@@ -250,11 +250,8 @@ const ContactPage: React.FC = () => {
                   ></textarea>
                 </div>
 
-                <div className="pt-4">
-                  <PrimaryButton
-                    className="w-full md:w-auto"
-                    disabled={loading}
-                  >
+                <div className="pt-4 flex justify-center md:justify-start">
+                  <PrimaryButton className="w-fit" disabled={loading}>
                     {loading ? "Sending..." : "Send Message"}
                   </PrimaryButton>
                 </div>

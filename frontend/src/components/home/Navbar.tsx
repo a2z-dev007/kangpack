@@ -45,15 +45,15 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
   // Scroll track for background transparency
   useEffect(() => {
     const handleScroll = () => {
-      // The Hero section is 300vh, so we only show the background 
+      // The Hero section is 300vh, so we only show the background
       // when the user scrolls past the cinematic experience.
-      const heroHeight = window.innerHeight * 2.8; 
+      const heroHeight = window.innerHeight * 2.8;
       setScrolled(window.scrollY > heroHeight);
     };
-    
+
     // Check initial scroll position
     handleScroll();
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -325,7 +325,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
                           <span className="text-[10px] font-bold text-white/20 font-mono pt-1 w-6">
                             0{i + 1}
                           </span>
-                          <span className="text-3xl font-black text-white uppercase tracking-tighter group-hover:text-white/80 transition-colors leading-none">
+                          <span className="text-2xl font-black text-white uppercase tracking-tighter group-hover:text-white/80 transition-colors leading-none">
                             {link.name}
                           </span>
                         </Link>
