@@ -47,21 +47,21 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => {
   ];
 
   return (
-    <div className="flex items-center justify-center space-x-4 md:space-x-8 mb-12">
+    <div className="flex items-center justify-center space-x-2 md:space-x-8 mb-16">
       {steps.map((step, idx) => (
         <React.Fragment key={step.id}>
-          <div className="flex flex-col items-center">
+          <div className="flex flex-col items-center relative">
             <div
-              className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
+              className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center z-10 transition-all duration-300 ${
                 currentStep >= step.id
                   ? "bg-[#6B4A2D] text-white shadow-lg"
                   : "bg-white text-[#6B4A2D]/40 border-2 border-[#6B4A2D]/10"
               }`}
             >
-              <step.icon size={20} />
+              <step.icon size={18} className="md:size-5" />
             </div>
             <span
-              className={`text-[10px] md:text-xs font-bold uppercase tracking-widest mt-3 transition-colors ${
+              className={`text-[9px] md:text-xs font-bold uppercase tracking-widest mt-3 whitespace-nowrap transition-colors ${
                 currentStep >= step.id ? "text-[#6B4A2D]" : "text-[#6B4A2D]/40"
               }`}
             >
@@ -70,7 +70,7 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => {
           </div>
           {idx < steps.length - 1 && (
             <div
-              className={`h-[2px] w-8 md:w-16 transition-colors duration-500 mb-6 ${
+              className={`h-[2px] w-6 sm:w-12 md:w-16 transition-colors duration-500 -mt-6 ${
                 currentStep > step.id ? "bg-[#6B4A2D]" : "bg-[#6B4A2D]/10"
               }`}
             />
@@ -448,7 +448,7 @@ export default function CheckoutPage() {
               <ArrowLeft size={20} />
               Back
             </button>
-            <h1 className="text-4xl md:text-5xl font-black text-[#6B4A2D] uppercase tracking-tighter">
+            <h1 className="text-3xl md:text-5xl font-black text-[#6B4A2D] uppercase tracking-tighter">
               Checkout
             </h1>
           </div>
@@ -465,18 +465,18 @@ export default function CheckoutPage() {
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: 20, opacity: 0 }}
-                    className="bg-[#fff] p-8 md:p-12 rounded-[32px] shadow-sm border border-[#6B4A2D]/5"
+                    className="bg-[#fff] px-5 py-8 md:p-12 rounded-[32px] shadow-sm border border-[#6B4A2D]/5"
                   >
-                    <h2 className="text-2xl font-black text-[#6B4A2D] uppercase tracking-tighter mb-8 flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-lg bg-[#6B4A2D]/5 flex items-center justify-center text-sm">
+                    <h2 className="text-xl md:text-2xl font-black text-[#6B4A2D] uppercase tracking-tighter mb-8 flex items-center gap-3">
+                      <span className="w-7 h-7 md:w-8 md:h-8 rounded-lg bg-[#6B4A2D]/5 flex items-center justify-center text-xs md:text-sm">
                         1
                       </span>
                       Your Information
                     </h2>
                     {!isAuthenticated && (
                       <div className="bg-[#6B4A2D]/5 p-6 rounded-2xl mb-8">
-                        <div className="flex items-center justify-between">
-                          <div>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+                          <div className="flex-1">
                             <p className="text-sm font-bold text-[#6B4A2D]">
                               Checking out as a guest?
                             </p>
@@ -489,10 +489,13 @@ export default function CheckoutPage() {
                               are only available to registered members.
                             </p>
                           </div>
-                          <Link href="/auth/login">
+                          <Link
+                            href="/auth/login"
+                            className="shrink-0 w-full sm:w-auto"
+                          >
                             <Button
                               variant="outline"
-                              className="border-[#6B4A2D]/20 text-[#6B4A2D] hover:bg-[#6B4A2D] hover:text-white transition-all text-xs font-bold"
+                              className="w-full border-[#6B4A2D]/20 text-[#6B4A2D] hover:bg-[#6B4A2D] hover:text-white transition-all text-xs font-bold h-11"
                             >
                               Log In
                             </Button>
@@ -569,7 +572,7 @@ export default function CheckoutPage() {
                           placeholder="123 Productivity Way"
                         />
                       </div>
-                      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
                             City
@@ -580,6 +583,7 @@ export default function CheckoutPage() {
                             onChange={handleInputChange}
                             required
                             className="h-14 rounded-xl border-[#6B4A2D]/10 focus:border-[#6B4A2D] transition-all"
+                            placeholder="Lucknow"
                           />
                         </div>
                         <div className="space-y-2">
@@ -708,10 +712,12 @@ export default function CheckoutPage() {
 
                       <Button
                         type="submit"
-                        className="w-full bg-[#6B4A2D] hover:bg-[#6B4A2D]/90 text-white h-14 rounded-2xl text-lg font-bold uppercase tracking-widest mt-8 group"
+                        className="w-full bg-[#6B4A2D] hover:bg-[#6B4A2D]/90 text-white h-14 rounded-2xl text-sm md:text-lg font-bold uppercase tracking-wider md:tracking-widest mt-8 group whitespace-normal px-4"
                       >
-                        Continue to Shipping
-                        <ChevronRight className="group-hover:translate-x-1 transition-transform ml-2" />
+                        <span className="text-center">
+                          Continue to Shipping
+                        </span>
+                        <ChevronRight className="group-hover:translate-x-1 transition-transform ml-2 shrink-0" />
                       </Button>
                     </form>
                   </motion.div>
@@ -723,7 +729,7 @@ export default function CheckoutPage() {
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: 20, opacity: 0 }}
-                    className="bg-white p-8 md:p-12 rounded-[32px] shadow-sm border border-[#6B4A2D]/5"
+                    className="bg-white px-5 py-8 md:p-12 rounded-[32px] shadow-sm border border-[#6B4A2D]/5"
                   >
                     <h2 className="text-2xl font-black text-[#6B4A2D] uppercase tracking-tighter mb-8 flex items-center gap-3">
                       <span className="w-8 h-8 rounded-lg bg-[#6B4A2D]/5 flex items-center justify-center text-sm">
@@ -769,10 +775,10 @@ export default function CheckoutPage() {
 
                     <Button
                       onClick={handleShippingSubmit}
-                      className="w-full bg-[#6B4A2D] hover:bg-[#6B4A2D]/90 text-white h-14 rounded-2xl text-lg font-bold uppercase tracking-widest group"
+                      className="w-full bg-[#6B4A2D] hover:bg-[#6B4A2D]/90 text-white h-14 rounded-2xl text-sm md:text-lg font-bold uppercase tracking-wider md:tracking-widest group whitespace-normal px-4"
                     >
-                      Continue to Payment
-                      <ChevronRight className="group-hover:translate-x-1 transition-transform ml-2" />
+                      <span className="text-center">Continue to Payment</span>
+                      <ChevronRight className="group-hover:translate-x-1 transition-transform ml-2 shrink-0" />
                     </Button>
                   </motion.div>
                 )}
@@ -783,7 +789,7 @@ export default function CheckoutPage() {
                     initial={{ x: -20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: 20, opacity: 0 }}
-                    className="bg-white p-8 md:p-12 rounded-[32px] shadow-sm border border-[#6B4A2D]/5"
+                    className="bg-white px-5 py-8 md:p-12 rounded-[32px] shadow-sm border border-[#6B4A2D]/5"
                   >
                     <h2 className="text-2xl font-black text-[#6B4A2D] uppercase tracking-tighter mb-8 flex items-center gap-3">
                       <span className="w-8 h-8 rounded-lg bg-[#6B4A2D]/5 flex items-center justify-center text-sm">
@@ -902,7 +908,7 @@ export default function CheckoutPage() {
                     <Button
                       onClick={handlePaymentSubmit}
                       disabled={isProcessing}
-                      className="w-full bg-[#6B4A2D] hover:bg-[#6B4A2D]/90 text-white h-14 rounded-2xl text-lg font-bold uppercase tracking-widest group"
+                      className="w-full bg-[#6B4A2D] hover:bg-[#6B4A2D]/90 text-white h-14 rounded-2xl text-sm md:text-lg font-bold uppercase tracking-wider md:tracking-widest group px-6 whitespace-normal"
                     >
                       {isProcessing ? (
                         <div className="flex items-center gap-2">
@@ -910,10 +916,10 @@ export default function CheckoutPage() {
                           Processing...
                         </div>
                       ) : (
-                        <>
-                          Complete Purchase
-                          <ChevronRight className="group-hover:translate-x-1 transition-transform ml-2" />
-                        </>
+                        <div className="flex items-center justify-center gap-3 w-full">
+                          <span className="text-center">Complete Purchase</span>
+                          <ChevronRight className="group-hover:translate-x-1 transition-transform shrink-0" />
+                        </div>
                       )}
                     </Button>
                   </motion.div>
@@ -922,8 +928,8 @@ export default function CheckoutPage() {
             </div>
 
             {/* Right Column: Order Summary */}
-            <div className="lg:col-span-5 xl:col-span-4">
-              <div className="bg-[#FFF] border border-[#6B4A2D]/10 p-8 rounded-[32px] sticky top-32">
+            <div className="lg:col-span-5 xl:col-span-4 mt-8 lg:mt-0">
+              <div className="bg-[#FFF] border border-[#6B4A2D]/10 p-5 md:p-8 rounded-[32px] sticky top-32">
                 <h2 className="text-lg font-black text-[#6B4A2D] uppercase tracking-tighter mb-6">
                   Order Summary
                 </h2>
@@ -941,16 +947,19 @@ export default function CheckoutPage() {
                           className="w-full h-full object-cover rounded-lg"
                         />
                       </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between">
-                          <h4 className="font-bold text-[#6B4A2D] text-md line-clamp-1">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex justify-between items-start gap-4">
+                          <h4 className="font-bold text-[#6B4A2D] text-sm md:text-md line-clamp-2 min-w-0">
                             {item.product.name}
                           </h4>
-                          <span className="font-bold text-[#6B4A2D] text-md">
-                            ₹{(item.product.price * item.quantity).toFixed(2)}
+                          <span className="font-bold text-[#6B4A2D] text-sm md:text-md whitespace-nowrap shrink-0">
+                            ₹
+                            {(
+                              item.product.price * item.quantity
+                            ).toLocaleString()}
                           </span>
                         </div>
-                        <p className="text-sm text-[#6B4A2D]/60 mt-1 uppercase tracking-widest">
+                        <p className="text-[10px] md:text-sm text-[#6B4A2D]/60 mt-1 uppercase tracking-widest font-bold">
                           Qty: {item.quantity}
                         </p>
                       </div>
@@ -977,9 +986,9 @@ export default function CheckoutPage() {
                       {formatPrice(tax)}
                     </span>
                   </div>
-                  <div className="flex justify-between text-xl font-black text-[#6B4A2D] border-t border-[#6B4A2D]/10 pt-4 uppercase tracking-tighter">
-                    <span>Total</span>
-                    <span>{formatPrice(total)}</span>
+                  <div className="flex justify-between items-baseline text-lg md:text-xl font-black text-[#6B4A2D] border-t border-[#6B4A2D]/10 pt-4 uppercase tracking-tighter gap-2">
+                    <span className="shrink-0">Total</span>
+                    <span className="truncate">{formatPrice(total)}</span>
                   </div>
                 </div>
 
