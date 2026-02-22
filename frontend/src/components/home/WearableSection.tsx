@@ -81,18 +81,19 @@ const WearableSection: React.FC = () => {
     const containerTop = containerRef.current.offsetTop;
     const containerHeight = containerRef.current.offsetHeight;
     const viewportHeight = window.innerHeight;
-    
+
     // Calculate the target scroll position based on where the slides are mapped
     // [0, 0.33, 0.66, 1] means:
     // Slide 0: 0% to 33%
     // Slide 1: 33% to 66%
     // Slide 2: 66% to 100%
     const targets = [0, 0.45, 0.8]; // Midpoints or starts of slide regions
-    const targetScroll = containerTop + (containerHeight - viewportHeight) * targets[nextIdx];
-    
+    const targetScroll =
+      containerTop + (containerHeight - viewportHeight) * targets[nextIdx];
+
     window.scrollTo({
       top: targetScroll,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   };
 
@@ -105,16 +106,26 @@ const WearableSection: React.FC = () => {
       <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
         <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#6B4A2D" strokeWidth="0.5"/>
+            <pattern
+              id="grid"
+              width="40"
+              height="40"
+              patternUnits="userSpaceOnUse"
+            >
+              <path
+                d="M 40 0 L 0 0 0 40"
+                fill="none"
+                stroke="#6B4A2D"
+                strokeWidth="0.5"
+              />
             </pattern>
           </defs>
           <rect width="100%" height="100%" fill="url(#grid)" />
         </svg>
       </div>
-      
+
       {/* Floating Decorative Elements */}
-      <motion.div 
+      <motion.div
         style={{ y: useTransform(scrollYProgress, [0, 1], [0, -100]) }}
         className="absolute top-20 left-[10%] text-[15rem] font-black text-[#6B4A2D]/[0.02] select-none pointer-events-none leading-none"
       >
@@ -123,7 +134,6 @@ const WearableSection: React.FC = () => {
 
       <div className="relative w-full flex items-center justify-center px-4 md:px-6">
         <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-14 py-4 md:py-0">
-          
           {/* Left Content Card */}
           <div className="relative h-auto min-h-[55%] md:h-[70%] lg:h-full bg-white shadow-[0_40px_100px_rgba(0,0,0,0.08)] rounded-[30px] md:rounded-[50px] flex flex-col justify-between items-start overflow-hidden order-2 lg:order-1 border border-black/5">
             {/* Dot Grid Background Pattern (Persistent) */}
@@ -148,7 +158,7 @@ const WearableSection: React.FC = () => {
                 >
                   <div className="w-full">
                     {/* Badge */}
-                    <motion.div 
+                    <motion.div
                       initial={{ opacity: 0, scale: 0.9 }}
                       animate={{ opacity: 1, scale: 1 }}
                       className="flex items-center w-max gap-3 mb-8 bg-[#F2EFE9] px-5 py-2 rounded-full border border-black/5"
@@ -202,7 +212,7 @@ const WearableSection: React.FC = () => {
               </AnimatePresence>
 
               {/* Footer and Navigation Indicators (Persistent) */}
-              <div className="relative z-10 w-full flex items-center justify-between mt-12  md:mt-auto md:pt-10">
+              <div className="relative z-10 w-full flex flex-col sm:flex-row items-center justify-between gap-8 sm:gap-0 mt-8 sm:mt-12 md:mt-auto md:pt-10">
                 <Link href="/products">
                   <PrimaryButton className="btn-premium">
                     Shop Collection
@@ -214,9 +224,10 @@ const WearableSection: React.FC = () => {
                     {slides.map((_, i) => (
                       <motion.div
                         key={i}
-                        animate={{ 
+                        animate={{
                           width: i === currentSlide ? 32 : 10,
-                          backgroundColor: i === currentSlide ? "#6B4A2D" : "#D4CEC4"
+                          backgroundColor:
+                            i === currentSlide ? "#6B4A2D" : "#D4CEC4",
                         }}
                         className="h-1.5 rounded-full transition-all duration-500"
                       />
@@ -241,7 +252,7 @@ const WearableSection: React.FC = () => {
                 transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                 className="absolute inset-0 group"
               >
-                <Lens 
+                <Lens
                   className="w-full h-full"
                   lensColor="#a67c52"
                   zoomFactor={1.8}
@@ -254,21 +265,25 @@ const WearableSection: React.FC = () => {
                 </Lens>
 
                 {/* Manual Navigation Button */}
-                <motion.button 
-                  onClick={() => setCurrentSlide((prev) => (prev + 1) % slides.length)}
+                <motion.button
+                  onClick={() =>
+                    setCurrentSlide((prev) => (prev + 1) % slides.length)
+                  }
                   whileHover={{ scale: 1.1 }}
                   whileTap={{ scale: 0.9 }}
                   className="absolute bottom-6 right-6 z-20 bg-white/40 backdrop-blur-xl border border-white/40 p-3 rounded-full shadow-xl flex items-center justify-center group/btn"
                 >
                   <ArrowRight className="w-5 h-5 text-brand-brown group-hover/btn:text-[#a67c52] transition-colors" />
                 </motion.button>
-                
+
                 {/* Product Status Label */}
                 <div className="absolute top-8 left-8 z-20">
-                   <div className="bg-black/20 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-full flex items-center gap-2">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#a67c52] animate-pulse" />
-                      <span className="text-[9px] font-black uppercase tracking-widest text-white">Live Prototype v2.4</span>
-                   </div>
+                  <div className="bg-black/20 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-full flex items-center gap-2">
+                    <div className="w-1.5 h-1.5 rounded-full bg-[#a67c52] animate-pulse" />
+                    <span className="text-[9px] font-black uppercase tracking-widest text-white">
+                      Live Prototype v2.4
+                    </span>
+                  </div>
                 </div>
               </motion.div>
             </AnimatePresence>

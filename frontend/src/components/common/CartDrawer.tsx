@@ -92,10 +92,10 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   <motion.div
                     layout
                     key={`${item.productId}-${item.variantId || ""}`}
-                    className="flex gap-4 bg-white p-4 rounded-2xl shadow-sm border border-[#6B4A2D]/5"
+                    className="flex gap-3 md:gap-4 bg-white p-3 md:p-4 rounded-2xl shadow-sm border border-[#6B4A2D]/5"
                   >
                     {/* Product Image */}
-                    <div className="h-24 w-24 bg-[#F5F5F0] rounded-xl overflow-hidden flex-shrink-0 relative group">
+                    <div className="h-20 w-20 md:h-24 md:w-24 bg-[#F5F5F0] rounded-xl overflow-hidden flex-shrink-0 relative group">
                       <img
                         src={item.product.images?.[0] || "/placeholder.png"}
                         alt={item.product.name}
@@ -129,8 +129,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         </p>
                       </div>
 
-                      <div className="flex items-center justify-between mt-3">
-                        <div className="flex items-center gap-3 bg-[#F5F5F0] rounded-lg p-1">
+                      <div className="flex items-center justify-between flex-wrap gap-2 mt-4">
+                        <div className="flex items-center gap-2 bg-[#F5F5F0] rounded-lg p-1">
                           <button
                             onClick={() =>
                               dispatch(
@@ -144,9 +144,9 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             className="p-1 hover:bg-white rounded-md text-[#6B4A2D] transition-colors shadow-sm disabled:opacity-50"
                             disabled={item.quantity <= 1}
                           >
-                            <Minus size={14} />
+                            <Minus size={12} />
                           </button>
-                          <span className="text-sm font-bold text-[#6B4A2D] w-4 text-center">
+                          <span className="text-xs font-bold text-[#6B4A2D] w-4 text-center">
                             {item.quantity}
                           </span>
                           <button
@@ -161,11 +161,14 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                             }
                             className="p-1 hover:bg-white rounded-md text-[#6B4A2D] transition-colors shadow-sm"
                           >
-                            <Plus size={14} />
+                            <Plus size={12} />
                           </button>
                         </div>
-                        <span className="font-bold text-[#6B4A2D]">
-                          ₹{(item.product.price * item.quantity).toFixed(2)}
+                        <span className="font-bold text-[#6B4A2D] text-sm whitespace-nowrap">
+                          ₹
+                          {(
+                            item.product.price * item.quantity
+                          ).toLocaleString()}
                         </span>
                       </div>
                     </div>

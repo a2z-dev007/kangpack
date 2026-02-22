@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { productsApi } from "@/features/products/api";
 import Navbar from "@/components/home/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 import { QUERY_KEYS, ROUTES } from "@/lib/constants";
 import { formatPrice } from "@/lib/utils";
 import {
@@ -376,7 +377,7 @@ export default function ProductDetailPage({
                       )}
                     </motion.div>
 
-                    <h1 className="text-5xl md:text-7xl font-black text-[#6B4A2D] tracking-tighter mb-8 leading-[0.95] uppercase">
+                    <h1 className="text-3xl sm:text-4xl md:text-7xl font-black text-[#6B4A2D] tracking-tighter mb-8 leading-[0.95] uppercase">
                       {product.name.split(" ").map((word, i) => (
                         <span key={i} className={i === 0 ? "" : "opacity-40"}>
                           {word}{" "}
@@ -384,12 +385,12 @@ export default function ProductDetailPage({
                       ))}
                     </h1>
 
-                    <div className="flex items-center gap-8 mb-8">
-                      <span className="text-4xl font-bold heading-gradient">
+                    <div className="flex items-center gap-4 md:gap-8 mb-8">
+                      <span className="text-2xl md:text-4xl font-bold heading-gradient">
                         {formatPrice(product.price)}
                       </span>
                       {product.compareAtPrice && (
-                        <span className="text-2xl text-[#8B7E6F]/40 line-through font-light">
+                        <span className="text-lg md:text-2xl text-[#8B7E6F]/40 line-through font-light">
                           {formatPrice(product.compareAtPrice)}
                         </span>
                       )}
