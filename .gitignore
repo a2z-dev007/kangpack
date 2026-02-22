@@ -1,0 +1,31 @@
+# Root .gitignore for Kangpack
+
+# Environment variables
+.env
+.env.local
+.env.production
+.env.development.local
+.env.test.local
+.env.production.local
+**/.env
+**/.env.local
+**/.env.production
+**/.env.development.local
+**/.env.test.local
+**/.env.production.local
+
+# Build outputs
+dist/
+.next/
+build/
+
+# Dependencies
+node_modules/
+
+# OS/System files
+.DS_Store
+Thumbs.db
+
+# Private files / keys
+*.pem
+*.key
