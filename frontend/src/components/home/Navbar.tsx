@@ -77,15 +77,13 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
    */
   // const handleLogout = () => { ... } // Removed
 
-  const isDark = darkText || scrolled || solid;
+  const isDark = false;
   const isSolid = solid || scrolled;
 
-  const textColorClass = isDark ? "text-[#6B4A2D]" : "text-white";
-  const textColorClassHover = isDark
-    ? "hover:text-[#6B4A2D]/80"
-    : "hover:text-white/80";
+  const textColorClass = "text-white";
+  const textColorClassHover = "hover:text-white/80";
   const bgColorClass = isSolid
-    ? "bg-white/90 backdrop-blur-md shadow-sm py-4"
+    ? "bg-black/50 backdrop-blur-xl border-b border-white/10 shadow-sm py-4"
     : "bg-transparent py-10 shadow-none";
 
   // ... (lock scroll effect) ...
@@ -119,14 +117,14 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
               >
                 <span>kang</span>
                 <span
-                  className={`${isDark ? "text-[#6B4A2D]/40" : "text-white/40"} italic`}
+                  className="text-white/40 italic"
                 >
                   _
                 </span>
                 <span>pack</span>
               </span>
               <div
-                className={`absolute -top-1 left-7 w-3 h-3 ${isDark ? "bg-[#6B4A2D]/20" : "bg-white/20"} rounded-full blur-[2px]`}
+                className="absolute -top-1 left-7 w-3 h-3 bg-white/20 rounded-full blur-[2px]"
               ></div>
             </div>
           </motion.div>
@@ -134,7 +132,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
 
         {/* Desktop Navigation Links (Center) */}
         <div
-          className={`hidden lg:flex gap-4 xl:gap-8 text-xs xl:text-sm font-bold uppercase tracking-widest ${isDark ? "text-[#6B4A2D]/90" : "text-white/90"}`}
+          className="hidden lg:flex gap-4 xl:gap-8 text-xs xl:text-sm font-bold uppercase tracking-widest text-white/90"
         >
           {navLinks.map((link, index) => (
             <Link key={link.name} href={link.href} passHref>
@@ -150,7 +148,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
               >
                 {link.name}
                 <span
-                  className={`absolute -bottom-2 left-0 w-0 h-[2px] ${isDark ? "bg-[#6B4A2D]" : "bg-white"} transition-all group-hover:w-full duration-300`}
+                  className="absolute -bottom-2 left-0 w-0 h-[2px] bg-white transition-all group-hover:w-full duration-300"
                 />
               </motion.span>
             </Link>
@@ -268,7 +266,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsOpen(false)}
-              className="absolute inset-0 bg-[#6B4A2D]/40 backdrop-blur-md"
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
             />
 
             {/* Content Panel */}
@@ -277,7 +275,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 30, stiffness: 300 }}
-              className="absolute top-0 right-0 w-full sm:w-[85%] sm:max-w-sm h-[100dvh] bg-[#6B4A2D] shadow-2xl flex flex-col z-[110]"
+              className="absolute top-0 right-0 w-full sm:w-[85%] sm:max-w-sm h-[100dvh] bg-[#141414] shadow-2xl flex flex-col z-[110] border-l border-white/5"
             >
               {/* Decorative Background Text - Fixed position to stay behind everything */}
               <div className="absolute top-1/2 -right-24 -translate-y-1/2 select-none pointer-events-none opacity-[0.03] z-0 overflow-hidden">
@@ -287,7 +285,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
               </div>
 
               {/* Mobile Menu Header - Fixed at Top */}
-              <div className="flex-shrink-0 flex justify-between items-center px-6 py-6 border-b border-white/5 relative z-20 bg-[#6B4A2D]/95 backdrop-blur-sm">
+              <div className="flex-shrink-0 flex justify-between items-center px-6 py-6 border-b border-white/5 relative z-20 bg-[#141414]/95 backdrop-blur-sm">
                 <Link href="/" onClick={() => setIsOpen(false)}>
                   <span className="text-white text-xl font-black tracking-tighter uppercase">
                     kang<span className="text-white/40 italic">_</span>pack

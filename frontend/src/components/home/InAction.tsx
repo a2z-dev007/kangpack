@@ -22,17 +22,17 @@ const InAction: React.FC = () => {
   return (
     <section 
       ref={containerRef}
-      className="bg-brand-beige py-24 md:py-32 flex flex-col items-center overflow-hidden"
+      className="bg-[#050505] text-white py-24 md:py-32 flex flex-col items-center overflow-hidden"
     >
       {/* Badge */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6 text-center"
+        className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-lg mb-6 text-center border border-white/5"
       >
-        <Play className="w-3 h-3 brand-primary" />
-        <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+        <Play className="w-3 h-3 text-white/80" />
+        <span className="text-[11px] font-medium tracking-wide text-white/80 uppercase">
           In Action
         </span>
       </motion.div>
@@ -45,7 +45,7 @@ const InAction: React.FC = () => {
         transition={{ delay: 0.1 }}
         className="text-4xl md:text-7xl leading-[1.1] mb-6 tracking-tight text-center font-bold"
       >
-        <span className="heading-gradient">In Action.</span>
+        <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">In Action.</span>
       </motion.h2>
 
       {/* Description */}
@@ -54,7 +54,7 @@ const InAction: React.FC = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.2 }}
-        className="light-text text-base md:text-xl max-w-2xl mx-auto leading-relaxed text-center mb-16 xl:mb-24 px-6"
+        className="text-white/40 text-base md:text-xl max-w-2xl mx-auto leading-relaxed text-center mb-16 xl:mb-24 px-6"
       >
         See how Kangpack transforms any space into a hands-free mobile
         workspace.
@@ -67,7 +67,7 @@ const InAction: React.FC = () => {
             opacity: springOpacity,
             rotateX: springRotateX,
           }}
-          className="relative aspect-video w-full rounded-[30px] md:rounded-[60px] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.15)] bg-black"
+          className="relative aspect-video w-full rounded-[30px] md:rounded-[60px] overflow-hidden shadow-[0_50px_100px_rgba(255,255,255,0.05)] bg-black ring-1 ring-white/10"
         >
           {/* Video Element */}
           <video 

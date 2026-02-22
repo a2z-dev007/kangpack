@@ -66,7 +66,7 @@ const OfficeAnywhere: React.FC = () => {
   };
 
   return (
-    <section className="py-16 md:py-24 overflow-hidden">
+    <section className="bg-[#f5f2ee] text-[#1a1a1a] py-16 md:py-24 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-10 md:mb-12">
@@ -75,10 +75,10 @@ const OfficeAnywhere: React.FC = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
-            className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6"
+            className="inline-flex items-center gap-2 bg-[#1a1a1a]/8 backdrop-blur-md px-4 py-2 rounded-lg mb-6 border border-[#a67c52]/20"
           >
-            <ImageIcon className="w-3 h-3 brand-primary" />
-            <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+            <ImageIcon className="w-3 h-3 text-[#a67c52]" />
+            <span className="text-[11px] font-medium tracking-wide text-[#1a1a1a]/70 uppercase">
               The Experience
             </span>
           </motion.div>
@@ -89,7 +89,7 @@ const OfficeAnywhere: React.FC = () => {
             viewport={{ once: false }}
             className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tight font-bold"
           >
-            <span className="heading-gradient">Your Office Anywhere</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1a1a1a] to-[#1a1a1a]/50">Your Office Anywhere</span>
           </motion.h2>
 
           {/* Description */}
@@ -97,7 +97,7 @@ const OfficeAnywhere: React.FC = () => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: false }}
-            className="light-text text-sm md:text-base max-w-2xl mx-auto leading-relaxed"
+            className="text-[#1a1a1a]/50 text-sm md:text-base max-w-2xl mx-auto leading-relaxed"
           >
             Turn any space into productive workspace instantly, comfortably,
             effortlessly.
@@ -110,19 +110,19 @@ const OfficeAnywhere: React.FC = () => {
         {/* Previous Button */}
         <button
           onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 bg-white/90 hover:bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100"
+          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 bg-white/80 backdrop-blur-xl border border-[#a67c52]/20 hover:bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100"
           aria-label="Previous"
         >
-          <ChevronLeft className="w-6 h-6 text-[#6B5D4F]" />
+          <ChevronLeft className="w-6 h-6 text-[#1a1a1a]" />
         </button>
 
         {/* Next Button */}
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 bg-white/90 hover:bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100"
+          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 bg-white/80 backdrop-blur-xl border border-[#a67c52]/20 hover:bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100"
           aria-label="Next"
         >
-          <ChevronRight className="w-6 h-6 text-[#6B5D4F]" />
+          <ChevronRight className="w-6 h-6 text-[#1a1a1a]" />
         </button>
 
         <div
@@ -146,7 +146,7 @@ const OfficeAnywhere: React.FC = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: false }}
                 transition={{ delay: index * 0.05 }}
-                className="flex-shrink-0 w-[280px] md:w-[450px] xl:w-[550px] h-[350px] md:h-[450px] xl:h-[550px] rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.18)] transition-shadow duration-300 cursor-pointer"
+                className="flex-shrink-0 w-[280px] md:w-[450px] xl:w-[550px] h-[350px] md:h-[450px] xl:h-[550px] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10 hover:shadow-[0_20px_60px_rgba(255,255,255,0.05)] transition-shadow duration-300 cursor-pointer"
                 whileHover={{ scale: 1.02, y: -5 }}
                 onClick={() => openLightbox(carouselImages, index)}
               >

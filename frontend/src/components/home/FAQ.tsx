@@ -42,24 +42,24 @@ const FAQ: React.FC = () => {
   ];
 
   return (
-    <section className="bg-transparent py-16 md:py-24 px-6">
+    <section className="bg-[#f5f2ee] text-[#1a1a1a] py-16 md:py-24 px-6">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
         {/* Left Header Section */}
         <div className="lg:w-[450px] lg:sticky lg:top-32 w-full">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6">
-            <div className="w-1.5 h-1.5 bg-[#6B4A2D] rounded-full"></div>
-            <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+          <div className="inline-flex items-center gap-2 bg-[#1a1a1a]/8 backdrop-blur-md border border-[#a67c52]/20 px-4 py-2 rounded-lg mb-6">
+            <div className="w-1.5 h-1.5 bg-[#a67c52] rounded-full"></div>
+            <span className="text-[11px] font-medium tracking-wide text-[#1a1a1a]/70 uppercase">
               Common Questions
             </span>
           </div>
 
           <h2 className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tighter font-bold">
-            <span className="heading-gradient">FAQ's</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1a1a1a] to-[#1a1a1a]/50">FAQ's</span>
             <br />
-            <span className="text-[#B8AFA1]">Asked</span>
+            <span className="text-[#1a1a1a]/40">Asked</span>
           </h2>
-          <p className="light-text text-[16px] md:text-lg xl:text-xl leading-relaxed max-w-[400px] mb-10 lg:mb-0">
+          <p className="text-[#1a1a1a]/40 text-[16px] md:text-lg xl:text-xl leading-relaxed max-w-[400px] mb-10 lg:mb-0">
             Find quick answers to common questions about Kangpack usage, care,
             and support essentials.
           </p>
@@ -67,26 +67,26 @@ const FAQ: React.FC = () => {
 
         {/* Right FAQ List section */}
         <div className="w-full flex-grow">
-          <div className="border-t border-[#6B4A2D]/10">
+          <div className="border-t border-[#a67c52]/20">
             {faqs.map((faq, i) => (
-              <div key={i} className="border-b border-[#6B4A2D]/10">
+              <div key={i} className="border-b border-[#a67c52]/20">
                 <button
                   onClick={() => setOpenIndex(openIndex === i ? null : i)}
                   className="w-full flex items-center justify-between py-6 md:py-10 xl:py-12 2xl:py-14 text-left group transition-all"
                 >
                   <div className="flex items-center gap-6 md:gap-24">
-                    <span className="text-[12px] md:text-[16px] text-[#6B4A2D]/40 font-mono w-6 md:w-8">
+                    <span className="text-[12px] md:text-[16px] text-[#1a1a1a]/40 font-mono w-6 md:w-8">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span
-                      className={`text-[15px] md:text-[20px] xl:text-[24px] 2xl:text-[28px] font-bold md:font-medium tracking-tight transition-colors duration-300 ${openIndex === i ? "text-[#6B4A2D]" : "text-[#6B4A2D]/80 group-hover:text-[#6B4A2D]"}`}
+                      className={`text-[15px] md:text-[20px] xl:text-[24px] 2xl:text-[28px] font-bold md:font-medium tracking-tight transition-colors duration-300 ${openIndex === i ? "text-[#1a1a1a]" : "text-[#1a1a1a]/60 group-hover:text-[#1a1a1a]"}`}
                     >
                       {faq.q}
                     </span>
                   </div>
                   <div className="flex-shrink-0 ml-4">
                     <div
-                      className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-300 ${openIndex === i ? "btn-premium" : "text-[#6B4A2D] border border-black/5"}`}
+                      className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-300 ${openIndex === i ? "bg-[#1a1a1a] text-white" : "text-[#1a1a1a]/60 border border-[#a67c52]/30"}`}
                     >
                       {openIndex === i ? (
                         <Minus className="w-4 h-4 md:w-5 md:h-5" />
@@ -109,7 +109,7 @@ const FAQ: React.FC = () => {
                       }}
                       className="overflow-hidden"
                     >
-                      <p className="pb-8 pl-12 md:pl-[120px] lg:pl-[136px] xl:pl-[160px] text-[#8B7E6F] leading-relaxed text-[15px] md:text-[18px] xl:text-[20px] max-w-4xl">
+                      <p className="pb-8 pl-12 md:pl-[120px] lg:pl-[136px] xl:pl-[160px] text-[#1a1a1a]/50 leading-relaxed text-[15px] md:text-[18px] xl:text-[20px] max-w-4xl">
                         {faq.a}
                       </p>
                     </motion.div>

@@ -26,7 +26,7 @@ const Stats: React.FC = () => {
   ];
 
   return (
-    <section className="bg-[#F8F5F1] py-16 md:py-24 px-6 overflow-hidden">
+    <section className="bg-[#f5f2ee] text-[#1a1a1a] py-16 md:py-24 px-6 overflow-hidden">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 mb-12 md:mb-16">
@@ -38,9 +38,9 @@ const Stats: React.FC = () => {
               viewport={{ once: true }}
               className="flex items-center gap-3"
             >
-              <div className="w-2.5 h-2.5 bg-brand-premium rounded-[2px]" />
-              <span className="text-[11px] font-bold uppercase tracking-widest text-[#6B4A2D]/60 mt-0.5">
-                Stats & Facts
+              <div className="w-2.5 h-2.5 bg-[#a67c52] rounded-[2px]" />
+              <span className="text-[11px] font-bold uppercase tracking-widest text-[#1a1a1a]/60 mt-0.5">
+                Stats &amp; Facts
               </span>
             </motion.div>
           </div>
@@ -54,11 +54,11 @@ const Stats: React.FC = () => {
               transition={{ duration: 0.8 }}
               className="text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.2] tracking-tight text-left max-w-4xl"
             >
-              <span className="heading-gradient underline decoration-primary/20 underline-offset-8">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1a1a1a] to-[#1a1a1a]/50 underline decoration-[#a67c52]/20 underline-offset-8">
                 We engineer freedom for modern professionals where mobility
                 meets real productivity.{" "}
               </span>
-              <span className="text-[#B8AFA1]">
+              <span className="text-[#1a1a1a]/40">
                 Every detail is designed to remove friction, boost comfort, and
                 keep you moving without slowing down.
               </span>
@@ -78,7 +78,7 @@ const Stats: React.FC = () => {
               className={`group ${index === 2 ? "md:col-span-1" : ""}`}
             >
               {/* Number and Suffix */}
-              <div className="text-6xl md:text-7xl lg:text-8xl font-black text-[#6B4A2D] leading-none mb-6 flex items-baseline">
+              <div className="text-6xl md:text-7xl lg:text-8xl font-black text-[#1a1a1a] leading-none mb-6 flex items-baseline">
                 <SlotCounter
                   value={stat.value}
                   duration={2}
@@ -91,13 +91,13 @@ const Stats: React.FC = () => {
               </div>
 
               {/* Divider Line */}
-              <div className="w-full h-[1px] bg-[#6B4A2D]/10 mb-6" />
+              <div className="w-full h-[1px] bg-[#a67c52]/20 mb-6" />
 
               {/* Label and Description */}
-              <h4 className="text-lg md:text-xl font-bold text-[#6B4A2D] mb-2 tracking-tight">
+              <h4 className="text-lg md:text-xl font-bold text-[#1a1a1a] mb-2 tracking-tight">
                 {stat.label}
               </h4>
-              <p className="text-sm md:text-base text-[#B8AFA1] font-medium leading-relaxed max-w-sm">
+              <p className="text-sm md:text-base text-[#1a1a1a]/40 font-medium leading-relaxed max-w-sm">
                 {stat.description}
               </p>
             </motion.div>

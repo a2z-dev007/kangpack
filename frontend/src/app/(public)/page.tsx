@@ -1,12 +1,15 @@
 "use client"
 import React from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Menu, X, ChevronRight, Play, Star, MapPin,
-  Briefcase, Shield, Zap, Laptop, Globe, User,
-  ArrowRight, Check, Plus, Minus
-} from 'lucide-react';
 import Navbar from '@/components/home/Navbar';
+import GlobalVideoModal from '@/components/common/GlobalVideoModal';
+import ScrollSection, { ParallaxImage } from '@/components/common/ScrollSection';
+import { ASSETS } from '@/constants/assets';
+
+// Smooth scroll + cursor
+import SmoothScroll from '@/components/home-v2/SmoothScroll';
+import CursorGlow from '@/components/home-v2/CursorGlow';
+
+// ── Existing sections ──────────────────────────────────────────────────────────
 import Hero from '@/components/home/Hero';
 import GalleryIntro from '@/components/home/GalleryIntro';
 import Features from '@/components/home/Features';
@@ -23,122 +26,188 @@ import RealMoments from '@/components/home/RealMoments';
 import Pricing from '@/components/home/Pricing';
 import FAQ from '@/components/home/FAQ';
 import OurProducts from '@/components/home/OurProducts';
-import SectionDivider from '@/components/common/SectionDivider';
-import { Footer } from '@/components/layout/footer';
-import { ASSETS } from '@/constants/assets';
-import ScrollSection, { ParallaxImage } from '@/components/common/ScrollSection';
-import GlobalVideoModal from '@/components/common/GlobalVideoModal';
+import Footer from '@/components/home/Footer';
 
+// ── NEW sections ───────────────────────────────────────────────────────────────
+import ProblemSection from '@/components/home/ProblemSection';
+import SolutionReveal from '@/components/home/SolutionReveal';
+import HowItWorks from '@/components/home/HowItWorks';
+import ComparisonSection from '@/components/home/ComparisonSection';
+import FinalCTA from '@/components/home/FinalCTA';
 
 const HomePage: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-brand-beige">
-      <Navbar />
-      <GlobalVideoModal />
-      <main className="flex-grow">
-        <ScrollSection>
-          <Hero />
-        </ScrollSection>
+    <SmoothScroll>
+      <div className="min-h-screen flex flex-col font-sans bg-black">
+        {/* Sticky Navbar */}
+        <div className="fixed top-0 w-full z-50">
+          <Navbar />
+        </div>
 
-        <SectionDivider />
+        <GlobalVideoModal />
 
-        <ScrollSection>
-          <GalleryIntro />
-        </ScrollSection>
+        <main className="flex-grow pt-0">
 
-        <SectionDivider />
+          {/* ═══════════════════════════════════════╗
+               1 — HERO (Cinematic Impact)
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <Hero />
+          </ScrollSection>
 
-        <ScrollSection>
-          <Features />
-        </ScrollSection>
+          {/* ═══════════════════════════════════════╗
+               2 — PROBLEM (Emotional Trigger)  [DARK]
+          ╚══════════════════════════════════════ */}
+          <ProblemSection />
 
-        <ScrollSection>
-          <DesignedToMove />
-        </ScrollSection>
+          {/* ═══════════════════════════════════════╗
+               3 — SOLUTION REVEAL                 [DARK]
+          ╚══════════════════════════════════════ */}
+          <SolutionReveal />
 
-        <ScrollSection>
-          <InAction />
-        </ScrollSection>
+          {/* ═══════════════════════════════════════╗
+               4 — PRODUCT IMMERSIVE SHOWCASE      [DARK]
+                   WearableSection — sticky scroll
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <WearableSection />
+          </ScrollSection>
 
-        <SectionDivider />
+          {/* ═══════════════════════════════════════╗
+               5 — PRODUCT GALLERY (3-view)        [DARK]
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <GalleryThree />
+          </ScrollSection>
 
-        <ScrollSection>
-          <WhyChoose />
-        </ScrollSection>
+          {/* ═══════════════════════════════════════╗
+               5B — FEATURE DEEP DIVE              [DARK]
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <Features />
+          </ScrollSection>
 
-        <SectionDivider />
+          {/* ═══════════════════════════════════════╗
+               6 — LIFESTYLE / IN ACTION           [DARK]
+                   Horizontal scroll use-cases
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <OfficeAnywhere />
+          </ScrollSection>
 
-        <ScrollSection>
-          <Stats />
-        </ScrollSection>
+          <ScrollSection>
+            <InAction />
+          </ScrollSection>
 
-        <SectionDivider />
+          {/* ═══════════════════════════════════════╗
+               6B — GALLERY INTRO (light interlude)[DARK]
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <GalleryIntro />
+          </ScrollSection>
 
-        <ScrollSection>
-        <WearableSection />
-        </ScrollSection>
+          {/* ═══════════════════════════════════════╗
+               7 — HOW IT WORKS  (horizontal scroll)[DARK]
+          ╚══════════════════════════════════════ */}
+          <HowItWorks />
 
-        <SectionDivider />
+          {/* ═══════════════════════════════════════╗
+               7B — DESIGNED TO MOVE               [DARK]
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <DesignedToMove />
+          </ScrollSection>
 
-        <ScrollSection>
-          <GalleryThree />
-        </ScrollSection>
+          {/* ═══════════════════════════════════════╗
+               8 — SOCIAL PROOF / TESTIMONIALS     [DARK]
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <Testimonials />
+          </ScrollSection>
 
-        <SectionDivider />
+          {/* ═══════════════════════════════════════╗
+               8B — REAL MOMENTS (gallery)         [DARK]
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <RealMoments />
+          </ScrollSection>
 
-        <ScrollSection>
-          <OfficeAnywhere />
-        </ScrollSection>
+          {/* ═══════════════════════════════════════╗
+               9 — COMPARISON / WHY KANGPACK       [DARK]
+          ╚══════════════════════════════════════ */}
+          <ComparisonSection />
 
-        <SectionDivider />
+          {/* ═══════════════════════════════════════╗
+               9B — WHY CHOOSE                     [DARK]
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <WhyChoose />
+          </ScrollSection>
 
-        <ScrollSection>
-          <Testimonials />
-        </ScrollSection>
+          {/* ═══════════════════════════════════════╗
+               9C — TECH SPECS                     [DARK]
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <TechSpecs />
+          </ScrollSection>
 
-        <SectionDivider />
+          {/* ═══════════════════════════════════════╗
+               9D — STATS                          [DARK]
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <Stats />
+          </ScrollSection>
 
-        <ScrollSection>
-          <TechSpecs />
-        </ScrollSection>
+          {/* ═══════════════════════════════════════╗
+               9E — PRICING                        [DARK]
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <Pricing />
+          </ScrollSection>
 
-        <SectionDivider />
+          {/* ═══════════════════════════════════════╗
+               9F — FAQ                            [DARK]
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <FAQ />
+          </ScrollSection>
 
-        <ScrollSection>
-          <RealMoments />
-        </ScrollSection>
+          {/* ═══════════════════════════════════════╗
+               10 — FINAL CTA                      [LIGHT]
+          ╚══════════════════════════════════════ */}
+          <FinalCTA />
 
-        <SectionDivider />
+          {/* ═══════════════════════════════════════╗
+               CINEMATIC FULL-BLEED IMAGE
+          ╚══════════════════════════════════════ */}
+          <ScrollSection>
+            <div className="w-full h-[60vh] md:h-screen relative overflow-hidden">
+              <ParallaxImage
+                src={ASSETS.TICKERS.MAIN2}
+                className="w-full h-full"
+                alt="Detail View"
+              />
+              <div className="absolute inset-0 bg-black/30" />
+              {/* Overlay CTA */}
+              <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+                <p className="text-white/50 text-xs uppercase tracking-[0.3em] mb-4">Take it anywhere</p>
+                <h3 className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-tight">
+                  The workspace<br />that follows you.
+                </h3>
+              </div>
+            </div>
+          </ScrollSection>
 
-        <ScrollSection>
-          <Pricing />
-        </ScrollSection>
+          {/* Products */}
+          <OurProducts />
 
-        <SectionDivider />
+        </main>
 
-        <ScrollSection>
-          <FAQ />
-        </ScrollSection>
+        {/* Footer */}
+        <Footer />
 
-        <SectionDivider />
-
-        <ScrollSection>
-          {/* Large Product Reveal */}
-          <div className="w-full h-[60vh] md:h-screen relative overflow-hidden">
-            <ParallaxImage
-              src={ASSETS.TICKERS.MAIN2}
-              className="w-full h-full"
-              alt="Detail View"
-            />
-            <div className="absolute inset-0 bg-black/10"></div>
-          </div>
-        </ScrollSection>
-
-        {/* Other Products Section */}
-        <OurProducts />
-      </main>
-      {/* <Footer /> */}
-    </div>
+      </div>
+    </SmoothScroll>
   );
 };
 

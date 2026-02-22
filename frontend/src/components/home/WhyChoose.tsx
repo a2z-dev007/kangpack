@@ -15,11 +15,11 @@ const WhyChoose: React.FC = () => {
   ];
 
   return (
-    <section className="bg-[#F8F5F0] py-16 md:py-24 px-4 sm:px-6 relative overflow-hidden">
+    <section className="bg-[#f5f2ee] text-[#1a1a1a] py-16 md:py-24 px-4 sm:px-6 relative overflow-hidden">
       {/* Background Blobs */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40">
-        <div className="absolute top-[10%] left-[-5%] w-[40%] h-[60%] bg-[#E8E2DA] rounded-full blur-[100px] transform -rotate-12"></div>
-        <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[60%] bg-[#E8E2DA] rounded-full blur-[100px]"></div>
+        <div className="absolute top-[10%] left-[-5%] w-[40%] h-[60%] bg-[#a67c52]/5 rounded-full blur-[100px] transform -rotate-12"></div>
+        <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[60%] bg-[#a67c52]/5 rounded-full blur-[100px]"></div>
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -30,10 +30,10 @@ const WhyChoose: React.FC = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
-            className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6"
+            className="inline-flex items-center gap-2 bg-[#1a1a1a]/8 backdrop-blur-md px-4 py-2 rounded-lg mb-6 border border-[#a67c52]/20"
           >
-            <Shield className="w-3 h-3 brand-primary" />
-            <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+            <Shield className="w-3 h-3 text-[#a67c52]" />
+            <span className="text-[11px] font-medium tracking-wide text-[#1a1a1a]/70 uppercase">
               Benefits
             </span>
           </motion.div>
@@ -44,8 +44,8 @@ const WhyChoose: React.FC = () => {
             viewport={{ once: false }}
             className="text-3xl md:text-5xl leading-[1.2] mb-6 tracking-tight font-bold"
           >
-            <span className="text-primary">Why Choose </span>
-            <span className="heading-gradient px-1">Kangpack?</span>
+            <span className="text-[#1a1a1a]">Why Choose </span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1a1a1a] to-[#1a1a1a]/50 px-1">Kangpack?</span>
           </motion.h2>
 
           {/* Description */}
@@ -53,7 +53,7 @@ const WhyChoose: React.FC = () => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: false }}
-            className="light-text text-base md:text-lg xl:text-xl max-w-2xl mx-auto leading-relaxed px-4 xl:mb-12"
+            className="text-[#1a1a1a]/50 text-base md:text-lg xl:text-xl max-w-2xl mx-auto leading-relaxed px-4 xl:mb-12"
           >
             Explore a smarter way to work on the move. Kangpack blends comfort,
             mobility, and smart design to keep you productive anywhere.
@@ -93,13 +93,13 @@ const WhyChoose: React.FC = () => {
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: false }}
-                className="bg-[#E5E2DA] rounded-[24px] sm:rounded-[32px] p-6 sm:p-6 md:p-8 xl:p-10 2xl:p-12 flex flex-col justify-between h-[180px] sm:h-[180px] md:h-[200px] xl:h-[250px] 2xl:h-[300px] shadow-sm group"
+                className="bg-[#1a1a1a]/5 border border-[#a67c52]/10 rounded-[24px] sm:rounded-[32px] p-6 sm:p-6 md:p-8 xl:p-10 2xl:p-12 flex flex-col justify-between h-[180px] sm:h-[180px] md:h-[200px] xl:h-[250px] 2xl:h-[300px] shadow-sm group"
               >
                 <div>
-                  <h4 className="text-[36px] sm:text-[48px] md:text-[56px] xl:text-[44px] 2xl:text-[56px] font-black text-brand-brown leading-none">
+                  <h4 className="text-[36px] sm:text-[48px] md:text-[56px] xl:text-[44px] 2xl:text-[56px] font-black text-[#1a1a1a] leading-none">
                     98%
                   </h4>
-                  <p className="text-brand-brown/40 text-[9px] sm:text-[10px] md:text-[11px] font-bold uppercase tracking-widest mt-2">
+                  <p className="text-[#1a1a1a]/40 text-[9px] sm:text-[10px] md:text-[11px] font-bold uppercase tracking-widest mt-2">
                     Satisfaction rate
                   </p>
                 </div>
@@ -108,7 +108,7 @@ const WhyChoose: React.FC = () => {
                     <img
                       key={i}
                       src={`https://picsum.photos/seed/user${i}/100/100`}
-                      className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 xl:w-8 xl:h-8 rounded-full border-2 border-[#E5E2DA] shadow-sm group-hover:translate-y-[-4px] transition-transform"
+                      className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 xl:w-8 xl:h-8 rounded-full border-2 border-black shadow-sm group-hover:translate-y-[-4px] transition-transform"
                       style={{ transitionDelay: `${i * 40}ms` }}
                       alt="user"
                     />
@@ -121,23 +121,22 @@ const WhyChoose: React.FC = () => {
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: false }}
-                className="btn-premium rounded-[24px] sm:rounded-[32px] flex items-center justify-between shadow-lg relative overflow-hidden h-[180px] sm:h-[180px] md:h-[200px] xl:h-[250px] 2xl:h-[300px] group px-6 sm:px-4 md:px-6 py-4 sm:py-5 xl:px-8 xl:py-10 2xl:px-10 2xl:py-12 border-none"
+                className="bg-[#e8e2d9] border border-[#a67c52]/20 shadow-[inner_0_0_20px_rgba(166,124,82,0.03)] rounded-[24px] sm:rounded-[32px] flex items-center justify-between relative overflow-hidden h-[180px] sm:h-[180px] md:h-[200px] xl:h-[250px] 2xl:h-[300px] group px-6 sm:px-4 md:px-6 py-4 sm:py-5 xl:px-8 xl:py-10 2xl:px-10 2xl:py-12"
               >
                 {/* Text Section - Left Side */}
                 <div className="relative z-10 flex-shrink-0">
-                  <h4 className="text-white text-left text-[15px] sm:text-base md:text-[18px] lg:text-[20px] font-bold leading-tight ">
+                  <h4 className="text-[#1a1a1a] text-left text-[15px] sm:text-base md:text-[18px] lg:text-[20px] font-bold leading-tight ">
                     Radiation
-                    <span className="block opacity-60 font-normal text-xs mt-1">
+                    <span className="block opacity-60 font-normal text-xs mt-1 text-[#1a1a1a]/60">
                       Shield Protection
                     </span>
                   </h4>
                 </div>
-
                 {/* Image Section - Right Side */}
                 <div className="relative z-10">
                   <img
                     src={ASSETS.BENEFITS.CARD_4TH}
-                    className="w-20 sm:w-24 md:w-28 lg:w-32 h-auto drop-shadow-xl group-hover:scale-110 transition-transform duration-500"
+                    className="w-20 sm:w-24 md:w-28 lg:w-32 h-auto drop-shadow-[0_20px_40px_rgba(255,255,255,0.1)] group-hover:scale-110 transition-transform duration-500"
                     alt="Radiation Shield"
                   />
                 </div>
@@ -173,13 +172,13 @@ const WhyChoose: React.FC = () => {
                 initial={{ opacity: 0, y: -30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false }}
-                className="col-span-1 relative rounded-[24px] sm:rounded-[32px] overflow-hidden group shadow-lg bg-[#E5E2DA] flex flex-col pl-4 sm:pl-5 md:pl-7 pt-4 sm:pt-5 md:pt-7"
+                className="col-span-1 relative rounded-[24px] sm:rounded-[32px] overflow-hidden group shadow-lg bg-[#1a1a1a]/5 border border-[#a67c52]/10 flex flex-col pl-4 sm:pl-5 md:pl-7 pt-4 sm:pt-5 md:pt-7"
               >
-                <div className="mb-2 sm:mb-3 md:mb-4">
-                  <h4 className="text-[28px] sm:text-[36px] md:text-[40px] xl:text-[32px] 2xl:text-[40px] font-bold text-brand-brown leading-none">
+                <div className="mb-2 sm:mb-3 md:mb-4 relative z-10">
+                  <h4 className="text-[28px] sm:text-[36px] md:text-[40px] xl:text-[32px] 2xl:text-[40px] font-bold text-[#1a1a1a] leading-none">
                     1.8 Kg
                   </h4>
-                  <p className="text-brand-brown/40 text-[9px] sm:text-[11px] md:text-[12px] font-bold uppercase tracking-widest mt-1">
+                  <p className="text-[#1a1a1a]/40 text-[9px] sm:text-[11px] md:text-[12px] font-bold uppercase tracking-widest mt-1">
                     Leather build
                   </p>
                 </div>

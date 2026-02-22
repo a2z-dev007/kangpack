@@ -45,19 +45,19 @@ const GalleryThree: React.FC = () => {
   const frontColor = useTransform(
     scrollYProgress,
     [0, 0.15, 0.3],
-    ["#b7ad9f", "#b7ad9f", "#6B4A2D"],
+    ["rgba(26,26,26,0.2)", "rgba(26,26,26,0.2)", "#1a1a1a"],
   );
 
   const backColor = useTransform(
     scrollYProgress,
     [0, 0.3, 0.45, 0.6],
-    ["#b7ad9f", "#b7ad9f", "#b7ad9f", "#6B4A2D"],
+    ["rgba(26,26,26,0.2)", "rgba(26,26,26,0.2)", "rgba(26,26,26,0.2)", "#1a1a1a"],
   );
 
   const sidewaysColor = useTransform(
     scrollYProgress,
     [0, 0.6, 0.75, 0.85],
-    ["#b7ad9f", "#b7ad9f", "#b7ad9f", "#6B4A2D"],
+    ["rgba(26,26,26,0.2)", "rgba(26,26,26,0.2)", "rgba(26,26,26,0.2)", "#1a1a1a"],
   );
 
   // Image 1 (Front) - Starts CENTER, then moves LEFT when Image 2 appears
@@ -144,7 +144,7 @@ const GalleryThree: React.FC = () => {
   return (
     // Wrapper with extra height to create scroll distance for pinning effect
     // Increased to 400vh for longer hold time at the end
-    <div ref={containerRef} className="relative " style={{ height: "400vh" }}>
+    <div ref={containerRef} className="relative bg-[#f5f2ee] text-[#1a1a1a]" style={{ height: "400vh" }}>
       {/* Sticky container that stays fixed while scrolling */}
       <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
         <section className="w-full py-20 md:py-32 lg:py-40 px-4 sm:px-6">
@@ -152,9 +152,9 @@ const GalleryThree: React.FC = () => {
             {/* Header */}
             <div className="text-center mb-8   flex flex-col items-center">
               {/* Badge */}
-              <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg mb-4 sm:mb-6">
-                <div className="w-1.5 h-1.5 bg-[#6B4A2D] rounded-full"></div>
-                <span className="text-[10px] sm:text-[11px] font-medium tracking-wide brand-primary uppercase">
+              <div className="inline-flex items-center gap-2 bg-[#1a1a1a]/8 backdrop-blur-md border border-[#a67c52]/20 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg mb-4 sm:mb-6">
+                <div className="w-1.5 h-1.5 bg-[#a67c52] rounded-full"></div>
+                <span className="text-[10px] sm:text-[11px] font-medium tracking-wide text-[#1a1a1a]/70 uppercase">
                   Versatility
                 </span>
               </div>
@@ -169,7 +169,7 @@ const GalleryThree: React.FC = () => {
               </h2>
 
               {/* Description */}
-              <p className="text-[#8B7E6F] text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed px-4">
+              <p className="text-[#1a1a1a]/50 text-xs sm:text-sm md:text-base max-w-2xl mx-auto leading-relaxed px-4">
                 One bag. Three ways to wear it.
               </p>
             </div>
@@ -191,7 +191,7 @@ const GalleryThree: React.FC = () => {
                   rotateZ: image1RotateZ,
                   transformStyle: "preserve-3d",
                 }}
-                className="absolute left-1/2 -translate-x-1/2 w-[38%] sm:w-[35%] md:w-[420px] xl:w-[550px] 2xl:w-[650px] h-[65%] sm:h-[70%] md:h-[280px] xl:h-[400px] 2xl:h-[480px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_15px_40px_rgba(0,0,0,0.15)] md:shadow-[0_25px_70px_rgba(0,0,0,0.2)] z-10 cursor-pointer will-change-transform"
+                className="absolute left-1/2 -translate-x-1/2 w-[38%] sm:w-[35%] md:w-[420px] xl:w-[550px] 2xl:w-[650px] h-[65%] sm:h-[70%] md:h-[280px] xl:h-[400px] 2xl:h-[480px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10 z-10 cursor-pointer will-change-transform"
                 onClick={() => openLightbox(images, 0)}
               >
                 <img
@@ -213,7 +213,7 @@ const GalleryThree: React.FC = () => {
                   rotateZ: image2RotateZ,
                   transformStyle: "preserve-3d",
                 }}
-                className="absolute left-1/2 -translate-x-1/2 w-[42%] sm:w-[38%] md:w-[440px] xl:w-[580px] 2xl:w-[680px] h-[75%] sm:h-[78%] md:h-[310px] xl:h-[440px] 2xl:h-[520px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_18px_50px_rgba(0,0,0,0.2)] md:shadow-[0_30px_80px_rgba(0,0,0,0.25)] z-20 cursor-pointer will-change-transform"
+                className="absolute left-1/2 -translate-x-1/2 w-[42%] sm:w-[38%] md:w-[440px] xl:w-[580px] 2xl:w-[680px] h-[75%] sm:h-[78%] md:h-[310px] xl:h-[440px] 2xl:h-[520px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10 z-20 cursor-pointer will-change-transform"
                 onClick={() => openLightbox(images, 1)}
               >
                 <img
@@ -235,7 +235,7 @@ const GalleryThree: React.FC = () => {
                   rotateZ: image3RotateZ,
                   transformStyle: "preserve-3d",
                 }}
-                className="absolute left-1/2 -translate-x-1/2 w-[48%] sm:w-[45%] md:w-[460px] xl:w-[600px] 2xl:w-[700px] h-[85%] sm:h-[88%] md:h-[350px] xl:h-[500px] 2xl:h-[580px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.25)] md:shadow-[0_35px_90px_rgba(0,0,0,0.3)] z-30 cursor-pointer will-change-transform"
+                className="absolute left-1/2 -translate-x-1/2 w-[48%] sm:w-[45%] md:w-[460px] xl:w-[600px] 2xl:w-[700px] h-[85%] sm:h-[88%] md:h-[350px] xl:h-[500px] 2xl:h-[580px] rounded-xl sm:rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl ring-1 ring-white/10 z-30 cursor-pointer will-change-transform"
                 onClick={() => openLightbox(images, 2)}
               >
                 <img

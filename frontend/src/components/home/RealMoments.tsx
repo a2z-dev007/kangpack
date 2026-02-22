@@ -36,7 +36,7 @@ const RealMoments: React.FC = () => {
   } = useLightbox();
 
   return (
-    <section className="py-16 md:py-24 overflow-hidden bg-[#FDFCFB]">
+    <section className="py-16 md:py-24 overflow-hidden bg-[#f5f2ee] text-[#1a1a1a]">
       <div className="max-w-7xl mx-auto px-6 ">
         {/* Header */}
         <div className="text-center flex flex-col items-center mb-12">
@@ -45,10 +45,10 @@ const RealMoments: React.FC = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
-            className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-8"
+            className="inline-flex items-center gap-2 bg-[#1a1a1a]/8 backdrop-blur-md border border-[#a67c52]/20 px-4 py-2 rounded-lg mb-8"
           >
-            <Camera className="w-3.5 h-3.5 brand-primary" />
-            <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+            <Camera className="w-3.5 h-3.5 text-[#a67c52]" />
+            <span className="text-[11px] font-medium tracking-wide text-[#1a1a1a]/70 uppercase">
               Real Moments
             </span>
           </motion.div>
@@ -59,7 +59,7 @@ const RealMoments: React.FC = () => {
             viewport={{ once: false }}
             className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tight font-bold"
           >
-            <span className="heading-gradient">Designed for Real Life</span>
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#1a1a1a] to-[#1a1a1a]/50">Designed for Real Life</span>
           </motion.h2>
 
           {/* Description */}
@@ -67,14 +67,14 @@ const RealMoments: React.FC = () => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: false }}
-            className="light-text text-base md:text-lg xl:text-xl max-w-2xl mx-auto leading-relaxed mb-12 xl:mb-16 text-center"
+            className="text-[#1a1a1a]/50 text-base md:text-lg xl:text-xl max-w-2xl mx-auto leading-relaxed mb-12 xl:mb-16 text-center"
           >
             Explore Kangpack in everyday moments — crafted for movement,
             comfort, and modern work.
           </motion.p>
 
           {/* Action Button */}
-          <PrimaryButton className="btn-premium">Shop Now</PrimaryButton>
+          <PrimaryButton className="bg-[#1a1a1a] text-white font-semibold hover:scale-105 transition-transform" textColor="#fff" circleColor="#fff" hoverTextColor="#000">Shop Now</PrimaryButton>
         </div>
       </div>
 
@@ -106,14 +106,14 @@ const RealMoments: React.FC = () => {
               className="!flex justify-center items-center !w-[300px] md:!w-[450px] xl:!w-[400px] 2xl:!w-[550px] cursor-pointer"
               onClick={() => openLightbox(images, index)}
             >
-              <div className="relative aspect-[4/5] xl:aspect-[3/4] rounded-[24px] md:rounded-[40px] overflow-hidden shadow-2xl border-[8px] border-white mx-auto">
+              <div className="relative aspect-[4/5] xl:aspect-[3/4] rounded-[24px] md:rounded-[40px] overflow-hidden shadow-2xl border-[4px] border-[#e8e2d9] ring-1 ring-[#a67c52]/20 mx-auto">
                 <ParallaxImage
                   src={img}
                   alt={`Real Moment ${index + 1}`}
-                  className="w-full h-full"
+                  className="w-full h-full object-cover"
                 />
                 {/* Subtle radial overlay for depth */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
               </div>
             </SwiperSlide>
           ))}

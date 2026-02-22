@@ -25,7 +25,7 @@ const TechSpecs: React.FC = () => {
   ];
 
   return (
-    <section className="bg-transparent py-16 md:py-24 px-6">
+    <section className="bg-[#0a0a0a] text-white py-16 md:py-24 px-6">
       <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 items-start">
         {/* Left Column: Image & Intro */}
         <div className="flex-1 w-full lg:sticky lg:top-24">
@@ -33,7 +33,7 @@ const TechSpecs: React.FC = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
-            className="rounded-[32px] overflow-hidden shadow-xl mb-10 h-[500px] md:h-[600px] group"
+            className="rounded-[32px] overflow-hidden shadow-[0_20px_60px_rgba(255,255,255,0.05)] ring-1 ring-white/10 mb-10 h-[500px] md:h-[600px] group"
           >
             <ParallaxImage
               src={ASSETS.TICKERS.FIRST}
@@ -47,16 +47,16 @@ const TechSpecs: React.FC = () => {
             viewport={{ once: false }}
             className="max-w-lg"
           >
-            <h3 className="text-2xl md:text-3xl leading-[1.3] text-[#6B4A2D] font-normal">
+            <h3 className="text-2xl md:text-3xl leading-[1.3] text-white font-normal">
               <span className="font-bold">Designed for</span>{" "}
-              <span className="text-[#8B7E6F]">work anywhere.</span> Built for{" "}
+              <span className="text-white/40">work anywhere.</span> Built for{" "}
               <span className="font-bold">comfort</span>,{" "}
               <span className="font-bold">balance</span>, and{" "}
               <span className="font-bold">productivity</span>{" "}
-              <span className="text-[#8B7E6F]">on the move.</span>
+              <span className="text-white/40">on the move.</span>
             </h3>
             <div className="mt-8">
-              <PrimaryButton className="btn-premium">Buy Now</PrimaryButton>
+              <PrimaryButton className="bg-white text-black font-semibold hover:scale-105 transition-transform" textColor="#000" circleColor="#000" hoverTextColor="#fff">Buy Now</PrimaryButton>
             </div>
           </motion.div>
         </div>
@@ -69,10 +69,10 @@ const TechSpecs: React.FC = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: false }}
-              className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6"
+              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/5 px-4 py-2 rounded-lg mb-6"
             >
-              <div className="w-1.5 h-1.5 bg-[#6B4A2D] rounded-full"></div>
-              <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+              <div className="w-1.5 h-1.5 bg-white/60 rounded-full"></div>
+              <span className="text-[11px] font-medium tracking-wide text-white/80 uppercase">
                 Technical Detail
               </span>
             </motion.div>
@@ -83,8 +83,8 @@ const TechSpecs: React.FC = () => {
               viewport={{ once: false }}
               className="text-4xl md:text-6xl leading-[1] tracking-tight flex flex-col font-bold"
             >
-              <span className="heading-gradient">Technical</span>
-              <span className="text-[#B8AFA1]">Specifications</span>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/50">Technical</span>
+              <span className="text-white/40">Specifications</span>
             </motion.h2>
           </div>
 
@@ -96,15 +96,15 @@ const TechSpecs: React.FC = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: false }}
                 transition={{ delay: i * 0.05 }}
-                className={`flex ${s.fullRow ? "flex-col py-6" : "justify-between items-center py-5"} border-b border-[#6B4A2D]/10`}
+                className={`flex ${s.fullRow ? "flex-col py-6" : "justify-between items-center py-5"} border-b border-white/10`}
               >
                 <span
-                  className={`text-[#8B7E6F] font-normal ${s.fullRow ? "mb-4 text-left" : ""}`}
+                  className={`text-white/40 font-normal ${s.fullRow ? "mb-4 text-left" : ""}`}
                 >
                   {s.label}
                 </span>
                 <span
-                  className={`text-[#6B4A2D] font-medium transition-colors ${
+                  className={`text-white font-medium transition-colors ${
                     s.fullRow
                       ? "text-center w-full block text-base md:text-lg tracking-wide"
                       : "text-right ml-4"
