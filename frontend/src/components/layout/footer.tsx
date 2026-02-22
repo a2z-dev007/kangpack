@@ -32,7 +32,9 @@ const footerNav = {
   legal: [
     { label: "Terms & Conditions", href: "/terms-and-conditions" },
     { label: "Privacy Policy", href: "/privacy-policy" },
-    { label: "Shipping & Returns", href: "/shipping-and-returns" },
+    { label: "Shipping Policy", href: "/shipping-policy" },
+    { label: "Warranty Policy", href: "/warranty-policy" },
+    { label: "Refund Cancellation", href: "/refund-cancellation" },
   ],
 };
 
