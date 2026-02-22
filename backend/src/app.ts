@@ -15,41 +15,10 @@ const app = express();
 // Trust proxy for Nginx
 app.set('trust proxy', true);
 
-// --- 1. CONSOLIDATED CORS HANDLING ---
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
-  
-  // Define allowed origins patterns
-  const isAllowedOrigin = origin && (
-    origin.includes('kangpack.in') || 
-    origin.includes('localhost') || 
-    origin.includes('127.0.0.1') ||
-    origin === env.CORS_ORIGIN // Fallback to explicit env value
-  );
+// --- 1. CORS HANDLING ---
+app.use(cors(corsOptions));
 
-  if (isAllowedOrigin) {
-    res.setHeader('Access-Control-Allow-Origin', origin as string);
-    res.setHeader('Access-Control-Allow-Credentials', 'true');
-    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
-    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Authorization, x-session-id, Range, Accept, Cache-Control, Pragma, x-refresh-token');
-    res.setHeader('Access-Control-Max-Age', '3600');
-    res.setHeader('Access-Control-Expose-Headers', 'X-Total-Count, X-Page-Count, Content-Range, Accept-Ranges');
-  }
-  
-  // Handle Preflight directly
-  if (req.method === 'OPTIONS') {
-    if (isAllowedOrigin) {
-      return res.status(200).end();
-    }
-    // For non-allowed origins, still return 204 or 403? 
-    // Usually 204/200 but without the headers will cause browser to block.
-    return res.status(204).end();
-  }
-  next();
-});
 
-// Remove secondary cors middleware to prevent "multiple header" errors
-// app.use(cors(corsOptions)); 
 
 // Dedicated CORS test route
 app.get('/cors-test', (req, res) => {
