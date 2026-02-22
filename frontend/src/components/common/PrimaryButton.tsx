@@ -55,7 +55,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       whileHover="hover"
       initial="initial"
       className={cn(
-        "group relative flex items-center p-1.5 pr-8 rounded-full shadow-lg transition-all duration-300 w-fit overflow-hidden isolate",
+        "group relative flex items-center p-1.5 pr-6 md:pr-8 rounded-full shadow-lg transition-all duration-300 w-fit overflow-hidden isolate",
         !mainColor && "bg-gradient-variant-2",
         className,
       )}
@@ -77,14 +77,14 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       {/* The Icon Container */}
       <div
         className={cn(
-          "relative z-10 w-10 h-10 md:w-11 md:h-11 flex-shrink-0 flex items-center justify-center",
+          "relative z-10 w-9 h-9 md:w-11 md:h-11 flex-shrink-0 flex items-center justify-center",
           iconClassName,
         )}
       >
         <div className="relative z-10">
           {icon || (
             <ArrowRight
-              className="w-5 h-5 md:w-6 md:h-6"
+              className="w-4 h-4 md:w-6 md:h-6"
               style={{ color: mainColor || "#6B4A2D" }}
             />
           )}
@@ -93,7 +93,7 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
 
       {/* The Text */}
       <motion.span
-        className="relative z-10 ml-5 text-base md:text-lg font-semibold tracking-wide uppercase whitespace-nowrap"
+        className="relative z-10 ml-3 md:ml-5 text-sm md:text-lg font-semibold tracking-wide uppercase whitespace-nowrap"
         variants={textVariants}
         custom={{ initial: textColor, hover: hoverTextColor }}
       >
