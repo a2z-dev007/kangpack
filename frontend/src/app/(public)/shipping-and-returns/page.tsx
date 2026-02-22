@@ -87,7 +87,7 @@ const ShippingReturnsPage = () => {
 
       <main className="flex-grow">
         {/* Cinematic Hero - Full Width & Centered Content */}
-        <section className="relative h-[80vh] w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden flex items-center justify-center">
+        <section className="relative  h-[50vh] min-h-[400px] w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden flex items-center justify-center">
           <div className="absolute inset-0 z-10 bg-black/40" />
           <div className="absolute inset-0 z-0">
             <ParallaxImage

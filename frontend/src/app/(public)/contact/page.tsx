@@ -91,7 +91,7 @@ const ContactPage: React.FC = () => {
           </div>
         </div>
 
-        <ScrollSection className="py-24 px-6 md:px-16 -mt-20 relative z-30">
+        <ScrollSection className="py-24 px-6 md:px-16  relative z-30">
           <div className="max-w-7xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden flex flex-col lg:flex-row">
             {/* Contact Info (Left) */}
             <div className="bg-[#6B4A2D] text-white p-6 md:p-12 lg:w-1/3 flex flex-col justify-between relative overflow-hidden">

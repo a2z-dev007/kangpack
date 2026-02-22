@@ -45,7 +45,7 @@ const FAQsPage: React.FC = () => {
                 </div>
 
                 {/* Reuse the existing FAQ component */}
-                <div className="-mt-20 relative z-30">
+                <div className=" relative z-30 my-10">
                     <FAQ />
                 </div>
 
