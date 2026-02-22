@@ -11,7 +11,8 @@ yarn-error.log*
 .env.production
 .env.test.local
 # .env.production
-.env.production.local
+.env.production
+**/ .env*
 
 # Locks
 package-lock.json
