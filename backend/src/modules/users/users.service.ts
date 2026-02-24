@@ -57,6 +57,9 @@ export class UsersService {
 
     if (status !== undefined) {
       query.isActive = status === 'active';
+    } else {
+      // By default, only show active users (exclude soft-deleted users)
+      query.isActive = true;
     }
 
     // Execute query with pagination
