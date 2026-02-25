@@ -194,7 +194,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
                       href={
                         user?.role === "admin"
                           ? "/admin/dashboard"
-                          : "/dashboard"
+                          : "/profile/dashboard"
                       }
                       className="cursor-pointer w-full"
                     >
@@ -203,7 +203,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/settings" className="cursor-pointer w-full">
+                    <Link href="/profile" className="cursor-pointer w-full">
                       <Settings className="mr-2 h-4 w-4" />
                       <span>Settings</span>
                     </Link>
@@ -378,7 +378,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
 
                           <div className="grid grid-cols-2 gap-3">
                             <Link
-                              href="/dashboard"
+                              href="/profile/dashboard"
                               onClick={() => setIsOpen(false)}
                               className="w-full"
                             >
