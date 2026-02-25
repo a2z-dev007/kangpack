@@ -23,7 +23,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { LogoutConfirmModal } from "../common/LogoutConfirmModal";
 
 interface NavbarProps {
@@ -40,23 +40,22 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
   const { isAuthenticated, user, logout } = useAuth();
   const cartItems = useAppSelector((state) => state.cart.items);
   const [cartCount, setCartCount] = useState(0);
-  const router = useRouter();
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
 
   // Scroll track for background transparency
   useEffect(() => {
     const handleScroll = () => {
-      // The Hero section is 300vh, so we only show the background
-      // when the user scrolls past the cinematic experience.
-      const heroHeight = window.innerHeight * 2.8;
-      setScrolled(window.scrollY > heroHeight);
+      // For the home page, the Hero section is very long (cinematic)
+      // Otherwise, we use a standard small threshold.
+      const threshold = isHomePage ? window.innerHeight * 2.8 : 50;
+      setScrolled(window.scrollY > threshold);
     };
 
-    // Check initial scroll position
     handleScroll();
-
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [isHomePage]);
 
   useEffect(() => {
     const count = cartItems.reduce((sum, item) => sum + item.quantity, 0);
@@ -64,9 +63,9 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
   }, [cartItems]);
 
   const navLinks = [
-    { name: "About Us", href: "/about" },
     { name: "Our Products", href: "/products" },
-    { name: "Kangpack Variants", href: "#variants" },
+    { name: "About Us", href: "/about" },
+    // { name: "Kangpack Variants", href: "#variants" },
     { name: "FAQ's", href: "/faqs" },
     { name: "Contact Us", href: "/contact" },
   ];

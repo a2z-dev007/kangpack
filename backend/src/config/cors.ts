@@ -3,24 +3,29 @@ import { env } from './env';
 
 export const corsOptions: CorsOptions = {
   origin: (origin, callback) => {
-    // 1. Allow mobile/Postman
+    // 1. Allow mobile/Postman/Server-side requests (no origin header)
     if (!origin) return callback(null, true);
 
-    const allowedOrigins = env.CORS_ORIGIN.split(',').map(o => o.trim());
+    const allowedOrigins = (env.CORS_ORIGIN || '').split(',').map(o => o.trim()).filter(Boolean);
     
-    // 2. Check Kangpack domains (both HTTP and HTTPS for safety)
+    // 2. Comprehensive origin check
     const isKangpack = origin.includes('kangpack.in');
-    const isLocalhost = origin.includes('localhost') || origin.includes('127.0.0.1');
+    const isLocalhost = origin.includes('localhost') || 
+                       origin.includes('127.0.0.1') || 
+                       origin.startsWith('http://192.168.') ||
+                       origin.startsWith('http://10.') ||
+                       origin.startsWith('http://172.');
     
-    // 3. Check explicit allowed origins or wildcard
-    const isExplicitlyAllowed = allowedOrigins.includes(origin) || allowedOrigins.includes('*');
+    // Check if explicitly allowed or if we should allow all in development
+    const isExplicitlyAllowed = allowedOrigins.includes(origin) || 
+                               allowedOrigins.includes('*') ||
+                               allowedOrigins.some(ao => ao !== '*' && origin.startsWith(ao));
 
-    if (isKangpack || isLocalhost || isExplicitlyAllowed) {
+    if (isKangpack || isLocalhost || isExplicitlyAllowed || (process.env.NODE_ENV !== 'production' && !origin)) {
       return callback(null, true);
     }
 
     console.warn(`[CORS] Blocking unexpected origin: ${origin}`);
-    // Return false instead of Error to avoid server-side error handling during flight check
     return callback(null, false);
   },
   credentials: true,
@@ -34,6 +39,7 @@ export const corsOptions: CorsOptions = {
     'Cache-Control',
     'Pragma',
     'x-session-id',
+    'x-refresh-token',
     'Range'
   ],
   exposedHeaders: ['X-Total-Count', 'X-Page-Count', 'Content-Range', 'Accept-Ranges'],

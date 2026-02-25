@@ -20,64 +20,71 @@ import {
 } from "lucide-react";
 
 const PrivacyPolicyPage = () => {
-  const lastUpdated = "February 13, 2026";
+  const lastUpdated = "12-02-2025";
 
   const privacySections = [
     {
-      id: "info-collection",
-      title: "1. Information Collection",
-      icon: <Eye className="w-6 h-6" />,
+      id: "introduction",
+      title: "1. Introduction",
+      icon: <ShieldCheck className="w-6 h-6" />,
       content:
-        "We collect information that you provide directly to us when you create an account, make a purchase, or communicate with us. This may include your name, email address, shipping address, and payment information. We also automatically collect certain technical data when you browse our website.",
+        "Pannovationz respects your privacy and is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your information when you visit www.kangpack.in.",
+    },
+    {
+      id: "info-collection",
+      title: "2. Information We Collect",
+      icon: <Database className="w-6 h-6" />,
+      content:
+        "We may collect Personal Information (Name, Email address, Phone number, Shipping/Billing address, Payment details processed via secure third-party payment gateways) and Non-Personal Information (IP address, Browser type, Device information, Cookies and usage data).",
     },
     {
       id: "use-of-data",
-      title: "2. How We Use Information",
+      title: "3. How We Use Your Information",
       icon: <UserCheck className="w-6 h-6" />,
       content:
-        "Your information is used to process transactions, manage your account, improve our services, and send you important updates or marketing communications (which you can opt-out of at any time). We use data analytics to better understand how our platform is used and to enhance your shopping experience.",
+        "We use your information to process orders and payments, deliver products, provide customer support, improve website functionality, and send order updates and promotional emails (only if consented).",
     },
     {
-      id: "data-protection",
-      title: "3. Data Security",
+      id: "payment-security",
+      title: "4. Payment Security",
       icon: <Lock className="w-6 h-6" />,
       content:
-        "We implement industry-standard security measures to protect your personal data from unauthorized access, loss, or alteration. This includes SSL encryption for sensitive data and regular security audits. However, please note that no method of transmission over the internet is 100% secure.",
+        "All payments are processed through secure third-party payment gateways. We do not store complete credit/debit card details on our servers.",
     },
     {
       id: "cookies",
-      title: "4. Cookies & Tracking",
+      title: "5. Cookies",
       icon: <Cookie className="w-6 h-6" />,
       content:
-        "Our website uses cookies and similar tracking technologies to track activity and store certain information. Cookies help us remember your preferences and provide a personalized experience. You can manage your cookie settings through your browser at any time.",
+        "Our website may use cookies to improve user experience, analyze website traffic, and remember preferences. Users may disable cookies via browser settings.",
+    },
+    {
+      id: "data-protection",
+      title: "6. Data Protection",
+      icon: <Lock className="w-6 h-6" />,
+      content:
+        "We implement appropriate technical and security measures to protect your personal data from unauthorized access, alteration, or disclosure.",
     },
     {
       id: "third-parties",
-      title: "5. Third-Party Sharing",
+      title: "7. Third-Party Services",
       icon: <Globe className="w-6 h-6" />,
       content:
-        "We do not sell your personal data. We may share information with trusted third-party service providers who assist us in operating our website, conducting our business, or servicing you, provided they agree to keep this information confidential and comply with data protection laws.",
-    },
-    {
-      id: "data-retention",
-      title: "6. Data Retention",
-      icon: <Database className="w-6 h-6" />,
-      content:
-        "We will retain your personal information only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use your information to the extent necessary to comply with our legal obligations, resolve disputes, and enforce our legal agreements.",
+        "We may share limited information with shipping partners, payment processors, and analytics providers. We do not sell or rent personal data to third parties.",
     },
     {
       id: "user-rights",
-      title: "7. Your Rights",
-      icon: <ShieldCheck className="w-6 h-6" />,
+      title: "8. User Rights",
+      icon: <Eye className="w-6 h-6" />,
       content:
-        "You have the right to access, update, or delete the personal information we have on you. Whenever made possible, you can perform these actions directly within your account settings section. If you are unable to perform these actions yourself, please contact us to assist you.",
+        "You may request access to your data, request correction or deletion, and opt-out of promotional emails. To exercise these rights, contact: support@kangpack.in",
     },
     {
       id: "policy-updates",
-      title: "8. Policy Updates",
+      title: "9. Changes to This Policy",
       icon: <Bell className="w-6 h-6" />,
       content:
-        "We may update our Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the 'Last Updated' date. You are advised to review this Privacy Policy periodically for any changes.",
+        "We reserve the right to update this Privacy Policy at any time. Changes will be posted on this page with updated effective dates.",
     },
   ];
 
@@ -87,7 +94,7 @@ const PrivacyPolicyPage = () => {
 
       <main className="flex-grow">
         {/* Cinematic Hero - Full Width & Centered Content */}
-        <section className="relative h-[80vh] w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden flex items-center justify-center">
+        <section className="relative  h-[50vh] min-h-[400px] w-screen left-1/2 right-1/2 -ml-[50vw] -mr-[50vw] overflow-hidden flex items-center justify-center">
           <div className="absolute inset-0 z-10 bg-black/40" />
           <div className="absolute inset-0 z-0">
             <ParallaxImage
@@ -215,8 +222,8 @@ const PrivacyPolicyPage = () => {
 
             <div className="grid grid-cols-1 gap-6">
               <a
-                href="mailto:privacy@kangpack.in"
-                className="flex items-center justify-between gap-4 p-5 md:p-8 rounded-3xl bg-white border border-[#6B4A2D]/5 hover:border-[#6B4A2D]/20 shadow-[0_4px_20px_-1px_rgba(107,74,45,0.05)] hover:shadow-[0_10px_40px_-1px_rgba(107,74,45,0.08)] transition-all duration-500 group relative overflow-hidden"
+                href="mailto:support@kangpack.in"
+                className="flex items-center justify-between gap-8 p-8 rounded-3xl bg-white border border-[#6B4A2D]/5 hover:border-[#6B4A2D]/20 shadow-[0_4px_20px_-1px_rgba(107,74,45,0.05)] hover:shadow-[0_10px_40px_-1px_rgba(107,74,45,0.08)] transition-all duration-500 group relative overflow-hidden"
               >
                 <div className="relative z-10 flex items-center gap-4 md:gap-14">
                   <div className="w-12 h-12 md:w-14 md:h-14 rounded-full bg-[#F9F7F4] flex items-center justify-center text-[#6B4A2D] group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500 flex-shrink-0">
@@ -226,8 +233,8 @@ const PrivacyPolicyPage = () => {
                     <div className="text-[#6B4A2D]/50 text-[12px] md:text-[20px] font-bold uppercase tracking-[0.1em] mb-1">
                       Privacy Support
                     </div>
-                    <div className="text-[14px] md:text-[18px] font-bold text-[#6B4A2D] truncate">
-                      privacy@kangpack.in
+                    <div className="text-[18px] font-bold text-[#6B4A2D]">
+                      support@kangpack.in
                     </div>
                   </div>
                 </div>
@@ -258,6 +265,36 @@ const PrivacyPolicyPage = () => {
                 </div>
               </Link>
             </div>
+          </div>
+        </section>
+
+        {/* Contact Section */}
+        <section className="py-16 bg-brand-beige">
+          <div className="max-w-4xl mx-auto px-6">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="bg-white/70 backdrop-blur-sm border border-[#6B4A2D]/10 rounded-3xl p-8 md:p-12 shadow-lg"
+            >
+              <h2 className="text-3xl md:text-4xl font-bold text-[#6B4A2D] mb-6 tracking-tight">
+                10. Contact Us
+              </h2>
+              <p className="text-[#8B7E6F] text-base md:text-lg mb-6">
+                If you have questions about this Privacy Policy, please contact:
+              </p>
+              <div className="bg-[#F9F7F4] rounded-2xl p-6 space-y-2">
+                <p className="text-[#6B4A2D] font-medium">
+                  📧 Email: <a href="mailto:support@kangpack.in" className="hover:underline">support@kangpack.in</a>
+                </p>
+                <p className="text-[#6B4A2D] font-medium">
+                  🏢 Company Name: Pannovationz
+                </p>
+                <p className="text-[#6B4A2D] font-medium">
+                  🌐 Website: <a href="https://www.kangpack.in" className="hover:underline">www.kangpack.in</a>
+                </p>
+              </div>
+            </motion.div>
           </div>
         </section>
       </main>

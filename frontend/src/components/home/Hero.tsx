@@ -191,7 +191,7 @@ const Hero: React.FC = () => {
         </div>
 
         {/* --- CONTENT LAYER --- */}
-        <div className="relative z-30 container mx-auto px-6 h-full flex flex-col items-center pt-20 md:pt-2 lg:pt-2">
+        <div className="relative z-30 container mx-auto px-6 h-full flex flex-col items-center pt-8 md:pt-2 lg:pt-2">
           <div className="flex-grow flex flex-col items-center justify-center w-full relative">
           
           {/* Pre-title Reveal */}
@@ -206,7 +206,7 @@ const Hero: React.FC = () => {
                 className="flex items-center gap-4"
               >
                 <div className="h-[1px] w-10 bg-[#a67c52]/50" />
-                <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.6em] text-[#a67c52]/80">
+                <span className="text-[10px] md:text-xs font-bold text-center uppercase tracking-[0.6em] text-[#a67c52]/80">
                   {slide.pretitle}
                 </span>
                 <div className="h-[1px] w-10 bg-[#a67c52]/50" />
@@ -219,14 +219,14 @@ const Hero: React.FC = () => {
             <AnimatePresence mode="wait">
               <motion.div
                 key={`title-${activeSlide}`}
-                className="flex flex-col items-center"
+                className="flex flex-col items-center mb-6"
               >
                 <motion.h1 
                   className="text-[18vw] md:text-[clamp(8rem,12vh+3vw,12rem)] font-black leading-[0.8] tracking-tighter uppercase mb-2 md:mb-4 opacity-[0.012] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap z-0 pointer-events-none"
                 >
                   KANGPACK
                 </motion.h1>
-                <h2 className="text-5xl md:text-3xl lg:text-5xl xl:text-6xl font-bold tracking-tighter md:tracking-tight mb-1 md:mb-2 lg:mb-4 leading-[0.9] md:leading-[1] z-10 flex flex-col">
+                <h2 className="text-4xl md:text-3xl mb-2 lg:text-5xl xl:text-6xl w-full font-bold tracking-tighter md:tracking-tight  md:mb-2 lg:mb-4 leading-[0.9] md:leading-[1] z-10 flex flex-col">
                   <span className="block overflow-hidden">
                     <motion.span 
                       initial={{ y: "100%" }}
@@ -238,7 +238,7 @@ const Hero: React.FC = () => {
                       {slide.title1}
                     </motion.span>
                   </span>
-                  <span className="block overflow-hidden relative">
+                  <span className="block overflow-hidden relative mt-2">
                     <motion.span 
                       initial={{ y: "100%" }}
                       animate={{ y: 0 }}
@@ -256,7 +256,7 @@ const Hero: React.FC = () => {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ delay: 0.8 }}
-                  className="mb-3 md:mb-4 lg:mb-6 px-4 py-1.5 rounded-full bg-[#a67c52]/10 border border-[#a67c52]/20 backdrop-blur-md"
+                  className="mb-4 md:mb-4 lg:mb-6 mt-4 md:mt-4 lg:mt-6 px-4 py-1.5 rounded-full bg-[#a67c52]/10 border border-[#a67c52]/20 backdrop-blur-md"
                 >
                   <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-[#a67c52]">
                     {slide.highlight}
@@ -296,7 +296,7 @@ const Hero: React.FC = () => {
                 <img
                     src={slide.image}
                     alt="Kangpack Prototype"
-                    className="w-[85%] md:w-[min(70%,55vh)] h-auto object-contain z-10 mt-12 scale-100 md:scale-105 transition-transform duration-700"
+                    className="w-[85%] md:w-[min(70%,55vh)] h-auto object-contain z-10  scale-100 md:scale-105 transition-transform duration-700"
                   />
                 
                 
