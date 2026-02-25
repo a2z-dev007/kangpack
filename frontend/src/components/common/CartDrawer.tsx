@@ -80,7 +80,10 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       Looks like you haven't added anything yet.
                     </p>
                     <Button
-                      onClick={onClose}
+                      onClick={() => {
+                        onClose();
+                        router.push("/products");
+                      }}
                       className="bg-[#6B4A2D] text-white hover:bg-[#6B4A2D]/90"
                     >
                       Start Shopping

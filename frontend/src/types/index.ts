@@ -179,6 +179,7 @@ export interface Address {
   state: string;
   postalCode: string;
   country: string;
+  type?: "Home" | "Work" | "Other";
   isDefault?: boolean;
 }
 

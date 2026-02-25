@@ -3,13 +3,21 @@ import { User, PaginatedResponse, PaginationParams } from '@/types';
 
 export const usersApi = {
   getProfile: async (): Promise<User> => {
-    const { data } = await api.get('/users/profile');
-    return data;
+    const { data } = await api.get('/auth/profile');
+    const user = data.data;
+    if (user && !user.name && user.firstName) {
+      user.name = `${user.firstName} ${user.lastName || ''}`.trim();
+    }
+    return user;
   },
 
   updateProfile: async (userData: Partial<User>): Promise<User> => {
-    const { data } = await api.put('/users/profile', userData);
-    return data;
+    const { data } = await api.put('/auth/profile', userData);
+    const user = data.data;
+    if (user && !user.name && user.firstName) {
+      user.name = `${user.firstName} ${user.lastName || ''}`.trim();
+    }
+    return user;
   },
 
   // Admin endpoints

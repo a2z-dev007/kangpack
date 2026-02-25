@@ -36,16 +36,16 @@ export default function AddressesPage() {
 
   return (
     <div className="space-y-8">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
             Saved Addresses
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Manage your delivery locations.
           </p>
         </div>
-        <Button className="rounded-full shadow-lg shadow-primary/20">
+        <Button className="w-full sm:w-auto rounded-full shadow-lg shadow-primary/20 h-11 text-xs sm:text-sm">
           <Plus className="mr-2 h-4 w-4" />
           Add New Address
         </Button>
@@ -77,7 +77,7 @@ export default function AddressesPage() {
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h3 className="font-bold text-lg">
+                      <h3 className="font-bold text-base sm:text-lg">
                         {address.type || "Address"}
                       </h3>
                     </div>

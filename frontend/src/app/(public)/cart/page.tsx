@@ -28,7 +28,7 @@ export default function CartPage() {
     return (
       <div className="min-h-screen bg-brand-beige font-sans flex flex-col">
         <Navbar darkText />
-        <div className="flex-grow container flex flex-col items-center justify-center py-32 text-center">
+        <div className="flex-grow container mx-auto flex flex-col items-center justify-center py-32 text-center">
           <div className="w-24 h-24 bg-[#6B4A2D]/5 rounded-full flex items-center justify-center text-[#6B4A2D]/20 mb-8">
             <ShoppingBag size={48} />
           </div>
@@ -54,7 +54,7 @@ export default function CartPage() {
     <div className="min-h-screen bg-brand-beige font-sans flex flex-col">
       <Navbar solid />
 
-      <div className="flex-grow container py-32 px-6">
+      <div className="flex-grow container mx-auto py-32 px-6">
         <div className="max-w-6xl mx-auto">
           <h1 className="text-5xl font-black text-[#6B4A2D] uppercase tracking-tighter mb-12">
             Shopping Cart
