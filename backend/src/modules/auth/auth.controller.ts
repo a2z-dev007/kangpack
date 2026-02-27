@@ -82,8 +82,17 @@ export class AuthController {
   });
 
   public static getProfile = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const { User } = await import('../../database');
+    const user = await User.findById(req.user!.userId);
+    
+    if (!user) {
+      return res.status(HTTP_STATUS.NOT_FOUND).json(
+        ResponseUtils.error(MESSAGES.USER_NOT_FOUND)
+      );
+    }
+
     res.status(HTTP_STATUS.OK).json(
-      ResponseUtils.success('Profile fetched successfully', req.user)
+      ResponseUtils.success('Profile fetched successfully', user)
     );
   });
 

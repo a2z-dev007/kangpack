@@ -12,6 +12,7 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
+import { ASSETS } from "@/constants/assets";
 import { useAppSelector } from "@/lib/store/hooks";
 import CartDrawer from "@/components/common/CartDrawer";
 import { Button } from "@/components/ui/button";
@@ -35,6 +36,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [logoScrolled, setLogoScrolled] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false); // Add state
 
   const { isAuthenticated, user, logout } = useAuth();
@@ -50,6 +52,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
       // Otherwise, we use a standard small threshold.
       const threshold = isHomePage ? window.innerHeight * 2.8 : 50;
       setScrolled(window.scrollY > threshold);
+      setLogoScrolled(window.scrollY > 50);
     };
 
     handleScroll();
@@ -113,20 +116,21 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
             className="flex items-center gap-2 cursor-pointer group"
           >
             <div className="relative">
-              <span
-                className={`${textColorClass} text-2xl font-black tracking-tighter uppercase flex items-center gap-1 transition-colors duration-300`}
-              >
-                <span>kang</span>
-                <span
-                  className={`${isDark ? "text-[#6B4A2D]/40" : "text-white/40"} italic`}
-                >
-                  _
-                </span>
-                <span>pack</span>
-              </span>
               <div
-                className={`absolute -top-1 left-7 w-3 h-3 ${isDark ? "bg-[#6B4A2D]/20" : "bg-white/20"} rounded-full blur-[2px]`}
-              ></div>
+                className={`transition-all duration-500 rounded-2xl `}
+              >
+                <img
+                  src={ASSETS.LOGO}
+                  alt="Kangpack Logo"
+                  className={`h-6 md:h-8 transition-all duration-300 ${
+                    !logoScrolled && isHomePage
+                      ? "brightness-100"
+                      : isDark
+                      ? "brightness-100"
+                      : "brightness-0 invert"
+                  }`}
+                />
+              </div>
             </div>
           </motion.div>
         </Link>
@@ -288,9 +292,11 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
               {/* Mobile Menu Header - Fixed at Top */}
               <div className="flex-shrink-0 flex justify-between items-center px-6 py-6 border-b border-white/5 relative z-20 bg-[#6B4A2D]/95 backdrop-blur-sm">
                 <Link href="/" onClick={() => setIsOpen(false)}>
-                  <span className="text-white text-xl font-black tracking-tighter uppercase">
-                    kang<span className="text-white/40 italic">_</span>pack
-                  </span>
+                  <img
+                    src={ASSETS.LOGO}
+                    alt="Kangpack Logo"
+                    className="h-6 brightness-0 invert"
+                  />
                 </Link>
                 <motion.button
                   whileTap={{ scale: 0.9 }}

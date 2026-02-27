@@ -1,4 +1,5 @@
 export const ASSETS = {
+    LOGO: '/assets/black-logo.svg',
     HERO: {
         BG: '/assets/hero-bg.png',
         BAG: '/assets/bag.png',

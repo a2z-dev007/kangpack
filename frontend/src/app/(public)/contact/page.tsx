@@ -123,7 +123,7 @@ const ContactPage: React.FC = () => {
                         Email
                       </p>
                       <p className="font-medium text-lg">
-                        support@kangpack.com
+                        support@kangpack.in
                       </p>
                     </div>
                   </div>
@@ -133,7 +133,7 @@ const ContactPage: React.FC = () => {
                       <p className="text-xs uppercase tracking-widest opacity-60 mb-1">
                         Phone
                       </p>
-                      <p className="font-medium text-lg">+1 (555) 123-4567</p>
+                      <p className="font-medium text-lg">+91 99887 76655</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-4">
@@ -143,9 +143,9 @@ const ContactPage: React.FC = () => {
                         Office
                       </p>
                       <p className="font-medium text-lg">
-                        123 Innovation Dr,
+                        Connaught Place,
                         <br />
-                        Tech City, TC 90210
+                        New Delhi, 110001
                       </p>
                     </div>
                   </div>
@@ -177,7 +177,7 @@ const ContactPage: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-[#6B4A2D]/60 pl-1">
-                      First Name
+                      First Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -185,13 +185,13 @@ const ContactPage: React.FC = () => {
                       value={formData.firstName}
                       onChange={handleChange}
                       className="w-full bg-brand-beige/50 border border-[#6B4A2D]/10 rounded-xl px-4 py-3 text-[#6B4A2D] focus:outline-none focus:border-[#6B4A2D]/40 transition-colors"
-                      placeholder="John"
+                      placeholder="Rajesh"
                       required
                     />
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-[#6B4A2D]/60 pl-1">
-                      Last Name
+                      Last Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -199,7 +199,7 @@ const ContactPage: React.FC = () => {
                       value={formData.lastName}
                       onChange={handleChange}
                       className="w-full bg-brand-beige/50 border border-[#6B4A2D]/10 rounded-xl px-4 py-3 text-[#6B4A2D] focus:outline-none focus:border-[#6B4A2D]/40 transition-colors"
-                      placeholder="Doe"
+                      placeholder="Kumar"
                       required
                     />
                   </div>
@@ -208,7 +208,7 @@ const ContactPage: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label className="text-xs font-bold uppercase tracking-widest text-[#6B4A2D]/60 pl-1">
-                      Email
+                      Email <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
@@ -216,7 +216,7 @@ const ContactPage: React.FC = () => {
                       value={formData.email}
                       onChange={handleChange}
                       className="w-full bg-brand-beige/50 border border-[#6B4A2D]/10 rounded-xl px-4 py-3 text-[#6B4A2D] focus:outline-none focus:border-[#6B4A2D]/40 transition-colors"
-                      placeholder="john@example.com"
+                      placeholder="rajesh@kumar.com"
                       required
                     />
                   </div>
@@ -230,14 +230,14 @@ const ContactPage: React.FC = () => {
                       value={formData.phone}
                       onChange={handleChange}
                       className="w-full bg-brand-beige/50 border border-[#6B4A2D]/10 rounded-xl px-4 py-3 text-[#6B4A2D] focus:outline-none focus:border-[#6B4A2D]/40 transition-colors"
-                      placeholder="+1 (555) 000-0000"
+                      placeholder="+91 99887 76655"
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold uppercase tracking-widest text-[#6B4A2D]/60 pl-1">
-                    Message
+                    Message <span className="text-red-500">*</span>
                   </label>
                   <textarea
                     rows={4}

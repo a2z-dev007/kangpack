@@ -16,6 +16,7 @@ import {
 import { useCart } from '@/hooks/use-cart';
 import { useAuth } from '@/hooks/use-auth';
 import { ROUTES } from '@/lib/constants';
+import { ASSETS } from '@/constants/assets';
 
 export function Header() {
   const router = useRouter();
@@ -45,9 +46,11 @@ export function Header() {
           </Button>
 
           <Link href={ROUTES.HOME} className="flex items-center space-x-2">
-            <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary/60">
-              Premium Store
-            </span>
+            <img 
+              src={ASSETS.LOGO} 
+              alt="Kangpack Logo" 
+              className="h-6 md:h-8"
+            />
           </Link>
 
           <nav className="hidden md:flex items-center gap-6 lg:gap-8">

@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   Card,
   CardContent,
@@ -11,10 +12,61 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
-import { User, ShieldCheck, Mail, Phone, Camera } from "lucide-react";
+import { useProfile } from "@/hooks/use-profile";
+import { User, ShieldCheck, Mail, Phone, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import api, { handleApiError } from "@/lib/api";
 
 export default function ProfilePage() {
   const { user } = useAuth();
+  const { updateProfile, loading: profileLoading } = useProfile();
+  
+  const [formData, setFormData] = useState({
+    firstName: user?.firstName || user?.name?.split(" ")[0] || "",
+    lastName: user?.lastName || user?.name?.split(" ")[1] || "",
+    phone: user?.phone || "",
+  });
+
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+
+  const [passwordLoading, setPasswordLoading] = useState(false);
+
+  const handleProfileSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    await updateProfile(formData);
+  };
+
+  const handlePasswordSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error("New passwords do not match");
+      return;
+    }
+
+    setPasswordLoading(true);
+    try {
+      const response = await api.post("/auth/change-password", {
+        currentPassword: passwordData.currentPassword,
+        newPassword: passwordData.newPassword,
+      });
+      if (response.data.success) {
+        toast.success("Password updated successfully");
+        setPasswordData({
+          currentPassword: "",
+          newPassword: "",
+          confirmPassword: "",
+        });
+      }
+    } catch (error) {
+      toast.error(handleApiError(error));
+    } finally {
+      setPasswordLoading(false);
+    }
+  };
 
   return (
     <div className="space-y-8">
@@ -38,88 +90,93 @@ export default function ProfilePage() {
             Your account profile details and contact information.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-8">
-          {/* Avatar Section (Mockup) */}
-          <div className="flex items-center gap-6">
-            <div className="relative">
-              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-muted flex items-center justify-center text-2xl sm:text-3xl font-bold text-muted-foreground border-4 border-white shadow-lg overflow-hidden">
-                {user?.name?.charAt(0) || user?.firstName?.charAt(0) || "U"}
+        <CardContent>
+          <form onSubmit={handleProfileSubmit} className="space-y-8">
+            <div className="flex items-center gap-6">
+              <div className="relative">
+                <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-muted flex items-center justify-center text-2xl sm:text-3xl font-bold text-muted-foreground border-4 border-white shadow-lg overflow-hidden">
+                  {user?.firstName?.charAt(0) || user?.name?.charAt(0) || "U"}
+                </div>
+              </div>
+              <div>
+                <h3 className="font-semibold text-base sm:text-lg">
+                  {user?.firstName} {user?.lastName}
+                </h3>
+                <p className="text-xs sm:text-sm text-muted-foreground truncate max-w-[180px] sm:max-w-none">
+                  {user?.email}
+                </p>
               </div>
             </div>
-            <div>
-              <h3 className="font-semibold text-base sm:text-lg">
-                {user?.name || `${user?.firstName} ${user?.lastName}`}
-              </h3>
-              <p className="text-xs sm:text-sm text-muted-foreground truncate max-w-[180px] sm:max-w-none">
-                {user?.email}
+
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="firstName" className="font-medium">
+                  First Name
+                </Label>
+                <Input
+                  id="firstName"
+                  value={formData.firstName}
+                  onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  className="h-11 rounded-xl bg-white border-muted-foreground/20"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="font-medium">
+                  Last Name
+                </Label>
+                <Input
+                  id="lastName"
+                  value={formData.lastName}
+                  onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  className="h-11 rounded-xl bg-white border-muted-foreground/20"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="font-medium">
+                Email Address
+              </Label>
+              <div className="relative">
+                <Input
+                  id="email"
+                  type="email"
+                  value={user?.email}
+                  disabled
+                  className="h-11 rounded-xl bg-muted/50 pl-10 border-transparent"
+                />
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              </div>
+              <p className="text-xs text-muted-foreground ml-1">
+                Email address cannot be changed.
               </p>
             </div>
-          </div>
 
-          <div className="grid sm:grid-cols-2 gap-6">
             <div className="space-y-2">
-              <Label htmlFor="firstName" className="font-medium">
-                First Name
+              <Label htmlFor="phone" className="font-medium">
+                Phone Number
               </Label>
-              <Input
-                id="firstName"
-                placeholder="John"
-                defaultValue={user?.firstName || user?.name?.split(" ")[0]}
-                disabled
-                className="h-11 rounded-xl bg-muted/50 border-transparent cursor-default"
-              />
+              <div className="relative">
+                <Input
+                  id="phone"
+                  placeholder="+91 99887 76655"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="h-11 rounded-xl bg-white border-muted-foreground/20 pl-10"
+                />
+                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              </div>
             </div>
-            <div className="space-y-2">
-              <Label
-                htmlFor="lastName"
-                className="font-medium text-muted-foreground"
-              >
-                Last Name
-              </Label>
-              <Input
-                id="lastName"
-                placeholder="Doe"
-                defaultValue={user?.lastName || user?.name?.split(" ")[1]}
-                disabled
-                className="h-11 rounded-xl bg-muted/50 border-transparent cursor-default"
-              />
-            </div>
-          </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="email" className="font-medium">
-              Email Address
-            </Label>
-            <div className="relative">
-              <Input
-                id="email"
-                type="email"
-                defaultValue={user?.email}
-                disabled
-                className="h-11 rounded-xl bg-muted/50 pl-10 border-transparent"
-              />
-              <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+            <div className="flex justify-end">
+              <Button type="submit" disabled={profileLoading} className="rounded-full px-8">
+                {profileLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+              </Button>
             </div>
-            <p className="text-xs text-muted-foreground ml-1">
-              Email address cannot be changed.
-            </p>
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="phone" className="font-medium">
-              Phone Number
-            </Label>
-            <div className="relative">
-              <Input
-                id="phone"
-                placeholder="+1 (555) 000-0000"
-                defaultValue={user?.phone}
-                disabled
-                className="h-11 rounded-xl bg-muted/50 border-transparent cursor-default pl-10"
-              />
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-            </div>
-          </div>
+          </form>
         </CardContent>
       </Card>
 
@@ -134,43 +191,57 @@ export default function ProfilePage() {
             Keep your account secure with a strong password.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label htmlFor="currentPassword">Current Password</Label>
-            <Input
-              id="currentPassword"
-              type="password"
-              className="h-11 rounded-xl bg-muted/30 border-muted-foreground/20"
-            />
-          </div>
-
-          <div className="grid sm:grid-cols-2 gap-6">
+        <CardContent>
+          <form onSubmit={handlePasswordSubmit} className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="newPassword">New Password</Label>
+              <Label htmlFor="currentPassword">Current Password</Label>
               <Input
-                id="newPassword"
+                id="currentPassword"
                 type="password"
-                className="h-11 rounded-xl bg-muted/30 border-muted-foreground/20"
+                value={passwordData.currentPassword}
+                onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
+                className="h-11 rounded-xl bg-white border-muted-foreground/20"
+                required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm New Password</Label>
-              <Input
-                id="confirmPassword"
-                type="password"
-                className="h-11 rounded-xl bg-muted/30 border-muted-foreground/20"
-              />
-            </div>
-          </div>
 
-          <div className="pt-4 flex justify-center sm:justify-end">
-            <Button
-              variant="outline"
-              className="w-full sm:w-auto rounded-full px-8 h-11 border-2 hover:bg-muted"
-            >
-              Update Password
-            </Button>
-          </div>
+            <div className="grid sm:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <Label htmlFor="newPassword">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={passwordData.newPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
+                  className="h-11 rounded-xl bg-white border-muted-foreground/20"
+                  required
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={passwordData.confirmPassword}
+                  onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
+                  className="h-11 rounded-xl bg-white border-muted-foreground/20"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="pt-4 flex justify-center sm:justify-end">
+              <Button
+                type="submit"
+                variant="outline"
+                disabled={passwordLoading}
+                className="w-full sm:w-auto rounded-full px-8 h-11 border-2 hover:bg-muted"
+              >
+                {passwordLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Update Password
+              </Button>
+            </div>
+          </form>
         </CardContent>
       </Card>
     </div>

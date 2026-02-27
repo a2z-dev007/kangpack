@@ -14,6 +14,7 @@ import { toast } from "sonner";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { addToCart } from "@/lib/store/features/cart/cartSlice";
 import { Product } from "@/types";
+import { WishlistButton } from "@/components/common/WishlistButton";
 
 const ProductCard: React.FC<{
   product: Product;
@@ -61,6 +62,14 @@ const ProductCard: React.FC<{
                 Low Stock
               </span>
             )}
+          </div>
+
+          {/* Wishlist Button Overlay */}
+          <div className="absolute top-4 right-4 z-20">
+            <WishlistButton 
+              productId={product.id || (product as any)._id} 
+              className="bg-white/80 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-all shadow-sm"
+            />
           </div>
 
           <div className="w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out">

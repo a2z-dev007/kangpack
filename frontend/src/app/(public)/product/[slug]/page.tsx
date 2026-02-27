@@ -28,7 +28,7 @@ import { addToCart } from "@/lib/store/features/cart/cartSlice";
 import { toast } from "sonner";
 import ScrollSection from "@/components/common/ScrollSection";
 import { cn } from "@/lib/utils";
-import OurProducts from "@/components/home/OurProducts";
+import { WishlistButton } from "@/components/common/WishlistButton";
 
 // --- Components ---
 
@@ -426,9 +426,11 @@ export default function ProductDetailPage({
                               ? "Unavailable"
                               : "Add to cart"}
                           </button>
-                          <button className="w-[64px] h-[64px] flex-shrink-0 border-2 border-[#6B4A2D]/10 rounded-2xl flex items-center justify-center text-[#6B4A2D] hover:bg-white hover:shadow-xl transition-all active:scale-90">
-                            <Heart className="w-6 h-6" />
-                          </button>
+                          <WishlistButton 
+                            productId={product.id || (product as any)._id} 
+                            className="w-[64px] h-[64px] flex-shrink-0 border-2 border-[#6B4A2D]/10 rounded-2xl flex items-center justify-center text-[#6B4A2D] hover:bg-white hover:shadow-xl transition-all active:scale-90"
+                            iconClassName="w-6 h-6"
+                          />
                         </div>
                       </div>
                     </div>

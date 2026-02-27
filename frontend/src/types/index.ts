@@ -171,7 +171,10 @@ export interface OrderItem {
 
 export interface Address {
   id?: string;
-  fullName: string;
+  _id?: string;
+  firstName: string;
+  lastName: string;
+  fullName?: string;
   phone: string;
   addressLine1: string;
   addressLine2?: string;
@@ -179,7 +182,7 @@ export interface Address {
   state: string;
   postalCode: string;
   country: string;
-  type?: "Home" | "Work" | "Other";
+  type?: "Home" | "Work" | "Other" | "shipping" | "billing";
   isDefault?: boolean;
 }
 

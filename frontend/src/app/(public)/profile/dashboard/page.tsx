@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import {
   Card,
   CardContent,
@@ -9,6 +10,8 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
+import { useWishlist } from "@/hooks/use-wishlist";
+import { useProfile } from "@/hooks/use-profile";
 import Link from "next/link";
 import { ROUTES } from "@/lib/constants";
 import {
@@ -22,43 +25,69 @@ import {
   TrendingUp,
   Wallet,
 } from "lucide-react";
+import api from "@/lib/api";
 
 export default function DashboardPage() {
   const { user } = useAuth();
+  const { wishlist, fetchWishlist } = useWishlist();
+  const { fetchProfile } = useProfile();
+  const [ordersCount, setOrdersCount] = useState(0);
+  const [totalSpent, setTotalSpent] = useState(0);
 
-  // Enhanced stats with trends (mock data)
+  useEffect(() => {
+    fetchWishlist();
+    fetchProfile();
+    
+    // Fetch some basic stats
+    const fetchStats = async () => {
+      try {
+        const response = await api.get('/orders?limit=1');
+        if (response.data.success) {
+          setOrdersCount(response.data.pagination.total || 0);
+          // Total spent would ideally come from a stats endpoint, 
+          // but for now we'll just show the order count
+        }
+      } catch (error) {
+        console.error('Failed to fetch stats:', error);
+      }
+    };
+    
+    fetchStats();
+  }, [fetchWishlist, fetchProfile]);
+
+  // Enhanced stats with trends
   const stats = [
     {
       label: "Total Orders",
-      value: "12",
+      value: ordersCount.toString(),
       icon: Package,
       color: "text-blue-500",
       bg: "bg-blue-500/10",
-      trend: "+12% from last month",
+      trend: "All time",
     },
     {
       label: "Wishlist Items",
-      value: "5",
+      value: wishlist.length.toString(),
       icon: Heart,
       color: "text-pink-500",
       bg: "bg-pink-500/10",
-      trend: "+2 new items",
+      trend: "Saved items",
     },
     {
       label: "Saved Addresses",
-      value: user?.addresses?.length || 2,
+      value: (user?.addresses?.length || 0).toString(),
       icon: MapPin,
       color: "text-green-500",
       bg: "bg-green-500/10",
-      trend: "Primary set",
+      trend: "Delivery points",
     },
     {
-      label: "Total Spent",
-      value: "$1,294",
-      icon: Wallet,
+      label: "Account Status",
+      value: "Active",
+      icon: User,
       color: "text-violet-500",
       bg: "bg-violet-500/10",
-      trend: "+5% from last month",
+      trend: "Verified",
     },
   ];
 
@@ -68,7 +97,7 @@ export default function DashboardPage() {
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">
             Welcome back,{" "}
-            <span className="text-primary">{user?.firstName || "Guest"}</span>!
+            <span className="text-primary">{user?.firstName || "User"}</span>!
           </h1>
           <p className="text-sm text-muted-foreground mt-1">
             Here&apos;s what&apos;s happening with your account today.
@@ -151,20 +180,19 @@ export default function DashboardPage() {
               </Button>
             </CardHeader>
             <CardContent>
-              {/* Empty State Mockup - Replace with map over orders if available */}
+              {/* Empty State Mockup */}
               <div className="flex flex-col items-center justify-center py-16 text-center border-2 border-dashed border-muted rounded-2xl bg-muted/10">
                 <div className="p-4 rounded-full bg-white shadow-sm mb-4 text-primary">
                   <ShoppingBag className="h-8 w-8" />
                 </div>
                 <h3 className="text-lg font-semibold mb-2 text-gray-900">
-                  No recent orders
+                  Manage your orders
                 </h3>
                 <p className="text-sm text-muted-foreground mb-6 max-w-xs mx-auto">
-                  You haven&apos;t placed any orders recently. Discover our
-                  latest collection today!
+                  Check your order history and track active deliveries.
                 </p>
                 <Button className="rounded-full shadow-lg h-10 px-6" asChild>
-                  <Link href={ROUTES.PRODUCTS}>Start Shopping</Link>
+                  <Link href={ROUTES.ORDERS}>View Order History</Link>
                 </Button>
               </div>
             </CardContent>
@@ -181,16 +209,16 @@ export default function DashboardPage() {
               <div className="inline-block p-2 rounded-lg bg-white/10 backdrop-blur-md mb-4">
                 <Zap className="h-5 w-5 text-yellow-400" />
               </div>
-              <h3 className="text-xl font-bold mb-2">Premium Member</h3>
+              <h3 className="text-xl font-bold mb-2">Member Rewards</h3>
               <p className="text-sm text-gray-300 mb-6 leading-relaxed">
-                You have earned 1,200 points this month. Redeem them for
-                exclusive discounts.
+                Enjoy exclusive benefits and early access to new products.
               </p>
               <Button
                 variant="outline"
                 className="w-full rounded-full border-white/20 hover:bg-white hover:text-gray-900 text-white shadow-lg bg-transparent"
+                asChild
               >
-                View Rewards
+                <Link href={ROUTES.PRODUCTS}>Shop Now</Link>
               </Button>
             </CardContent>
           </Card>
