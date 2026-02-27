@@ -19,10 +19,10 @@ export default function ProfilePage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-extrabold tracking-tight text-gray-900">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
           Account Settings
         </h1>
-        <p className="text-muted-foreground mt-1">
+        <p className="text-sm text-muted-foreground mt-1">
           Manage your personal information and security preferences.
         </p>
       </div>
@@ -35,31 +35,24 @@ export default function ProfilePage() {
             Personal Information
           </CardTitle>
           <CardDescription>
-            Update your profile details and how we contact you.
+            Your account profile details and contact information.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-8">
           {/* Avatar Section (Mockup) */}
           <div className="flex items-center gap-6">
-            <div className="relative group cursor-pointer">
-              <div className="w-24 h-24 rounded-full bg-muted flex items-center justify-center text-3xl font-bold text-muted-foreground border-4 border-white shadow-lg overflow-hidden">
+            <div className="relative">
+              <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-muted flex items-center justify-center text-2xl sm:text-3xl font-bold text-muted-foreground border-4 border-white shadow-lg overflow-hidden">
                 {user?.name?.charAt(0) || user?.firstName?.charAt(0) || "U"}
-              </div>
-              <div className="absolute inset-0 bg-black/40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                <Camera className="h-8 w-8 text-white" />
               </div>
             </div>
             <div>
-              <h3 className="font-semibold text-lg">
+              <h3 className="font-semibold text-base sm:text-lg">
                 {user?.name || `${user?.firstName} ${user?.lastName}`}
               </h3>
-              <p className="text-sm text-muted-foreground">{user?.email}</p>
-              <Button
-                variant="link"
-                className="px-0 text-primary h-auto font-semibold"
-              >
-                Change Avatar
-              </Button>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate max-w-[180px] sm:max-w-none">
+                {user?.email}
+              </p>
             </div>
           </div>
 
@@ -72,18 +65,23 @@ export default function ProfilePage() {
                 id="firstName"
                 placeholder="John"
                 defaultValue={user?.firstName || user?.name?.split(" ")[0]}
-                className="h-11 rounded-xl bg-muted/30 focus:bg-white transition-colors border-muted-foreground/20"
+                disabled
+                className="h-11 rounded-xl bg-muted/50 border-transparent cursor-default"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="lastName" className="font-medium">
+              <Label
+                htmlFor="lastName"
+                className="font-medium text-muted-foreground"
+              >
                 Last Name
               </Label>
               <Input
                 id="lastName"
                 placeholder="Doe"
                 defaultValue={user?.lastName || user?.name?.split(" ")[1]}
-                className="h-11 rounded-xl bg-muted/30 focus:bg-white transition-colors border-muted-foreground/20"
+                disabled
+                className="h-11 rounded-xl bg-muted/50 border-transparent cursor-default"
               />
             </div>
           </div>
@@ -116,16 +114,11 @@ export default function ProfilePage() {
                 id="phone"
                 placeholder="+1 (555) 000-0000"
                 defaultValue={user?.phone}
-                className="h-11 rounded-xl bg-muted/30 focus:bg-white transition-colors border-muted-foreground/20 pl-10"
+                disabled
+                className="h-11 rounded-xl bg-muted/50 border-transparent cursor-default pl-10"
               />
               <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             </div>
-          </div>
-
-          <div className="pt-4 flex justify-end">
-            <Button className="rounded-full px-8 h-11 shadow-lg shadow-primary/20 hover:shadow-primary/40 transition-shadow">
-              Save Changes
-            </Button>
           </div>
         </CardContent>
       </Card>
@@ -170,10 +163,10 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="pt-4 flex justify-end">
+          <div className="pt-4 flex justify-center sm:justify-end">
             <Button
               variant="outline"
-              className="rounded-full px-8 h-11 border-2 hover:bg-muted"
+              className="w-full sm:w-auto rounded-full px-8 h-11 border-2 hover:bg-muted"
             >
               Update Password
             </Button>

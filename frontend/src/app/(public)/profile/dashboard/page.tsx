@@ -66,19 +66,26 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-gray-900">
             Welcome back,{" "}
             <span className="text-primary">{user?.firstName || "Guest"}</span>!
           </h1>
-          <p className="text-muted-foreground mt-1">
+          <p className="text-sm text-muted-foreground mt-1">
             Here&apos;s what&apos;s happening with your account today.
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" className="rounded-full shadow-sm" asChild>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full sm:w-auto">
+          <Button
+            variant="outline"
+            className="rounded-full shadow-sm w-full sm:w-auto text-xs sm:text-sm"
+            asChild
+          >
             <Link href={ROUTES.PRODUCTS}>Browse Products</Link>
           </Button>
-          <Button className="rounded-full shadow-lg shadow-primary/20" asChild>
+          <Button
+            className="rounded-full shadow-lg shadow-primary/20 w-full sm:w-auto text-xs sm:text-sm"
+            asChild
+          >
             <Link href={ROUTES.CART}>View Cart</Link>
           </Button>
         </div>
@@ -98,7 +105,7 @@ export default function DashboardPage() {
                     {stat.label}
                   </p>
                   <div className="flex items-baseline gap-2">
-                    <h3 className="text-3xl font-extrabold tracking-tight text-gray-900">
+                    <h3 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-gray-900">
                       {stat.value}
                     </h3>
                   </div>
@@ -132,10 +139,13 @@ export default function DashboardPage() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="text-primary hover:text-primary/80"
+                className="text-primary hover:text-primary/80 shrink-0"
                 asChild
               >
-                <Link href={ROUTES.ORDERS}>
+                <Link
+                  href={ROUTES.ORDERS}
+                  className="flex items-center whitespace-nowrap"
+                >
                   View All <ChevronRight className="ml-1 h-3 w-3" />
                 </Link>
               </Button>
