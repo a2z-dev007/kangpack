@@ -1,10 +1,11 @@
 import { Order, IOrder, Cart, Product, User } from '../../database';
 import { AppError } from '../../common/middlewares/error.middleware';
 import { HTTP_STATUS, MESSAGES } from '../../common/constants';
-import { PaginationUtils } from '../../common/utils';
+import { PaginationUtils, PasswordUtils } from '../../common/utils';
 import { PaginationQuery, FilterQuery, OrderStatus, PaymentStatus, PaymentMethod } from '../../common/types';
 import { MailService } from '../../common/services/mail.service';
 import { RazorpayService } from '../../common/services/razorpay.service';
+import { env } from '../../config/env';
 import crypto from 'crypto';
 
 export interface CreateOrderData {
@@ -190,9 +191,12 @@ export class OrdersService {
         // Actually, the prompt says "If a guest later creates an account with the same email: Orders should be attachable"
         // Let's just create the account if it doesn't exist.
       } else {
+        // Hash password before saving
+        const hashedPassword = await PasswordUtils.hash(data.password);
+
         const newUser = new User({
           email: data.email,
-          password: data.password,
+          password: hashedPassword,
           firstName: data.shippingAddress.firstName,
           lastName: data.shippingAddress.lastName,
           role: 'user',
@@ -208,7 +212,7 @@ export class OrdersService {
         finalUserId = newUser._id.toString();
 
         // Send welcome email with credentials and verification link
-        const verificationUrl = `${process.env.CORS_ORIGIN || 'http://localhost:3000'}/auth/verify-email?token=${verificationToken}`;
+        const verificationUrl = `${env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
         MailService.sendAccountCreatedEmail(data.email, data.password!, verificationUrl).catch(err => console.error('Failed to send welcome email:', err));
       }
     }
