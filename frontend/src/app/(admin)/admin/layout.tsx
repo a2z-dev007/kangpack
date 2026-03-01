@@ -71,8 +71,6 @@ const navigationGroups = [
       { name: "Orders", href: ROUTES.ADMIN_ORDERS, icon: ShoppingCart },
       { name: "Customers", href: ROUTES.ADMIN_CUSTOMERS, icon: Users },
       { name: "Coupons", href: ROUTES.ADMIN_COUPONS, icon: Tag },
-      // { name: "Gallery", href: "#", icon: ImageIcon },
-      // { name: "Report", href: "#", icon: BarChart3 },
     ],
   },
   {
@@ -82,13 +80,6 @@ const navigationGroups = [
       { name: "CMS Pages", href: "/admin/cms", icon: FileText },
     ],
   },
-  // {
-  //   title: "SUPPORT",
-  //   items: [
-  //     { name: "Help Center", href: "#", icon: HelpCircle },
-  //     { name: "Privacy Policy", href: "#", icon: ShieldCheck },
-  //   ],
-  // },
 ];
 
 export default function AdminLayout({
@@ -155,19 +146,11 @@ export default function AdminLayout({
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-[#F0F5FA] dark:bg-slate-950 font-sans">
-      {/* Mobile Sidebar Overlay */}
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
-      )}
-
-      {/* Sidebar */}
+      {/* Sidebar - Hidden on mobile */}
       <aside
         className={cn(
           "fixed inset-y-0 left-0 z-50 w-[260px] border-r bg-white dark:bg-slate-900 transition-transform lg:static lg:translate-x-0 shadow-sm flex flex-col",
-          sidebarOpen ? "translate-x-0" : "-translate-x-full",
+          "hidden lg:flex"
         )}
       >
         <div className="flex h-[72px] items-center gap-3 px-6 border-b border-slate-100 dark:border-slate-800">
@@ -179,14 +162,6 @@ export default function AdminLayout({
               height={100}
             />
           </Link>
-          <Button
-            variant="ghost"
-            size="icon"
-            className="ml-auto lg:hidden"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X className="h-5 w-5" />
-          </Button>
         </div>
 
         <nav className="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-6 p-4">
@@ -324,18 +299,18 @@ export default function AdminLayout({
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden pb-16 lg:pb-0">
         {/* Header */}
         <header className="flex h-[72px] items-center justify-between bg-white dark:bg-slate-900 px-3 sm:px-6 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-30 shadow-sm shadow-slate-100/50 dark:shadow-none">
           <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="lg:hidden flex-shrink-0"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu className="h-5 w-5" />
-            </Button>
+            <Link href={ROUTES.HOME} className="lg:hidden">
+              <img
+                src={"/assets/black-logo.svg"}
+                alt="Logo"
+                width={120}
+                height={80}
+              />
+            </Link>
             <div className="hidden md:flex relative max-w-[400px] w-full group">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
               <Input
@@ -413,6 +388,198 @@ export default function AdminLayout({
             {children}
           </div>
         </main>
+
+        {/* Mobile Bottom Navigation */}
+        <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-lg">
+          <div className="grid grid-cols-5 gap-1 px-2 py-2">
+            <Link href={ROUTES.ADMIN_DASHBOARD}>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "flex flex-col items-center justify-center h-14 w-full gap-1 rounded-xl",
+                  pathname === ROUTES.ADMIN_DASHBOARD
+                    ? "bg-primary/10 text-primary"
+                    : "text-slate-600 dark:text-slate-400"
+                )}
+              >
+                <LayoutDashboard className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Dashboard</span>
+              </Button>
+            </Link>
+
+            <Link href={ROUTES.ADMIN_PRODUCTS}>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "flex flex-col items-center justify-center h-14 w-full gap-1 rounded-xl",
+                  pathname === ROUTES.ADMIN_PRODUCTS
+                    ? "bg-primary/10 text-primary"
+                    : "text-slate-600 dark:text-slate-400"
+                )}
+              >
+                <Package className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Products</span>
+              </Button>
+            </Link>
+
+            <Link href={ROUTES.ADMIN_ORDERS}>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "flex flex-col items-center justify-center h-14 w-full gap-1 rounded-xl",
+                  pathname === ROUTES.ADMIN_ORDERS
+                    ? "bg-primary/10 text-primary"
+                    : "text-slate-600 dark:text-slate-400"
+                )}
+              >
+                <ShoppingCart className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Orders</span>
+              </Button>
+            </Link>
+
+            <Link href={ROUTES.ADMIN_CUSTOMERS}>
+              <Button
+                variant="ghost"
+                className={cn(
+                  "flex flex-col items-center justify-center h-14 w-full gap-1 rounded-xl",
+                  pathname === ROUTES.ADMIN_CUSTOMERS
+                    ? "bg-primary/10 text-primary"
+                    : "text-slate-600 dark:text-slate-400"
+                )}
+              >
+                <Users className="h-5 w-5" />
+                <span className="text-[10px] font-medium">Customers</span>
+              </Button>
+            </Link>
+
+            <Button
+              variant="ghost"
+              onClick={() => setSidebarOpen(true)}
+              className="flex flex-col items-center justify-center h-14 w-full gap-1 rounded-xl text-slate-600 dark:text-slate-400"
+            >
+              <Menu className="h-5 w-5" />
+              <span className="text-[10px] font-medium">More</span>
+            </Button>
+          </div>
+        </nav>
+
+        {/* Mobile Menu Sheet */}
+        {sidebarOpen && (
+          <div className="lg:hidden fixed inset-0 z-50 bg-black/50" onClick={() => setSidebarOpen(false)}>
+            <div 
+              className="absolute bottom-0 left-0 right-0 bg-white dark:bg-slate-900 rounded-t-3xl max-h-[80vh] overflow-y-auto"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="sticky top-0 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between rounded-t-3xl">
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">Menu</h2>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => setSidebarOpen(false)}
+                  className="rounded-full"
+                >
+                  <X className="h-5 w-5" />
+                </Button>
+              </div>
+
+              <div className="p-6 space-y-6">
+                {navigationGroups.map((group) => (
+                  <div key={group.title} className="space-y-2">
+                    <p className="text-[11px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase px-2">
+                      {group.title}
+                    </p>
+                    <div className="space-y-1">
+                      {group.items.map((item) => {
+                        const Icon = item.icon;
+                        const hasChildren = "children" in item && item.children;
+                        const isExpanded = expandedItems.includes(item.name);
+                        const isActive = pathname === item.href;
+
+                        return (
+                          <div key={item.name} className="space-y-1">
+                            {hasChildren ? (
+                              <div className="space-y-1">
+                                <Button
+                                  variant="ghost"
+                                  onClick={() => toggleExpand(item.name)}
+                                  className={cn(
+                                    "w-full justify-between h-12 px-4 rounded-xl",
+                                    isExpanded
+                                      ? "bg-primary/10 text-primary"
+                                      : "text-slate-600 dark:text-slate-400"
+                                  )}
+                                >
+                                  <div className="flex items-center gap-3">
+                                    <Icon className="h-5 w-5" />
+                                    <span className="text-[15px] font-medium">
+                                      {item.name}
+                                    </span>
+                                  </div>
+                                  <ChevronDown
+                                    className={cn(
+                                      "h-4 w-4 transition-transform duration-200",
+                                      isExpanded ? "rotate-180" : ""
+                                    )}
+                                  />
+                                </Button>
+                                {isExpanded && (
+                                  <div className="pl-12 space-y-1">
+                                    {(item.children as any[]).map((child) => {
+                                      const isChildActive = pathname === child.href;
+                                      return (
+                                        <Link 
+                                          key={child.name} 
+                                          href={child.href}
+                                          onClick={() => setSidebarOpen(false)}
+                                        >
+                                          <Button
+                                            variant="ghost"
+                                            className={cn(
+                                              "w-full justify-start h-10 px-4 rounded-xl text-[14px]",
+                                              isChildActive
+                                                ? "bg-primary/10 text-primary"
+                                                : "text-slate-500 dark:text-slate-500"
+                                            )}
+                                          >
+                                            {child.name}
+                                          </Button>
+                                        </Link>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                              </div>
+                            ) : (
+                              <Link 
+                                href={item.href || "#"}
+                                onClick={() => setSidebarOpen(false)}
+                              >
+                                <Button
+                                  variant="ghost"
+                                  className={cn(
+                                    "w-full justify-start h-12 px-4 rounded-xl",
+                                    isActive
+                                      ? "bg-primary/10 text-primary"
+                                      : "text-slate-600 dark:text-slate-400"
+                                  )}
+                                >
+                                  <Icon className="mr-3 h-5 w-5" />
+                                  <span className="text-[15px] font-medium">
+                                    {item.name}
+                                  </span>
+                                </Button>
+                              </Link>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
       <style jsx global>{`
         .no-scrollbar::-webkit-scrollbar {
