@@ -334,10 +334,10 @@ export default function AdminDashboard() {
                 </p>
               </div>
 
-              <button className="w-full sm:w-auto px-4 py-2 bg-gradient-variant-2 hover:opacity-90 text-primary-foreground text-xs sm:text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
+              <Link href="/admin/inventory" className="w-full sm:w-auto px-4 py-2 bg-gradient-variant-2 hover:opacity-90 text-primary-foreground text-xs sm:text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
                 Fix Now
                 <ArrowUpRightIcon />
-              </button>
+              </Link>
             </div>
           </div>
         )}
@@ -377,10 +377,10 @@ export default function AdminDashboard() {
                   Recent Orders
                 </h3>
               </div>
-              <button className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+              <Link href="/admin/orders" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
                 View All
                 <ArrowUpRightIcon />
-              </button>
+              </Link>
             </div>
 
             <div className="space-y-3">
@@ -434,10 +434,10 @@ export default function AdminDashboard() {
                   New Customers
                 </h3>
               </div>
-              <button className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+              <Link href="/admin/customers" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
                 View All
                 <ArrowUpRightIcon />
-              </button>
+              </Link>
             </div>
 
             <div className="space-y-3">
