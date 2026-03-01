@@ -326,12 +326,12 @@ export default function AdminLayout({
       {/* Main Content */}
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         {/* Header */}
-        <header className="flex h-[72px] items-center justify-between bg-white dark:bg-slate-900 px-6 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-30 shadow-sm shadow-slate-100/50 dark:shadow-none">
-          <div className="flex items-center gap-4 flex-1">
+        <header className="flex h-[72px] items-center justify-between bg-white dark:bg-slate-900 px-3 sm:px-6 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-30 shadow-sm shadow-slate-100/50 dark:shadow-none">
+          <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
             <Button
               variant="ghost"
               size="icon"
-              className="lg:hidden"
+              className="lg:hidden flex-shrink-0"
               onClick={() => setSidebarOpen(true)}
             >
               <Menu className="h-5 w-5" />
@@ -345,7 +345,7 @@ export default function AdminLayout({
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0">
             <div className="hidden sm:flex items-center gap-1 mr-2 border-r border-slate-100 dark:border-slate-800 pr-2">
               <Button
                 variant="ghost"
@@ -378,7 +378,7 @@ export default function AdminLayout({
               </Button>
             </div>
 
-            <div className="flex items-center gap-3 pl-2 group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 rounded-xl transition-all duration-200">
+            <div className="flex items-center gap-2 sm:gap-3 pl-1 sm:pl-2 group cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 p-1.5 rounded-xl transition-all duration-200">
               <div className="text-right hidden xl:block">
                 <p className="text-[14px] font-bold text-slate-900 dark:text-white leading-none capitalize">
                   {user?.name || "Admin User"}
@@ -387,11 +387,11 @@ export default function AdminLayout({
                   {user?.role || "Administrator"}
                 </p>
               </div>
-              <Avatar className="h-10 w-10 border-2 border-white dark:border-slate-800 shadow-sm">
+              <Avatar className="h-8 w-8 sm:h-10 sm:w-10 border-2 border-white dark:border-slate-800 shadow-sm">
                 <AvatarImage
                   src={`https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.email}`}
                 />
-                <AvatarFallback className="bg-primary/10 text-primary font-bold">
+                <AvatarFallback className="bg-primary/10 text-primary font-bold text-xs sm:text-sm">
                   {user?.name?.charAt(0).toUpperCase() || "A"}
                 </AvatarFallback>
               </Avatar>
@@ -400,10 +400,10 @@ export default function AdminLayout({
             <Button
               variant="ghost"
               size="icon"
-              className="h-10 w-10 text-slate-400 hover:text-destructive transition-colors ml-1 rounded-xl"
+              className="h-8 w-8 sm:h-10 sm:w-10 text-slate-400 hover:text-destructive transition-colors ml-1 rounded-xl"
               onClick={() => logout()}
             >
-              <LogOut className="h-5 w-5" />
+              <LogOut className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </div>
         </header>

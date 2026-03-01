@@ -57,12 +57,12 @@ export default function AdminCoupons() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Coupons</h1>
-          <p className="text-muted-foreground">Manage discount codes and promotions</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Coupons</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage discount codes and promotions</p>
         </div>
-        <Button onClick={openAddModal}>
+        <Button onClick={openAddModal} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Create Coupon
         </Button>
@@ -108,16 +108,16 @@ export default function AdminCoupons() {
           ) : (
             <div className="space-y-4">
               {coupons.map((coupon: any) => (
-                <div key={coupon.id || coupon._id} className="border rounded-lg p-4 hover:bg-muted/50 transition-colors group">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3">
-                        <div className="p-2 bg-primary/10 rounded-lg">
-                          <Tag className="h-5 w-5 text-primary" />
+                <div key={coupon.id || coupon._id} className="border rounded-lg p-3 sm:p-4 hover:bg-muted/50 transition-colors group">
+                  <div className="flex flex-col sm:flex-row items-start sm:items-start justify-between gap-3 sm:gap-0">
+                    <div className="flex-1 w-full sm:w-auto">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-primary/10 rounded-lg flex-shrink-0">
+                          <Tag className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                         </div>
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <p className="font-mono font-bold text-lg">{coupon.code}</p>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-mono font-bold text-base sm:text-lg">{coupon.code}</p>
                             <Button
                               variant="ghost"
                               size="icon"
@@ -126,8 +126,46 @@ export default function AdminCoupons() {
                             >
                               <Copy className="h-3 w-3" />
                             </Button>
-                            <Badge variant={coupon.isActive ? 'default' : 'secondary'}>
+                            <Badge variant={coupon.isActive ? 'default' : 'secondary'} className="text-xs">
                               {coupon.isActive ? 'Active' : 'Inactive'}
+                            </Badge>
+                          </div>
+                          <p className="text-xs sm:text-sm text-muted-foreground mt-1">
+                            {coupon.type === 'percentage' ? `${coupon.value}% off` : `${coupon.value} off`}
+                            {coupon.minOrderAmount && ` • Min order: ${coupon.minOrderAmount}`}
+                          </p>
+                          <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-muted-foreground">
+                            {coupon.usageLimit && (
+                              <span>
+                                Used: {coupon.usageCount || 0} / {coupon.usageLimit}
+                              </span>
+                            )}
+                            {coupon.expiresAt && (
+                              <span>
+                                Expires: {formatDate(coupon.expiresAt)}
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex gap-2 w-full sm:w-auto justify-end">
+                      <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10" onClick={() => openEditModal(coupon)}>
+                        <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8 sm:h-10 sm:w-10"
+                        onClick={() => openDeleteModal(coupon)}
+                      >
+                        <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground mt-1">
