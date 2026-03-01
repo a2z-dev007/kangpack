@@ -71,37 +71,38 @@ export default function AdminCategories() {
       <div className="space-y-2">
         <div 
           className={cn(
-            "flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors group",
-            isSubCategory ? "ml-8 bg-muted/20" : "bg-card"
+            "flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-muted/50 transition-colors group gap-3 sm:gap-0",
+            isSubCategory ? "ml-4 sm:ml-8 bg-muted/20" : "bg-card"
           )}
         >
           <div 
-            className="flex items-center gap-3 flex-1 cursor-pointer"
+            className="flex items-center gap-3 flex-1 cursor-pointer w-full sm:w-auto"
             onClick={() => !search && hasSubCategories && toggleCategory(category.id)}
           >
             {!search && hasSubCategories ? (
-              isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground" /> : <ChevronRight className="h-4 w-4 text-muted-foreground" />
+              isExpanded ? <ChevronDown className="h-4 w-4 text-muted-foreground flex-shrink-0" /> : <ChevronRight className="h-4 w-4 text-muted-foreground flex-shrink-0" />
             ) : (
-              <FolderTree className="h-5 w-5 text-muted-foreground" />
+              <FolderTree className="h-5 w-5 text-muted-foreground flex-shrink-0" />
             )}
-            <div>
-              <p className="font-medium">{category.name}</p>
-              <p className="text-sm text-muted-foreground">{category.slug}</p>
+            <div className="min-w-0 flex-1">
+              <p className="font-medium truncate">{category.name}</p>
+              <p className="text-xs sm:text-sm text-muted-foreground truncate">{category.slug}</p>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            <Badge variant={category.isActive ? 'default' : 'secondary'}>
+          <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <Badge variant={category.isActive ? 'default' : 'secondary'} className="text-xs">
               {category.isActive ? 'Active' : 'Inactive'}
             </Badge>
-            <Button variant="ghost" size="icon" onClick={() => openEditModal(category)}>
-              <Edit className="h-4 w-4" />
+            <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10" onClick={() => openEditModal(category)}>
+              <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
+              className="h-8 w-8 sm:h-10 sm:w-10"
               onClick={() => openDeleteModal(category)}
             >
-              <Trash2 className="h-4 w-4 text-destructive" />
+              <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
             </Button>
           </div>
         </div>
@@ -119,12 +120,12 @@ export default function AdminCategories() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Categories</h1>
-          <p className="text-muted-foreground">Manage product categories</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Categories</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage product categories</p>
         </div>
-        <Button onClick={openAddModal}>
+        <Button onClick={openAddModal} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Add Category
         </Button>

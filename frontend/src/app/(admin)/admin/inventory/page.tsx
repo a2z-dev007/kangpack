@@ -27,72 +27,72 @@ export default function AdminInventory() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Inventory Management</h1>
-          <p className="text-muted-foreground">
+          <h1 className="text-2xl sm:text-3xl font-bold">Inventory Management</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Monitor and manage product stock levels
           </p>
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
                   Total Products
                 </CardTitle>
-                <div className="text-2xl font-bold mt-2">{products.length}</div>
+                <div className="text-xl sm:text-2xl font-bold mt-2">{products.length}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   In inventory
                 </p>
               </div>
-              <div className="h-12 w-12 bg-gradient-variant-2 rounded-lg flex items-center justify-center">
-                <Warehouse className="h-6 w-6 text-primary-foreground" />
+              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gradient-variant-2 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Warehouse className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
                   Low Stock
                 </CardTitle>
-                <div className="text-2xl font-bold mt-2 text-foreground">
+                <div className="text-xl sm:text-2xl font-bold mt-2 text-foreground">
                   {lowStock.length}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Need restocking
                 </p>
               </div>
-              <div className="h-12 w-12 bg-gradient-variant-2 rounded-lg flex items-center justify-center">
-                <AlertTriangle className="h-6 w-6 text-primary-foreground" />
+              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gradient-variant-2 rounded-lg flex items-center justify-center flex-shrink-0">
+                <AlertTriangle className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
               </div>
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
+          <CardContent className="p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div>
-                <CardTitle className="text-sm font-medium text-muted-foreground">
+              <div className="min-w-0 flex-1">
+                <CardTitle className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
                   Out of Stock
                 </CardTitle>
-                <div className="text-2xl font-bold mt-2 text-foreground">
+                <div className="text-xl sm:text-2xl font-bold mt-2 text-foreground">
                   {outOfStock.length}
                 </div>
                 <p className="text-xs text-muted-foreground mt-1">
                   Unavailable
                 </p>
               </div>
-              <div className="h-12 w-12 bg-gradient-variant-2 rounded-lg flex items-center justify-center">
-                <Package className="h-6 w-6 text-primary-foreground" />
+              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-gradient-variant-2 rounded-lg flex items-center justify-center flex-shrink-0">
+                <Package className="h-5 w-5 sm:h-6 sm:w-6 text-primary-foreground" />
               </div>
             </div>
           </CardContent>
@@ -109,18 +109,18 @@ export default function AdminInventory() {
               {lowStock.map((product: any) => (
                 <div
                   key={product.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors gap-3 sm:gap-0"
                 >
-                  <div>
-                    <p className="font-medium">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm sm:text-base truncate">{product.name}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
                       {product.sku}
                     </p>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-end">
                     <Badge
                       variant="secondary"
-                      className="bg-warning/10 text-warning hover:bg-warning/20"
+                      className="bg-warning/10 text-warning hover:bg-warning/20 text-xs"
                     >
                       {product.stock} left
                     </Badge>
@@ -128,9 +128,10 @@ export default function AdminInventory() {
                       variant="outline"
                       size="sm"
                       onClick={() => openAdjustModal(product)}
+                      className="text-xs"
                     >
-                      <Edit2 className="h-4 w-4 mr-2" />
-                      Adjust
+                      <Edit2 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Adjust</span>
                     </Button>
                   </div>
                 </div>
@@ -150,18 +151,18 @@ export default function AdminInventory() {
               {outOfStock.map((product: any) => (
                 <div
                   key={product.id}
-                  className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors gap-3 sm:gap-0"
                 >
-                  <div>
-                    <p className="font-medium">{product.name}</p>
-                    <p className="text-sm text-muted-foreground">
+                  <div className="min-w-0 flex-1">
+                    <p className="font-medium text-sm sm:text-base truncate">{product.name}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">
                       {product.sku}
                     </p>
                   </div>
-                  <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-end">
                     <Badge
                       variant="destructive"
-                      className="bg-destructive/10 text-destructive hover:bg-destructive/20 shadow-none"
+                      className="bg-destructive/10 text-destructive hover:bg-destructive/20 shadow-none text-xs"
                     >
                       Out of Stock
                     </Badge>
@@ -169,9 +170,10 @@ export default function AdminInventory() {
                       variant="outline"
                       size="sm"
                       onClick={() => openAdjustModal(product)}
+                      className="text-xs"
                     >
-                      <Edit2 className="h-4 w-4 mr-2" />
-                      Adjust
+                      <Edit2 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Adjust</span>
                     </Button>
                   </div>
                 </div>
@@ -193,18 +195,18 @@ export default function AdminInventory() {
                 .map((product: any) => (
                   <div
                     key={product.id}
-                    className="flex items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors"
+                    className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 border rounded-lg hover:bg-muted/50 transition-colors gap-3 sm:gap-0"
                   >
-                    <div>
-                      <p className="font-medium">{product.name}</p>
-                      <p className="text-sm text-muted-foreground">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-medium text-sm sm:text-base truncate">{product.name}</p>
+                      <p className="text-xs sm:text-sm text-muted-foreground truncate">
                         {product.sku}
                       </p>
                     </div>
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto justify-end">
                       <Badge
                         variant="default"
-                        className="bg-success/10 text-success hover:bg-success/20"
+                        className="bg-success/10 text-success hover:bg-success/20 text-xs"
                       >
                         {product.stock} in stock
                       </Badge>
@@ -212,9 +214,10 @@ export default function AdminInventory() {
                         variant="outline"
                         size="sm"
                         onClick={() => openAdjustModal(product)}
+                        className="text-xs"
                       >
-                        <Edit2 className="h-4 w-4 mr-2" />
-                        Adjust
+                        <Edit2 className="h-3 w-3 sm:h-4 sm:w-4 sm:mr-2" />
+                        <span className="hidden sm:inline">Adjust</span>
                       </Button>
                     </div>
                   </div>
