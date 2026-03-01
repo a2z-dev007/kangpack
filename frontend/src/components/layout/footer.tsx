@@ -14,6 +14,7 @@ import {
   MapPin,
   Phone
 } from "lucide-react";
+import { ASSETS } from "@/constants/assets";
 
 const socialLinks = [
   { icon: Instagram, href: "#", label: "Instagram" },
@@ -55,7 +56,7 @@ export const Footer: React.FC = () => {
               transition={{ duration: 0.6 }}
             >
               <img
-                src="/assets/black-logo.svg"
+                src={ASSETS.LOGO}
                 alt="Kangpack Logo"
                 className="h-8 md:h-10 mb-8"
               />

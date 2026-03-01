@@ -5,62 +5,57 @@ import { AppError } from '../middlewares/error.middleware';
 import { HTTP_STATUS } from '../constants';
 
 export class MailService {
-  private static getTransporter() {
-    // Modern GoDaddy/Office 365 accounts use smtp.office365.com
-    const host = process.env.SMTP_HOST || 'smtp.office365.com';
-    const port = parseInt(process.env.SMTP_PORT || '587');
-    const secure = process.env.SMTP_SECURE === 'true'; // false for 587
-
-    return nodemailer.createTransport({
-      host: host,
-      port: port,
-      secure: secure,
-      auth: {
-        user: process.env.SMTP_USER || 'support@kangpack.in',
-        pass: process.env.SMTP_PASS,
-      },
-      tls: {
-        ciphers: 'SSLv3',
-        rejectUnauthorized: false
-      }
-    });
-  }
-
-  private static transporter = MailService.getTransporter();
 
   public static async sendEmail(to: string, subject: string, html: string): Promise<void> {
-    try {
-      const fromName = process.env.FROM_NAME || 'Kangpack Support';
-      const fromEmail = process.env.FROM_EMAIL || 'support@kangpack.in';
+    console.log(`[MailService] Attempting to send email to: ${to}`);
+    console.log(`[MailService] Transport: ${env.SMTP_HOST}:${env.SMTP_PORT} (secure: ${env.SMTP_SECURE}, user: ${env.SMTP_USER})`);
 
-      await this.transporter.sendMail({
-        from: `"${fromName}" <${fromEmail}>`,
+    if (!env.SMTP_PASS) {
+        console.error('[MailService] SMTP_PASS is missing!');
+        return;
+    }
+
+    const transporter = nodemailer.createTransport({
+      host: env.SMTP_HOST,
+      port: env.SMTP_PORT,
+      secure: env.SMTP_SECURE,
+      auth: { 
+        user: env.SMTP_USER, 
+        pass: env.SMTP_PASS 
+      },
+      tls: { rejectUnauthorized: false },
+      connectionTimeout: 15000,
+      greetingTimeout: 15000,
+    });
+
+    try {
+      const info = await transporter.sendMail({
+        from: `"${env.FROM_NAME}" <${env.FROM_EMAIL}>`,
         to,
         subject,
         html,
       });
-      console.log(`[MailService] Email sent successfully to ${to}`);
+      console.log(`[MailService] SUCCESS! Email sent to ${to}. ID: ${info.messageId}`);
     } catch (error: any) {
       console.error('[MailService] FAILED to send email to:', to);
       console.error('[MailService] Error Details:', error.message || error);
-      // In production, you might want to throw here or use a retry queue
     }
   }
 
   public static async sendResetPasswordEmail(to: string, resetUrl: string): Promise<void> {
-    const subject = 'Password Reset Request';
+    const subject = 'Kangpack: Password Reset Link';
     const html = `
       <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
         <div style="background-color: #3E2A1D; color: white; padding: 40px; text-align: center;">
-          <h1 style="margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px;">Identity Recovery</h1>
+          <h1 style="margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px;">Password Recovery</h1>
         </div>
         <div style="padding: 40px; background-color: #F9F7F4;">
-          <p>Hi there,</p>
-          <p>We received a request to reset the password for your Kangpack account. Click the button below to set a new password:</p>
+          <p>Hi,</p>
+          <p>Click the button below to reset your Kangpack password. This link is valid for 10 minutes.</p>
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${resetUrl}" style="background-color: #6B4A2D; color: white; padding: 14px 28px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Reset My Password</a>
+            <a href="${resetUrl}" style="background-color: #6B4A2D; color: white; padding: 14px 28px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Reset Password</a>
           </div>
-          <p style="font-size: 14px; color: #888;">This link will expire in 10 minutes. If you didn't request this, you can safely ignore this email.</p>
+          <p style="font-size: 14px; color: #888;">If you didn't request this, please ignore this email.</p>
         </div>
       </div>
     `;
@@ -69,17 +64,17 @@ export class MailService {
   }
 
   public static async sendVerificationEmail(to: string, verificationUrl: string): Promise<void> {
-    const subject = 'Verify your email address';
+    const subject = 'Confirm your Kangpack account';
     const html = `
       <div style="font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #333; line-height: 1.6; border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden;">
         <div style="background-color: #3E2A1D; color: white; padding: 40px; text-align: center;">
-          <h1 style="margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px;">Verify Your Identity</h1>
+          <h1 style="margin: 0; font-size: 24px; text-transform: uppercase; letter-spacing: 2px;">Welcome to Kangpack</h1>
         </div>
         <div style="padding: 40px; background-color: #F9F7F4;">
-          <p>Hi there,</p>
-          <p>Thank you for joining Kangpack. Please verify your email address to unlock full access to your account and mobile productivity gear.</p>
+          <p>Hi,</p>
+          <p>Welcome to Kangpack. Please verify your email to activate your account:</p>
           <div style="text-align: center; margin: 30px 0;">
-            <a href="${verificationUrl}" style="background-color: #6B4A2D; color: white; padding: 14px 28px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Confirm My Email</a>
+            <a href="${verificationUrl}" style="background-color: #6B4A2D; color: white; padding: 14px 28px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Verify My Email</a>
           </div>
           <p style="font-size: 14px; color: #888;">If you didn't create an account, you can safely ignore this email.</p>
         </div>
@@ -88,6 +83,7 @@ export class MailService {
 
     await this.sendEmail(to, subject, html);
   }
+
 
   public static async sendAccountCreatedEmail(to: string, password: string, verificationUrl: string): Promise<void> {
     const subject = 'Your Kangpack Account Details';

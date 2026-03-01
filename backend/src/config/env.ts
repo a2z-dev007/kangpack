@@ -33,7 +33,23 @@ const envSchema = z.object({
   RATE_LIMIT_MAX_REQUESTS: z.string().transform(Number).default('100'),
   BCRYPT_SALT_ROUNDS: z.string().transform(Number).default('12'),
   COOKIE_SECRET: z.string().min(16, 'Cookie secret must be at least 16 characters'),
-  FRONTEND_URL: z.string().default('https://kangpack.in'),
+  FRONTEND_URL: z.string().transform(val => {
+    // Take the first URL if it's a list (comma-separated) and clean it
+    if (val.includes(',')) {
+      console.warn(`[Config] FRONTEND_URL contains multiple URLs, picking the first one.`);
+      const first = val.split(',')[0].trim().replace(/^["']|["']$/g, '');
+      console.log(`[Config] Cleaned FRONTEND_URL: ${first}`);
+      return first;
+    }
+    return val.trim().replace(/^["']|["']$/g, '');
+  }).default('https://kangpack.in'),
+  SMTP_HOST: z.string().default('smtpout.secureserver.net'),
+  SMTP_PORT: z.string().transform(Number).default('587'),
+  SMTP_SECURE: z.string().transform(val => val === 'true').default('false'),
+  SMTP_USER: z.string().default('support@kangpack.in'),
+  SMTP_PASS: z.string().transform(val => val.replace(/^["']|["']$/g, '')).optional(),
+  FROM_NAME: z.string().default('Kangpack Support'),
+  FROM_EMAIL: z.string().default('support@kangpack.in'),
   AWS_ACCESS_KEY_ID: z.string().default(''),
   AWS_SECRET_ACCESS_KEY: z.string().default(''),
   AWS_REGION: z.string().default(''),

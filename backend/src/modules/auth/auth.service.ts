@@ -56,7 +56,12 @@ export class AuthService {
 
     // Send verification email
     const verificationUrl = `${env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
-    await MailService.sendVerificationEmail(user.email, verificationUrl);
+    console.log(`[AuthService] Triggering verification email in background for: ${user.email}`);
+    // Non-blocking call to ensure fast response to the user
+    MailService.sendVerificationEmail(user.email, verificationUrl).catch(err => {
+      console.error(`[AuthService] Background email sending failed for ${user.email}:`, err);
+    });
+    console.log(`[AuthService] Registration successful, tokens generated`);
 
     // Generate tokens
     const { accessToken, refreshToken } = JWTService.generateTokenPair({
@@ -310,6 +315,8 @@ export class AuthService {
 
     // Send verification email
     const verificationUrl = `${env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
+    console.log(`[AuthService] Resending verification email to: ${user.email}`);
     await MailService.sendVerificationEmail(user.email, verificationUrl);
+    console.log(`[AuthService] Verification email resent successfully`);
   }
 }

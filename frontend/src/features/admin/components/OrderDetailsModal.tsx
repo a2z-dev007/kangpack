@@ -69,14 +69,14 @@ export function OrderDetailsModal({
         onClose={onClose}
         title={order.orderNumber}
         description={`Placed on ${formatDateTime(order.createdAt)}`}
-        icon={<Hash className="h-6 w-6" />}
+        icon={<Hash className="h-5 w-5 sm:h-6 sm:w-6" />}
         maxWidth="sm:max-w-[620px]"
       >
-        <div className="space-y-8 pb-10">
-          <div className="flex items-center justify-between">
+        <div className="space-y-6 sm:space-y-8 pb-10 px-0 sm:px-1">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <Badge
               variant={order.status === "delivered" ? "default" : "secondary"}
-              className="capitalize rounded-full px-4 py-1 font-bold text-xs"
+              className="capitalize rounded-full px-4 py-1.5 font-bold text-[10px] sm:text-xs w-fit"
             >
               Order {order.status}
             </Badge>
@@ -84,7 +84,7 @@ export function OrderDetailsModal({
               variant="outline"
               size="sm"
               onClick={() => setIsTimelineOpen(true)}
-              className="h-9 rounded-2xl border-slate-200 text-slate-600 font-bold text-xs hover:bg-slate-50"
+              className="h-9 rounded-2xl border-slate-200 text-slate-600 font-bold text-[10px] sm:text-xs hover:bg-slate-50 w-full sm:w-auto"
             >
               <History className="h-3.5 w-3.5 mr-2" />
               View Timeline
@@ -97,25 +97,25 @@ export function OrderDetailsModal({
               <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
                 <User className="h-3.5 w-3.5" /> Customer Info
               </h3>
-              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 space-y-4 shadow-sm">
-                <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 rounded-2xl bg-[#6B4A2D] flex items-center justify-center text-white font-black text-xl shadow-lg shadow-[#6B4A2D]/20">
+              <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 sm:p-6 space-y-4 shadow-sm">
+                <div className="flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4">
+                  <div className="h-12 w-12 sm:h-14 sm:w-14 rounded-2xl bg-[#6B4A2D] flex-shrink-0 flex items-center justify-center text-white font-black text-lg sm:text-xl shadow-lg shadow-[#6B4A2D]/20">
                     {(
                       order.user?.name ||
                       order.shippingAddress?.firstName ||
                       "G"
                     ).charAt(0)}
                   </div>
-                  <div>
-                    <p className="font-black text-lg text-slate-900 leading-tight">
+                  <div className="flex-1 min-w-0 w-full">
+                    <p className="font-black text-base sm:text-lg text-slate-900 leading-tight truncate">
                       {order.user?.name ||
                         `${order.shippingAddress?.firstName} ${order.shippingAddress?.lastName}` ||
                         "Guest Customer"}
                     </p>
                     <div className="flex flex-col gap-2 mt-2">
-                      <div className="flex items-center gap-2 group">
+                      <div className="flex items-center justify-center sm:justify-start gap-2 group">
                         <Mail className="h-3.5 w-3.5 text-[#6B4A2D] flex-shrink-0" />
-                        <span className="text-xs font-bold text-slate-600 flex-1">
+                        <span className="text-[11px] sm:text-xs font-bold text-slate-600 truncate break-all">
                           {order.email || order.user?.email}
                         </span>
                         <CopyToClipboard
@@ -124,9 +124,9 @@ export function OrderDetailsModal({
                         />
                       </div>
                       {order.phone && (
-                        <div className="flex items-center gap-2 group">
+                        <div className="flex items-center justify-center sm:justify-start gap-2 group">
                           <Phone className="h-3.5 w-3.5 text-[#6B4A2D] flex-shrink-0" />
-                          <span className="text-xs font-bold text-slate-600 flex-1">
+                          <span className="text-[11px] sm:text-xs font-bold text-slate-600">
                             {order.phone}
                           </span>
                           <CopyToClipboard
@@ -146,7 +146,7 @@ export function OrderDetailsModal({
                 <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
                   <MapPin className="h-3.5 w-3.5" /> Shipping Destination
                 </h3>
-                <div className="text-sm border border-slate-100 rounded-2xl p-5 bg-white shadow-sm leading-relaxed">
+                <div className="text-xs sm:text-sm border border-slate-100 rounded-2xl p-4 sm:p-5 bg-white shadow-sm leading-relaxed">
                   <p className="font-black text-slate-900 mb-2">
                     {order.shippingAddress?.firstName}{" "}
                     {order.shippingAddress?.lastName}
@@ -176,7 +176,7 @@ export function OrderDetailsModal({
                 <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
                   <ShieldCheck className="h-3.5 w-3.5" /> Billing Profile
                 </h3>
-                <div className="text-sm border border-slate-100 rounded-2xl p-5 bg-slate-50/50 shadow-sm border-dashed leading-relaxed">
+                <div className="text-xs sm:text-sm border border-slate-100 rounded-2xl p-4 sm:p-5 bg-slate-50/50 shadow-sm border-dashed leading-relaxed">
                   <p className="font-black text-slate-900 mb-2">
                     {order.billingAddress?.firstName}{" "}
                     {order.billingAddress?.lastName}
@@ -214,10 +214,10 @@ export function OrderDetailsModal({
               {order.items?.map((item: any) => (
                 <div
                   key={item._id || item.product?._id}
-                  className="flex items-center justify-between p-5 bg-white hover:bg-slate-50/50 transition-colors"
+                  className="flex flex-col sm:flex-row sm:items-center justify-between p-4 sm:p-5 bg-white hover:bg-slate-50/50 transition-colors gap-4"
                 >
-                  <div className="flex gap-5">
-                    <div className="h-20 w-20 rounded-xl border border-slate-100 bg-slate-50 flex-shrink-0 overflow-hidden shadow-inner">
+                  <div className="flex gap-4 sm:gap-5">
+                    <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl border border-slate-100 bg-slate-50 flex-shrink-0 overflow-hidden shadow-inner">
                       <img
                         src={
                           item.image ||
@@ -228,11 +228,11 @@ export function OrderDetailsModal({
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="flex flex-col justify-center">
-                      <p className="font-black text-slate-900">
+                    <div className="flex flex-col justify-center min-w-0">
+                      <p className="font-black text-slate-900 text-sm sm:text-base truncate">
                         {item.name || item.product?.name || "Deleted Product"}
                       </p>
-                      <p className="text-[11px] font-bold text-slate-400 mt-2 flex items-center gap-3">
+                      <p className="text-[10px] sm:text-[11px] font-bold text-slate-400 mt-1 sm:mt-2 flex flex-wrap items-center gap-x-3 gap-y-1">
                         {item.sku && (
                           <span className="bg-slate-100 px-2 py-0.5 rounded text-slate-600">
                             SKU: {item.sku}
@@ -244,7 +244,7 @@ export function OrderDetailsModal({
                       </p>
                     </div>
                   </div>
-                  <p className="font-black text-[#6B4A2D] text-lg">
+                  <p className="font-black text-[#6B4A2D] text-base sm:text-lg self-end sm:self-center">
                     {formatPrice(item.total || item.price * item.quantity)}
                   </p>
                 </div>
@@ -331,22 +331,22 @@ export function OrderDetailsModal({
               <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400">
                 Financial Breakdown
               </h3>
-              <div className="space-y-4 bg-slate-50/50 p-6 rounded-2xl border border-slate-100 shadow-sm">
-                <div className="flex justify-between text-xs font-bold text-slate-500">
+              <div className="space-y-4 bg-slate-50/50 p-4 sm:p-6 rounded-2xl border border-slate-100 shadow-sm">
+                <div className="flex justify-between text-[11px] sm:text-xs font-bold text-slate-500">
                   <span>Subtotal</span>
                   <span className="text-slate-900">
                     {formatPrice(order.subtotal)}
                   </span>
                 </div>
                 {order.taxAmount > 0 && (
-                  <div className="flex justify-between text-xs font-bold text-slate-500">
+                  <div className="flex justify-between text-[11px] sm:text-xs font-bold text-slate-500">
                     <span>Tax (Included)</span>
                     <span className="text-slate-900">
                       {formatPrice(order.taxAmount)}
                     </span>
                   </div>
                 )}
-                <div className="flex justify-between text-xs font-bold text-slate-500">
+                <div className="flex justify-between text-[11px] sm:text-xs font-bold text-slate-500">
                   <span>Logistic Fee</span>
                   <span className="text-slate-900">
                     {order.shippingAmount > 0
@@ -355,7 +355,7 @@ export function OrderDetailsModal({
                   </span>
                 </div>
                 {order.discountAmount > 0 && (
-                  <div className="flex justify-between text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl">
+                  <div className="flex justify-between text-[11px] sm:text-xs font-bold text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl">
                     <span>Promotional Save</span>
                     <span>-{formatPrice(order.discountAmount)}</span>
                   </div>
@@ -364,7 +364,7 @@ export function OrderDetailsModal({
                   <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest pb-1">
                     Total Payable
                   </span>
-                  <span className="text-3xl font-black text-[#6B4A2D] leading-none">
+                  <span className="text-2xl sm:text-3xl font-black text-[#6B4A2D] leading-none">
                     {formatPrice(order.totalAmount || order.total)}
                   </span>
                 </div>

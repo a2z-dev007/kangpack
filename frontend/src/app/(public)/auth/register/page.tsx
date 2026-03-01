@@ -182,7 +182,7 @@ export default function RegisterPage() {
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-[#6B4A2D]/60 uppercase tracking-widest pl-1">
-                      First Name
+                      First Name <span className="text-red-500">*</span>
                     </label>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B4A2D]/40" />
@@ -190,7 +190,7 @@ export default function RegisterPage() {
                         type="text"
                         {...register("firstName")}
                         className={`w-full bg-[#f8f6f4] border border-[#6B4A2D]/10 rounded-xl px-4 py-3 pl-10 text-[#6B4A2D] focus:outline-none focus:border-[#6B4A2D]/40 transition-colors text-sm ${errors.firstName ? "border-red-500 bg-red-50" : ""}`}
-                        placeholder="John"
+                        placeholder="Rajesh"
                         disabled={loading}
                       />
                     </div>
@@ -202,13 +202,13 @@ export default function RegisterPage() {
                   </div>
                   <div className="space-y-2">
                     <label className="text-xs font-bold text-[#6B4A2D]/60 uppercase tracking-widest pl-1">
-                      Last Name
+                      Last Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
                       {...register("lastName")}
                       className={`w-full bg-[#f8f6f4] border border-[#6B4A2D]/10 rounded-xl px-4 py-3 text-[#6B4A2D] focus:outline-none focus:border-[#6B4A2D]/40 transition-colors text-sm ${errors.lastName ? "border-red-500 bg-red-50" : ""}`}
-                      placeholder="Doe"
+                      placeholder="Kumar"
                       disabled={loading}
                     />
                     {errors.lastName && (
@@ -221,7 +221,7 @@ export default function RegisterPage() {
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-[#6B4A2D]/60 uppercase tracking-widest pl-1">
-                    Email
+                    Email <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B4A2D]/40" />
@@ -229,7 +229,7 @@ export default function RegisterPage() {
                       type="email"
                       {...register("email")}
                       className={`w-full bg-[#f8f6f4] border border-[#6B4A2D]/10 rounded-xl px-4 py-3 pl-10 text-[#6B4A2D] focus:outline-none focus:border-[#6B4A2D]/40 transition-colors text-sm ${errors.email ? "border-red-500 bg-red-50" : ""}`}
-                      placeholder="you@example.com"
+                      placeholder="rajesh@kumar.com"
                       disabled={loading}
                     />
                   </div>
@@ -242,7 +242,7 @@ export default function RegisterPage() {
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-[#6B4A2D]/60 uppercase tracking-widest pl-1">
-                    Password
+                    Password <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B4A2D]/40" />
@@ -274,7 +274,7 @@ export default function RegisterPage() {
 
                 <div className="space-y-2">
                   <label className="text-xs font-bold text-[#6B4A2D]/60 uppercase tracking-widest pl-1">
-                    Confirm Password
+                    Confirm Password <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#6B4A2D]/40" />

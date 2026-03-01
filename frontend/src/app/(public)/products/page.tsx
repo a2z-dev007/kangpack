@@ -16,6 +16,7 @@ import ScrollSection, {
 import { useAppDispatch } from "@/lib/store/hooks";
 import { addToCart } from "@/lib/store/features/cart/cartSlice";
 import { toast } from "sonner";
+import { WishlistButton } from "@/components/common/WishlistButton";
 
 // Custom Product Card Component matching the new aesthetic
 const ProductCard = ({ product, index }: { product: any; index: number }) => {
@@ -42,13 +43,21 @@ const ProductCard = ({ product, index }: { product: any; index: number }) => {
       >
         {/* Image Container */}
         <div className="aspect-[16/11] relative overflow-hidden bg-brand-beige/20">
-          {product.stock <= 5 && product.stock > 0 && (
-            <div className="absolute top-4 left-4 z-10">
+          <div className="absolute top-4 left-4 z-10">
+            {product.stock <= 5 && product.stock > 0 && (
               <span className="px-3 py-1 bg-red-500/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white rounded-full">
                 Low Stock
               </span>
-            </div>
-          )}
+            )}
+          </div>
+
+          {/* Wishlist Button Overlay */}
+          <div className="absolute top-4 right-4 z-20">
+            <WishlistButton 
+              productId={product.id || product._id} 
+              className="bg-white/80 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-all shadow-sm"
+            />
+          </div>
 
           <div className="w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out">
             {product.images && product.images[0] ? (

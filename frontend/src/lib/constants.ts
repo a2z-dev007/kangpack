@@ -34,6 +34,7 @@ export const QUERY_KEYS = {
   SETTINGS: 'settings',
   CUSTOMERS: 'customers',
   COUPONS: 'coupons',
+  WISHLIST: 'wishlist',
 } as const;
 
 export const STORAGE_KEYS = {

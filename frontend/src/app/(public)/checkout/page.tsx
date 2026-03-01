@@ -147,6 +147,25 @@ export default function CheckoutPage() {
   };
 
   useEffect(() => {
+    if (isAuthenticated && user && currentStep === 1) {
+      const defaultAddress = user.addresses?.find((a) => a.isDefault) || user.addresses?.[0];
+      
+      setFormData((prev) => ({
+        ...prev,
+        email: user.email || prev.email,
+        firstName: user.firstName || prev.firstName,
+        lastName: user.lastName || prev.lastName,
+        phone: defaultAddress?.phone || prev.phone,
+        addressLine1: defaultAddress?.addressLine1 || prev.addressLine1,
+        city: defaultAddress?.city || prev.city,
+        state: defaultAddress?.state || prev.state,
+        postalCode: defaultAddress?.postalCode || prev.postalCode,
+        country: defaultAddress?.country || prev.country || "India",
+      }));
+    }
+  }, [isAuthenticated, user, currentStep]);
+
+  useEffect(() => {
     // If we are at the final step but there are items in the cart (new order started)
     // or if we just landed on checkout and it's in step 4 from a previous session
     if (currentStep === 4 && cartItems.length > 0) {
@@ -166,10 +185,26 @@ export default function CheckoutPage() {
 
   const handleInfoSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.phone) {
-      toast.error("Phone number is required");
-      return;
+    
+    // Comprehensive validation
+    const requiredFields = [
+      { key: "firstName", label: "First Name" },
+      { key: "lastName", label: "Last Name" },
+      { key: "email", label: "Email Address" },
+      { key: "phone", label: "Phone Number" },
+      { key: "addressLine1", label: "Shipping Address" },
+      { key: "city", label: "City" },
+      { key: "state", label: "State" },
+      { key: "postalCode", label: "Pincode" },
+    ];
+
+    for (const field of requiredFields) {
+      if (!formData[field.key as keyof typeof formData]) {
+        toast.error(`${field.label} is required`);
+        return;
+      }
     }
+
     dispatch(setShippingAddress(formData as any));
     dispatch(setStep(2));
   };
@@ -507,102 +542,96 @@ export default function CheckoutPage() {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
-                            First Name
+                            First Name <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             name="firstName"
                             value={formData.firstName}
                             onChange={handleInputChange}
-                            required
                             className="h-14 rounded-xl border-[#6B4A2D]/10 focus:border-[#6B4A2D] transition-all"
-                            placeholder="John"
+                            placeholder="Rajesh"
                           />
                         </div>
                         <div className="space-y-2">
                           <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
-                            Last Name
+                            Last Name <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             name="lastName"
                             value={formData.lastName}
                             onChange={handleInputChange}
-                            required
                             className="h-14 rounded-xl border-[#6B4A2D]/10 focus:border-[#6B4A2D] transition-all"
-                            placeholder="Doe"
+                            placeholder="Kumar"
                           />
                         </div>
                       </div>
                       <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
-                          Email Address
+                          Email Address <span className="text-red-500">*</span>
                         </Label>
                         <Input
                           type="email"
                           name="email"
                           value={formData.email}
                           onChange={handleInputChange}
-                          required
                           className="h-14 rounded-xl border-[#6B4A2D]/10 focus:border-[#6B4A2D] transition-all"
-                          placeholder="john@example.com"
+                          placeholder="rajesh@kumar.com"
                         />
                       </div>
                       <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
-                          Phone Number
+                          Phone Number <span className="text-red-500">*</span>
                         </Label>
                         <Input
                           name="phone"
                           value={formData.phone}
                           onChange={handleInputChange}
-                          required
                           className="h-14 rounded-xl border-[#6B4A2D]/10 focus:border-[#6B4A2D] transition-all"
-                          placeholder="9998887776"
+                          placeholder="+91 99887 76655"
                         />
                       </div>
                       <div className="space-y-2">
                         <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
-                          Shipping Address
+                          Shipping Address <span className="text-red-500">*</span>
                         </Label>
                         <Input
                           name="addressLine1"
                           value={formData.addressLine1}
                           onChange={handleInputChange}
-                          required
                           className="h-14 rounded-xl border-[#6B4A2D]/10 focus:border-[#6B4A2D] transition-all"
-                          placeholder="123 Productivity Way"
+                          placeholder="Building Name, Flat No."
                         />
                       </div>
                       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
-                            City
+                            City <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             name="city"
                             value={formData.city}
                             onChange={handleInputChange}
-                            required
                             className="h-14 rounded-xl border-[#6B4A2D]/10 focus:border-[#6B4A2D] transition-all"
-                            placeholder="Lucknow"
+                            placeholder="Mumbai"
                           />
                         </div>
                         <div className="space-y-2">
                           <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
-                            State
+                            State <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             name="state"
                             value={formData.state}
                             onChange={handleInputChange}
-                            required
                             className="h-14 rounded-xl border-[#6B4A2D]/10 focus:border-[#6B4A2D] transition-all"
+                            placeholder="Maharashtra"
                           />
                         </div>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                           <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
-                            Country
+                            Country <span className="text-red-500">*</span>
                           </Label>
                           <select
                             name="country"
@@ -613,7 +642,6 @@ export default function CheckoutPage() {
                                 country: e.target.value,
                               })
                             }
-                            required
                             className="flex h-14 w-full rounded-xl border border-[#6B4A2D]/10 bg-white px-3 py-2 text-sm ring-offset-white file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-gray-500 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#6B4A2D] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-all font-medium text-[#6B4A2D]"
                           >
                             <option value="India">India</option>
@@ -630,15 +658,14 @@ export default function CheckoutPage() {
                         </div>
                         <div className="space-y-2">
                           <Label className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">
-                            Postal Code
+                            Pincode <span className="text-red-500">*</span>
                           </Label>
                           <Input
                             name="postalCode"
                             value={formData.postalCode}
                             onChange={handleInputChange}
-                            required
                             className="h-14 rounded-xl border-[#6B4A2D]/10 focus:border-[#6B4A2D] transition-all"
-                            placeholder="226020"
+                            placeholder="400001"
                           />
                         </div>
                       </div>
@@ -795,10 +822,52 @@ export default function CheckoutPage() {
                       <span className="w-8 h-8 rounded-lg bg-[#6B4A2D]/5 flex items-center justify-center text-sm">
                         3
                       </span>
-                      Payment Method
+                      Final Review & Payment
                     </h2>
 
-                    <div className="space-y-4 mb-10">
+                    {/* Order Review Section */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                      <div className="p-6 bg-[#6B4A2D]/5 rounded-3xl border border-[#6B4A2D]/10 relative group hover:bg-[#6B4A2D]/10 transition-all">
+                        <div className="flex justify-between items-center mb-4">
+                          <h4 className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">Shipping Information</h4>
+                          <button 
+                            onClick={() => dispatch(setStep(1))}
+                            className="text-[10px] font-bold text-[#6B4A2D] hover:underline uppercase tracking-widest"
+                          >
+                            Edit
+                          </button>
+                        </div>
+                        <p className="text-sm font-bold text-[#6B4A2D]">{formData.firstName} {formData.lastName}</p>
+                        <p className="text-xs text-[#8B7E6F] mt-1 line-clamp-2">{formData.addressLine1}, {formData.city}</p>
+                        <p className="text-xs text-[#8B7E6F]">{formData.state}, {formData.postalCode}</p>
+                        <p className="text-xs text-[#8B7E6F] mt-2 font-bold">{formData.phone}</p>
+                      </div>
+
+                      <div className="p-6 bg-[#6B4A2D]/5 rounded-3xl border border-[#6B4A2D]/10 relative group hover:bg-[#6B4A2D]/10 transition-all">
+                        <div className="flex justify-between items-center mb-4">
+                          <h4 className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60">Shipping Method</h4>
+                          <button 
+                            onClick={() => dispatch(setStep(2))}
+                            className="text-[10px] font-bold text-[#6B4A2D] hover:underline uppercase tracking-widest"
+                          >
+                            Edit
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-[#6B4A2D] shadow-sm">
+                            <Truck size={18} />
+                          </div>
+                          <div>
+                            <p className="text-sm font-bold text-[#6B4A2D]">Standard Shipping</p>
+                            <p className="text-[10px] text-[#A67C52] font-medium uppercase tracking-widest">3-5 Business Days</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-6 bg-[#6B4A2D]/5 rounded-3xl border border-[#6B4A2D]/10 mb-10">
+                      <h4 className="text-[10px] font-black uppercase tracking-widest text-[#6B4A2D]/60 mb-4">Select Payment Method</h4>
+                      <div className="space-y-4">
                       <div
                         onClick={() => setSelectedPaymentMethod("razorpay")}
                         className={`p-6 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
@@ -891,6 +960,7 @@ export default function CheckoutPage() {
                         <Truck size={20} className="text-[#6B4A2D]/20" />
                       </div>
                     </div>
+                  </div>
 
                     <div className="p-6 bg-[#6B4A2D]/5 rounded-2xl mb-10 border border-dashed border-[#6B4A2D]/30">
                       <p className="text-xs text-[#6B4A2D]/60 text-center uppercase tracking-widest mb-4">
