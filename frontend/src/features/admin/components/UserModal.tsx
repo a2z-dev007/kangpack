@@ -19,14 +19,22 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useCreateUser, useUpdateUser } from "../queries";
 import { Loader2 } from "lucide-react";
-import SelectInput from "@/components/ui/select-input";
 
 const userSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  firstName: z.string().min(1, "First name is required"),
+  lastName: z.string().min(1, "Last name is required"),
+  // name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
   password: z
     .string()
@@ -53,7 +61,9 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userSchema),
     defaultValues: {
-      name: "",
+      firstName: "",
+      lastName: "",
+      // name: "",
       email: "",
       password: "",
       role: "user",
@@ -63,14 +73,18 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
   useEffect(() => {
     if (user) {
       form.reset({
-        name: user.name,
+        firstName: user.firstName || "",
+        lastName: user.lastName || "",
+        // name: user.name,
         email: user.email,
         password: "",
         role: user.role,
       });
     } else {
       form.reset({
-        name: "",
+        firstName: "",
+        lastName: "",
+        // name: "",
         email: "",
         password: "",
         role: "user",
@@ -115,7 +129,37 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <FormField
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="firstName"
+                render={({ field }: { field: any }) => (
+                  <FormItem>
+                    <FormLabel>First Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="John" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="lastName"
+                render={({ field }: { field: any }) => (
+                  <FormItem>
+                    <FormLabel>Last Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Doe" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            </div>
+
+            {/* <FormField
               control={form.control}
               name="name"
               render={({ field }: { field: any }) => (
@@ -127,7 +171,7 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             <FormField
               control={form.control}
@@ -169,22 +213,18 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
               render={({ field }: { field: any }) => (
                 <FormItem>
                   <FormLabel>Role</FormLabel>
-                  <FormControl>
-                    <SelectInput
-                      options={[
-                        { value: "user", label: "User" },
-                        { value: "staff", label: "Staff" },
-                        { value: "admin", label: "Admin" },
-                      ]}
-                      value={[
-                        { value: "user", label: "User" },
-                        { value: "staff", label: "Staff" },
-                        { value: "admin", label: "Admin" },
-                      ].find((opt) => opt.value === field.value)}
-                      onChange={(option: any) => field.onChange(option?.value)}
-                      placeholder="Select role"
-                    />
-                  </FormControl>
+                  <Select onValueChange={field.onChange} value={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a role" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="user">User</SelectItem>
+                      <SelectItem value="staff">Staff</SelectItem>
+                      <SelectItem value="admin">Admin</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
