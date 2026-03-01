@@ -518,8 +518,8 @@ export default function AdminProducts() {
               </div>
             ) : (
               <div className="divide-y divide-slate-100">
-                {/* Table Header */}
-                <div className="flex items-center gap-4 px-6 py-4 bg-muted/20 border-b border-border">
+                {/* Table Header - Hidden on mobile */}
+                <div className="hidden md:flex items-center gap-4 px-6 py-4 bg-muted/20 border-b border-border">
                   <Checkbox
                     checked={
                       selectedProducts.length === products.length &&
@@ -543,16 +543,156 @@ export default function AdminProducts() {
                 {products.map((product: any, index: number) => (
                   <div
                     key={product._id || product.id}
-                    className={`flex items-center gap-4 px-6 py-4 hover:bg-muted/30 transition-all duration-200 group ${
+                    className={`flex flex-col md:flex-row items-start md:items-center gap-3 md:gap-4 px-4 md:px-6 py-4 hover:bg-muted/30 transition-all duration-200 group ${
                       index % 2 === 0 ? "bg-card" : "bg-muted/10"
                     }`}
                   >
+                    {/* Mobile Card Layout */}
+                    <div className="md:hidden w-full space-y-3">
+                      <div className="flex items-start gap-3">
+                        <Checkbox
+                          checked={selectedProducts.includes(product._id || product.id)}
+                          onCheckedChange={() => handleSelect(product._id || product.id)}
+                          className="border-input mt-1"
+                        />
+                        <div className="flex-1 flex items-start gap-3 cursor-pointer" onClick={() => openViewPage(product._id || product.id)}>
+                          <div className="relative flex-shrink-0">
+                            {product.images?.[0] ? (
+                              <div className="relative w-20 h-20 rounded-xl overflow-hidden shadow-sm border border-border">
+                                <Image
+                                  src={product.images[0]}
+                                  alt={product.name}
+                                  fill
+                                  className="object-cover"
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-20 h-20 bg-muted/20 rounded-xl flex items-center justify-center border border-border">
+                                <Package className="h-10 w-10 text-muted-foreground" />
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-foreground text-sm leading-tight mb-1">
+                              {product.name}
+                            </h3>
+                            <p className="text-xs text-muted-foreground font-mono mb-1">
+                              {product.sku}
+                            </p>
+                            {product.category && (
+                              <p className="text-xs text-muted-foreground/80">
+                                {product.category.name || product.category}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="text-muted-foreground hover:text-foreground hover:bg-muted h-8 w-8 flex-shrink-0"
+                            >
+                              <MoreVertical className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end" className="w-48">
+                            <DropdownMenuItem
+                              onClick={() => openViewPage(product._id || product.id)}
+                              className="cursor-pointer"
+                            >
+                              <Eye className="mr-2 h-4 w-4" />
+                              View Details
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => openEditModal(product)}
+                              className="cursor-pointer"
+                            >
+                              <Edit className="mr-2 h-4 w-4" />
+                              Edit Product
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() =>
+                                bulkUpdate({
+                                  ids: [product._id || product.id],
+                                  updates: { isActive: !product.isActive },
+                                })
+                              }
+                              className="cursor-pointer"
+                            >
+                              <RefreshCw className="mr-2 h-4 w-4" />
+                              {product.isActive ? "Deactivate" : "Activate"}
+                            </DropdownMenuItem>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              className="text-red-600 focus:text-red-600 cursor-pointer"
+                              onClick={() => openDeleteModal(product)}
+                            >
+                              <Trash2 className="mr-2 h-4 w-4" />
+                              Delete Product
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </div>
+                      
+                      <div className="flex items-center justify-between gap-4 pl-9">
+                        <div className="flex items-center gap-3">
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-0.5">Price</p>
+                            <p className="font-bold text-foreground text-base">
+                              {formatPrice(product.price)}
+                            </p>
+                            {product.comparePrice && product.comparePrice > product.price && (
+                              <p className="text-xs text-muted-foreground line-through">
+                                {formatPrice(product.comparePrice)}
+                              </p>
+                            )}
+                          </div>
+                          <div>
+                            <p className="text-xs text-muted-foreground mb-0.5">Stock</p>
+                            <Badge
+                              variant={
+                                product.stock > 10
+                                  ? "default"
+                                  : product.stock > 0
+                                    ? "secondary"
+                                    : "destructive"
+                              }
+                              className={`font-medium text-xs ${
+                                product.stock > 10
+                                  ? "bg-success/10 text-success hover:bg-success/20"
+                                  : product.stock > 0
+                                    ? "bg-warning/10 text-warning hover:bg-warning/20"
+                                    : "bg-destructive/10 text-destructive hover:bg-destructive/20"
+                              }`}
+                            >
+                              {product.stock} {product.stock === 1 ? "unit" : "units"}
+                            </Badge>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-xs text-muted-foreground mb-0.5">Status</p>
+                          <Badge
+                            variant={product.isActive ? "default" : "secondary"}
+                            className={`font-medium text-xs ${
+                              product.isActive
+                                ? "bg-success/10 text-success hover:bg-success/20"
+                                : "bg-muted text-muted-foreground hover:bg-muted/80"
+                            }`}
+                          >
+                            {product.isActive ? "Active" : "Inactive"}
+                          </Badge>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Desktop Table Layout */}
                     <Checkbox
                       checked={selectedProducts.includes(product._id || product.id)}
                       onCheckedChange={() => handleSelect(product._id || product.id)}
-                      className="border-input"
+                      className="border-input hidden md:block"
                     />
-                    <div className="flex-1 grid grid-cols-5 gap-4 items-center">
+                    <div className="hidden md:grid flex-1 grid-cols-5 gap-4 items-center">
                       {/* Product Info */}
                       <div className="col-span-2 flex items-center gap-4 cursor-pointer" onClick={() => openViewPage(product._id || product.id)}>
                         <div className="relative">
@@ -637,8 +777,8 @@ export default function AdminProducts() {
                       </div>
                     </div>
 
-                    {/* Actions */}
-                    <div className="w-20 flex justify-center">
+                    {/* Actions - Desktop only */}
+                    <div className="hidden md:flex w-20 justify-center">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button
