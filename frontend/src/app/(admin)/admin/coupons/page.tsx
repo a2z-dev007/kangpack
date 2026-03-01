@@ -166,43 +166,6 @@ export default function AdminCoupons() {
                 </div>
               ))}
             </div>
-                            </Badge>
-                          </div>
-                          <p className="text-sm text-muted-foreground mt-1">
-                            {coupon.type === 'percentage' ? `${coupon.value}% off` : `$${coupon.value} off`}
-                            {coupon.minOrderAmount && ` • Min order: $${coupon.minOrderAmount}`}
-                          </p>
-                          <div className="flex items-center gap-4 mt-2 text-sm text-muted-foreground">
-                            {coupon.usageLimit && (
-                              <span>
-                                Used: {coupon.usageCount || 0} / {coupon.usageLimit}
-                              </span>
-                            )}
-                            {coupon.expiresAt && (
-                              <span>
-                                Expires: {formatDate(coupon.expiresAt)}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button variant="ghost" size="icon" onClick={() => openEditModal(coupon)}>
-                        <Edit className="h-4 w-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => openDeleteModal(coupon)}
-                      >
-                        <Trash2 className="h-4 w-4 text-destructive" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
           )}
         </CardContent>
       </Card>
