@@ -71,12 +71,12 @@ export default function AdminCustomers() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Customers</h1>
-          <p className="text-muted-foreground">Manage customer accounts and roles</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">Customers</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage customer accounts and roles</p>
         </div>
-        <Button onClick={openAddModal}>
+        <Button onClick={openAddModal} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Add User
         </Button>
@@ -117,7 +117,7 @@ export default function AdminCustomers() {
             </div>
           ) : (
             <div className="space-y-4">
-              <div className="grid grid-cols-5 gap-4 pb-2 border-b text-sm font-medium text-muted-foreground px-2">
+              <div className="hidden sm:grid grid-cols-5 gap-4 pb-2 border-b text-sm font-medium text-muted-foreground px-2">
                 <div className="col-span-2">Customer</div>
                 <div>Role</div>
                 <div>Joined</div>
@@ -125,23 +125,25 @@ export default function AdminCustomers() {
               </div>
 
               {users.map((user: any) => (
-                <div key={user.id || user._id} className="grid grid-cols-5 gap-4 items-center py-3 border-b last:border-0 hover:bg-muted/50 transition-colors px-2 rounded-lg group">
-                  <div className="col-span-2">
-                    <p className="font-medium">{user.name}</p>
-                    <p className="text-sm text-muted-foreground">{user.email}</p>
+                <div key={user.id || user._id} className="grid grid-cols-1 sm:grid-cols-5 gap-3 sm:gap-4 items-start sm:items-center py-3 border-b last:border-0 hover:bg-muted/50 transition-colors px-2 rounded-lg group">
+                  <div className="col-span-1 sm:col-span-2">
+                    <p className="font-medium text-sm sm:text-base">{user.name}</p>
+                    <p className="text-xs sm:text-sm text-muted-foreground truncate">{user.email}</p>
                   </div>
-                  <div>
-                    <Badge variant={getRoleBadgeVariant(user.role) as any}>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs sm:hidden text-muted-foreground">Role:</span>
+                    <Badge variant={getRoleBadgeVariant(user.role) as any} className="text-xs">
                       {user.role}
                     </Badge>
                   </div>
-                  <div className="text-sm text-muted-foreground">
+                  <div className="text-xs sm:text-sm text-muted-foreground">
+                    <span className="sm:hidden">Joined: </span>
                     {formatDate(user.createdAt)}
                   </div>
-                  <div className="flex justify-end gap-2">
+                  <div className="flex justify-start sm:justify-end gap-2">
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="icon">
+                        <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
@@ -172,8 +174,8 @@ export default function AdminCustomers() {
 
           {/* Pagination */}
           {pagination && pagination.pages > 1 && (
-            <div className="flex items-center justify-between mt-6 pt-6 border-t">
-              <p className="text-sm text-muted-foreground">
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-6 pt-6 border-t gap-4">
+              <p className="text-xs sm:text-sm text-muted-foreground text-center sm:text-left">
                 Showing {((page - 1) * 10) + 1} to {Math.min(page * 10, pagination.total)} of {pagination.total} customers
               </p>
               <div className="flex gap-2">

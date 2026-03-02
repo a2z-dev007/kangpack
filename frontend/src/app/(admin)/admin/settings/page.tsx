@@ -69,54 +69,58 @@ export default function AdminSettings() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">Settings</h1>
-        <p className="text-muted-foreground">Manage your store configuration</p>
+        <h1 className="text-2xl sm:text-3xl font-bold">Settings</h1>
+        <p className="text-sm sm:text-base text-muted-foreground">Manage your store configuration</p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Store Information */}
         <Card>
           <CardHeader>
-            <CardTitle>Store Information</CardTitle>
-            <CardDescription>Basic information about your store</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">Store Information</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Basic information about your store</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="storeName">Store Name</Label>
+              <Label htmlFor="storeName" className="text-sm">Store Name</Label>
               <Input
                 id="storeName"
                 value={formData.storeName}
                 onChange={(e) => setFormData({ ...formData, storeName: e.target.value })}
                 placeholder="My Store"
+                className="text-sm"
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="storeDescription">Store Description</Label>
+              <Label htmlFor="storeDescription" className="text-sm">Store Description</Label>
               <Input
                 id="storeDescription"
                 value={formData.storeDescription}
                 onChange={(e) => setFormData({ ...formData, storeDescription: e.target.value })}
                 placeholder="Your one-stop shop for..."
+                className="text-sm"
               />
             </div>
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-sm">Email</Label>
                 <Input
                   id="email"
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   placeholder="store@example.com"
+                  className="text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="phone">Phone</Label>
+                <Label htmlFor="phone" className="text-sm">Phone</Label>
                 <Input
                   id="phone"
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   placeholder="+1 (555) 123-4567"
+                  className="text-sm"
                 />
               </div>
             </div>
@@ -126,22 +130,23 @@ export default function AdminSettings() {
         {/* Currency & Pricing */}
         <Card>
           <CardHeader>
-            <CardTitle>Currency & Pricing</CardTitle>
-            <CardDescription>Configure pricing and tax settings</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">Currency & Pricing</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Configure pricing and tax settings</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="currency">Currency</Label>
+                <Label htmlFor="currency" className="text-sm">Currency</Label>
                 <Input
                   id="currency"
                   value={formData.currency}
                   onChange={(e) => setFormData({ ...formData, currency: e.target.value })}
                   placeholder="INR"
+                  className="text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="taxRate">Tax Rate (%)</Label>
+                <Label htmlFor="taxRate" className="text-sm">Tax Rate (%)</Label>
                 <Input
                   id="taxRate"
                   type="number"
@@ -149,6 +154,7 @@ export default function AdminSettings() {
                   value={formData.taxRate}
                   onChange={(e) => setFormData({ ...formData, taxRate: parseFloat(e.target.value) })}
                   placeholder="0"
+                  className="text-sm"
                 />
               </div>
             </div>
@@ -158,13 +164,13 @@ export default function AdminSettings() {
         {/* Shipping */}
         <Card>
           <CardHeader>
-            <CardTitle>Shipping Settings</CardTitle>
-            <CardDescription>Configure shipping fees and thresholds</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">Shipping Settings</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Configure shipping fees and thresholds</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="shippingFee">Shipping Fee (₹)</Label>
+                <Label htmlFor="shippingFee" className="text-sm">Shipping Fee (₹)</Label>
                 <Input
                   id="shippingFee"
                   type="number"
@@ -172,10 +178,11 @@ export default function AdminSettings() {
                   value={formData.shippingFee}
                   onChange={(e) => setFormData({ ...formData, shippingFee: parseFloat(e.target.value) })}
                   placeholder="0"
+                  className="text-sm"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="freeShippingThreshold">Free Shipping Threshold (₹)</Label>
+                <Label htmlFor="freeShippingThreshold" className="text-sm">Free Shipping Threshold (₹)</Label>
                 <Input
                   id="freeShippingThreshold"
                   type="number"
@@ -183,6 +190,7 @@ export default function AdminSettings() {
                   value={formData.freeShippingThreshold}
                   onChange={(e) => setFormData({ ...formData, freeShippingThreshold: parseFloat(e.target.value) })}
                   placeholder="0"
+                  className="text-sm"
                 />
               </div>
             </div>
@@ -192,27 +200,27 @@ export default function AdminSettings() {
         {/* Features */}
         <Card>
           <CardHeader>
-            <CardTitle>Features</CardTitle>
-            <CardDescription>Enable or disable store features</CardDescription>
+            <CardTitle className="text-lg sm:text-xl">Features</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Enable or disable store features</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-2">
               <Checkbox id="enableReviews" />
-              <Label htmlFor="enableReviews">Enable Product Reviews</Label>
+              <Label htmlFor="enableReviews" className="text-sm">Enable Product Reviews</Label>
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox id="enableWishlist" />
-              <Label htmlFor="enableWishlist">Enable Wishlist</Label>
+              <Label htmlFor="enableWishlist" className="text-sm">Enable Wishlist</Label>
             </div>
             <div className="flex items-center space-x-2">
               <Checkbox id="enableCoupons" />
-              <Label htmlFor="enableCoupons">Enable Coupons</Label>
+              <Label htmlFor="enableCoupons" className="text-sm">Enable Coupons</Label>
             </div>
           </CardContent>
         </Card>
 
         <div className="flex justify-end">
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" disabled={isPending} className="w-full sm:w-auto">
             <Save className="mr-2 h-4 w-4" />
             {isPending ? 'Saving...' : 'Save Settings'}
           </Button>

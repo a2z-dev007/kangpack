@@ -267,29 +267,31 @@ export default function AdminOrders() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="flex flex-col gap-4">
         <div>
-          <h1 className="text-4xl font-black tracking-tight text-[#6B4A2D]">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-[#6B4A2D]">
             Orders
           </h1>
-          <p className="text-muted-foreground mt-1 text-lg">
+          <p className="text-muted-foreground mt-1 text-sm sm:text-base md:text-lg">
             Manage your store's sales and fulfillment cycle
           </p>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           <Button
             variant="outline"
-            className="rounded-full shadow-sm bg-white border-slate-200 h-11 px-6"
+            className="rounded-full shadow-sm bg-white border-slate-200 h-10 sm:h-11 px-3 sm:px-6 text-xs sm:text-sm"
           >
-            <Download className="h-4 w-4 mr-2" />
-            Export
+            <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="hidden xs:inline">Export</span>
+            <span className="xs:hidden">Export</span>
           </Button>
           <Button
             onClick={() => setFilterOpen(true)}
-            className="rounded-full bg-[#6B4A2D] hover:bg-[#5A3E25] shadow-md border-none h-11 px-6"
+            className="rounded-full bg-[#6B4A2D] hover:bg-[#5A3E25] shadow-md border-none h-10 sm:h-11 px-3 sm:px-6 text-xs sm:text-sm flex-1 sm:flex-none"
           >
-            <Filter className="h-4 w-4 mr-2" />
-            Advanced Filters
+            <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="hidden xs:inline">Advanced Filters</span>
+            <span className="xs:hidden">Filters</span>
           </Button>
 
           {(search ||
@@ -299,10 +301,10 @@ export default function AdminOrders() {
             <Button
               variant="outline"
               onClick={resetFilters}
-              className="rounded-full shadow-sm bg-white border-red-200 h-11 px-6 text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300 transition-all"
+              className="rounded-full shadow-sm bg-white border-red-200 h-10 sm:h-11 px-3 sm:px-6 text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300 transition-all text-xs sm:text-sm"
               title="Reset all filters"
             >
-              <RotateCcw className="h-4 w-4 mr-2" />
+              <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
               Reset
             </Button>
           )}
@@ -310,21 +312,21 @@ export default function AdminOrders() {
       </div>
 
       {/* Main Search & Status Filters */}
-      <div className="bg-white/50 backdrop-blur-sm border border-slate-200 rounded-3xl p-6 shadow-sm">
-        <div className="flex flex-col lg:flex-row gap-6">
+      <div className="bg-white/50 backdrop-blur-sm border border-slate-200 rounded-3xl p-4 sm:p-6 shadow-sm">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
           <div className="relative flex-1">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
             <Input
-              placeholder="Search by order #, email, or customer name..."
+              placeholder="Search by order #, email..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="pl-12 h-14 rounded-2xl border-slate-200 bg-white shadow-inner text-lg focus-visible:ring-[#6B4A2D]"
+              className="pl-10 sm:pl-12 h-12 sm:h-14 rounded-2xl border-slate-200 bg-white shadow-inner text-sm sm:text-base lg:text-lg focus-visible:ring-[#6B4A2D]"
             />
           </div>
-          <div className="flex flex-wrap items-center gap-2 bg-slate-100 p-1.5 rounded-2xl h-fit self-center">
+          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 bg-slate-100 p-1 sm:p-1.5 rounded-2xl h-fit self-center w-full lg:w-auto overflow-x-auto">
             {[
               "all",
               "pending",
@@ -340,7 +342,7 @@ export default function AdminOrders() {
                   setPage(1);
                 }}
                 className={cn(
-                  "px-4 py-2 rounded-xl text-sm font-bold capitalize transition-all",
+                  "px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold capitalize transition-all whitespace-nowrap",
                   statusFilter === status
                     ? "bg-white text-[#6B4A2D] shadow-sm transform-none"
                     : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50",

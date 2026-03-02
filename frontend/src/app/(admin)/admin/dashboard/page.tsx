@@ -270,44 +270,44 @@ export default function AdminDashboard() {
       <div className="max-w-10xl mx-auto space-y-6">
         {/* HEADER */}
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-          <p className="text-muted-foreground mt-1">
+          <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Dashboard</h1>
+          <p className="text-sm sm:text-base text-muted-foreground mt-1">
             Real-time overview of your store performance
           </p>
         </div>
 
         {/* STAT CARDS */}
-        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 xl:grid-cols-4">
           {statCards.map((stat) => {
             const Icon = stat.icon;
 
             return (
               <div
                 key={stat.title}
-                className="bg-card border border-border rounded-lg p-5 hover:border-primary/50 transition-colors"
+                className="bg-card border border-border rounded-lg p-4 sm:p-5 hover:border-primary/50 transition-colors"
               >
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium text-muted-foreground">
+                <div className="flex items-start justify-between mb-3 sm:mb-4">
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">
                       {stat.title}
                     </p>
-                    <p className="text-2xl font-bold text-foreground mt-1">
+                    <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">
                       {stat.value}
                     </p>
                   </div>
 
                   <div
-                    className={`h-10 w-10 rounded-full ${stat.iconBg} flex items-center justify-center text-primary-foreground`}
+                    className={`h-9 w-9 sm:h-10 sm:w-10 rounded-full ${stat.iconBg} flex items-center justify-center text-primary-foreground flex-shrink-0`}
                   >
                     <Icon />
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-muted-foreground">
+                <div className="flex items-center justify-between text-xs sm:text-sm gap-2">
+                  <span className="text-muted-foreground truncate">
                     {stat.description}
                   </span>
-                  <span className="flex items-center gap-1 text-success font-medium">
+                  <span className="flex items-center gap-1 text-success font-medium flex-shrink-0">
                     <TrendingUpIcon />
                     {stat.trend}
                   </span>
@@ -319,31 +319,31 @@ export default function AdminDashboard() {
 
         {/* ALERT */}
         {(stats?.products?.lowStock || 0) > 0 && (
-          <div className="bg-primary/5 border border-primary/10 rounded-lg p-5">
-            <div className="flex items-center gap-4">
+          <div className="bg-primary/5 border border-primary/10 rounded-lg p-4 sm:p-5">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
               <div className="h-10 w-10 rounded-full bg-gradient-variant-2 flex items-center justify-center text-primary-foreground flex-shrink-0">
                 <AlertTriangleIcon />
               </div>
 
-              <div className="flex-1">
-                <p className="font-semibold text-foreground">
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-foreground text-sm sm:text-base">
                   Low Stock Warning
                 </p>
-                <p className="text-sm text-muted-foreground mt-0.5">
+                <p className="text-xs sm:text-sm text-muted-foreground mt-0.5">
                   {stats?.products?.lowStock} products need restocking
                 </p>
               </div>
 
-              <button className="px-4 py-2 bg-gradient-variant-2 hover:opacity-90 text-primary-foreground text-sm font-medium rounded-lg transition-colors flex items-center gap-2">
+              <Link href="/admin/inventory" className="w-full sm:w-auto px-4 py-2 bg-gradient-variant-2 hover:opacity-90 text-primary-foreground text-xs sm:text-sm font-medium rounded-lg transition-colors flex items-center justify-center gap-2">
                 Fix Now
                 <ArrowUpRightIcon />
-              </button>
+              </Link>
             </div>
           </div>
         )}
 
         {/* QUICK STATS */}
-        <div className="grid gap-5 md:grid-cols-3">
+        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
           <QuickStat
             title="Processing Orders"
             value={stats?.orders?.processingOrders || 0}
@@ -377,10 +377,10 @@ export default function AdminDashboard() {
                   Recent Orders
                 </h3>
               </div>
-              <button className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+              <Link href="/admin/orders" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
                 View All
                 <ArrowUpRightIcon />
-              </button>
+              </Link>
             </div>
 
             <div className="space-y-3">
@@ -434,10 +434,10 @@ export default function AdminDashboard() {
                   New Customers
                 </h3>
               </div>
-              <button className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+              <Link href="/admin/customers" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
                 View All
                 <ArrowUpRightIcon />
-              </button>
+              </Link>
             </div>
 
             <div className="space-y-3">
@@ -499,14 +499,14 @@ function QuickStat({
   const colors = colorClasses[color as keyof typeof colorClasses];
 
   return (
-    <div className="bg-card border border-border rounded-lg p-5">
+    <div className="bg-card border border-border rounded-lg p-4 sm:p-5">
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-muted-foreground">{title}</p>
-          <p className="text-2xl font-bold text-foreground mt-1">{value}</p>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs sm:text-sm font-medium text-muted-foreground truncate">{title}</p>
+          <p className="text-xl sm:text-2xl font-bold text-foreground mt-1">{value}</p>
         </div>
         <div
-          className={`h-10 w-10 rounded-full ${colors.bg} flex items-center justify-center ${colors.text}`}
+          className={`h-9 w-9 sm:h-10 sm:w-10 rounded-full ${colors.bg} flex items-center justify-center ${colors.text} flex-shrink-0`}
         >
           <Icon />
         </div>

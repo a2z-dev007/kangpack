@@ -49,12 +49,12 @@ export default function AdminCMS() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">CMS Pages</h1>
-          <p className="text-muted-foreground">Manage static content pages like About, Privacy, etc.</p>
+          <h1 className="text-2xl sm:text-3xl font-bold">CMS Pages</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">Manage static content pages like About, Privacy, etc.</p>
         </div>
-        <Button onClick={openAddModal}>
+        <Button onClick={openAddModal} className="w-full sm:w-auto">
           <Plus className="mr-2 h-4 w-4" />
           Create Page
         </Button>
@@ -84,30 +84,30 @@ export default function AdminCMS() {
           ) : (
             <div className="space-y-4">
               {pages.map((page: any) => (
-                <div key={page.id || page._id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors group">
-                  <div className="flex items-center gap-4">
-                    <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                      <FileText className="h-6 w-6" />
+                <div key={page.id || page._id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 border rounded-lg hover:bg-muted/50 transition-colors group gap-3 sm:gap-0">
+                  <div className="flex items-start gap-3 sm:gap-4 flex-1 w-full sm:w-auto min-w-0">
+                    <div className="p-2 bg-muted rounded-lg group-hover:bg-primary/10 group-hover:text-primary transition-colors flex-shrink-0">
+                      <FileText className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
-                    <div>
-                      <p className="font-bold text-lg">{page.title}</p>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                        <Globe className="h-3 w-3" />
-                        <span>/{page.slug}</span>
-                        <span>•</span>
-                        <span>Updated {formatDate(page.updatedAt)}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-base sm:text-lg truncate">{page.title}</p>
+                      <div className="flex flex-wrap items-center gap-1 sm:gap-2 text-xs sm:text-sm text-muted-foreground mt-1">
+                        <Globe className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate">/{page.slug}</span>
+                        <span className="hidden sm:inline">•</span>
+                        <span className="truncate">Updated {formatDate(page.updatedAt)}</span>
                       </div>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={page.isActive ? 'default' : 'secondary'}>
+                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <Badge variant={page.isActive ? 'default' : 'secondary'} className="text-xs">
                       {page.isActive ? 'Published' : 'Draft'}
                     </Badge>
-                    <Button variant="ghost" size="icon" onClick={() => openEditModal(page)}>
-                      <Edit className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10" onClick={() => openEditModal(page)}>
+                      <Edit className="h-3 w-3 sm:h-4 sm:w-4" />
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => openDeleteModal(page)}>
-                      <Trash2 className="h-4 w-4 text-destructive" />
+                    <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10" onClick={() => openDeleteModal(page)}>
+                      <Trash2 className="h-3 w-3 sm:h-4 sm:w-4 text-destructive" />
                     </Button>
                   </div>
                 </div>
