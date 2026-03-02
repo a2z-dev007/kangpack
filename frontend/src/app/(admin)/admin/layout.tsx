@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { ROUTES } from "@/lib/constants";
@@ -102,7 +102,7 @@ export default function AdminLayout({
   const { mutate: logout } = useLogout();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState<string[]>(["Ecommerce"]);
-
+  const router = useRouter();
   // Verify session on mount
   const {
     data: userData,
@@ -128,9 +128,11 @@ export default function AdminLayout({
   useEffect(() => {
     if (!isVerifying) {
       if (!isAuthenticated) {
-        window.location.href = ROUTES.LOGIN;
+        // Don't redirect immediately, let the component handle loading state
+        // Only redirect if trying to access admin without auth
+        return;
       } else if (user?.role !== "admin" && user?.role !== "staff") {
-        window.location.href = ROUTES.HOME;
+        router.push(ROUTES.HOME);
       }
     }
   }, [isAuthenticated, user, isVerifying]);
@@ -145,6 +147,25 @@ export default function AdminLayout({
     return (
       <div className="h-screen w-screen flex items-center justify-center bg-brand-beige">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#6B4A2D]"></div>
+      </div>
+    );
+  }
+
+  if (!isVerifying && !isAuthenticated) {
+    // Show a proper message instead of just redirecting
+    return (
+      <div className="h-screen w-screen flex items-center justify-center bg-brand-beige">
+        <div className="text-center space-y-4">
+          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">
+            Access Denied
+          </h2>
+          <p className="text-slate-600 dark:text-slate-400">
+            Please login as an admin or staff member to access this area.
+          </p>
+          <Button onClick={() => router.push(ROUTES.LOGIN)}>
+            Go to Login
+          </Button>
+        </div>
       </div>
     );
   }

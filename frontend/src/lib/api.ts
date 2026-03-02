@@ -111,9 +111,9 @@ api.interceptors.response.use(
       } catch (refreshError) {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
-        if (typeof window !== 'undefined') {
-          window.location.href = ROUTES.LOGIN;
-        }
+        // Don't automatically redirect to login
+        // Let the component handle unauthorized state
+        console.error('Token refresh failed:', refreshError);
         return Promise.reject(refreshError);
       }
     }

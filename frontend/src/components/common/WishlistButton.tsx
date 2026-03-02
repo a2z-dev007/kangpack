@@ -34,7 +34,7 @@ export const WishlistButton: React.FC<WishlistButtonProps> = ({
 
     if (!isAuthenticated) {
       toast.error("Please login to add items to wishlist");
-      router.push(ROUTES.LOGIN);
+      // Don't redirect - let user continue browsing
       return;
     }
 

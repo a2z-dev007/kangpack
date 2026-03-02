@@ -78,6 +78,7 @@ export function useLogout() {
   const { setUser } = useAuth();
   const router = useRouter();
   const queryClient = useQueryClient();
+  
 
   return useMutation({
     mutationFn: () => authApi.logout(),
@@ -85,7 +86,8 @@ export function useLogout() {
       setUser(null);
       queryClient.clear();
       toast.success('Logged out successfully');
-      window.location.href = ROUTES.LOGIN;
+      // Redirect to home page instead of login page
+      window.location.href = ROUTES.HOME;
     },
   });
 }
