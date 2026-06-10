@@ -40,25 +40,25 @@ const ProductCard: React.FC<{
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: false, margin: "-50px" }}
       transition={{ duration: 0.6, delay: index * 0.1 }}
-      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 flex flex-col h-full"
+      className="group relative bg-white/[0.02] border border-white/5 rounded-2xl overflow-hidden shadow-2xl dark-glass-hover transition-all duration-500 flex flex-col h-full"
     >
       <Link
         href={ROUTES.PRODUCT_DETAIL(product.slug)}
         className="flex-grow flex flex-col"
       >
         {/* Image Container */}
-        <div className="aspect-[16/11] relative overflow-hidden bg-brand-beige/20">
+        <div className="aspect-[16/11] relative overflow-hidden bg-white/5">
           <div className="absolute top-4 left-4 z-10 flex gap-2">
             {tags.map((tag, i) => (
               <span
                 key={i}
-                className="px-3 py-1 bg-white/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-brand-brown rounded-full"
+                className="px-3 py-1 bg-black/40 border border-white/10 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-[#a67c52] rounded-full"
               >
                 {tag}
               </span>
             ))}
             {product.stock <= 5 && product.stock > 0 && (
-              <span className="px-3 py-1 bg-red-500/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white rounded-full">
+              <span className="px-3 py-1 bg-red-500/80 border border-red-500/20 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white rounded-full">
                 Low Stock
               </span>
             )}
@@ -68,7 +68,7 @@ const ProductCard: React.FC<{
           <div className="absolute top-4 right-4 z-20">
             <WishlistButton 
               productId={product.id || (product as any)._id} 
-              className="bg-white/80 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-all shadow-sm"
+              className="bg-black/40 border border-white/10 backdrop-blur-sm p-2 rounded-full hover:bg-black/60 transition-all shadow-sm text-white"
             />
           </div>
 
@@ -81,11 +81,11 @@ const ProductCard: React.FC<{
           </div>
 
           {/* Overlay Action */}
-          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
             <motion.div
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="bg-white text-brand-brown px-6 py-3 rounded-full font-bold uppercase text-xs tracking-widest flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
+              className="bg-[#a67c52] text-white px-6 py-3 rounded-full font-bold uppercase text-xs tracking-widest flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300"
             >
               View Details <ArrowRight className="w-4 h-4" />
             </motion.div>
@@ -94,28 +94,28 @@ const ProductCard: React.FC<{
 
         <div className="p-5 md:p-6 flex flex-col flex-grow">
           <div className="flex justify-between items-start mb-3">
-            <span className="text-[10px] md:text-xs font-bold text-brand-brown/40 uppercase tracking-widest line-clamp-1">
+            <span className="text-[10px] md:text-xs font-bold text-white/30 uppercase tracking-widest line-clamp-1">
               {product.category?.name || "Collection"}
             </span>
-            <span className="text-brand-brown font-bold text-lg md:text-xl whitespace-nowrap ml-4">
+            <span className="text-[#a67c52] font-bold text-lg md:text-xl whitespace-nowrap ml-4 drop-shadow-[0_0_10px_rgba(166,124,82,0.15)]">
               {formatPrice(product.price)}
             </span>
           </div>
-          <h3 className="text-xl md:text-2xl font-bold text-brand-brown mb-2 group-hover:text-brand-accent transition-colors line-clamp-2">
+          <h3 className="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-[#a67c52] transition-colors line-clamp-2">
             {product.name}
           </h3>
-          <p className="text-brand-brown/60 text-sm md:text-base leading-relaxed mb-4 line-clamp-2 flex-grow">
+          <p className="text-white/50 text-sm md:text-base leading-relaxed mb-4 line-clamp-2 flex-grow">
             {product.description?.slice(0, 100) + "..."}
           </p>
-          <div className="pt-4 border-t border-brand-brown/5 flex items-center justify-between mt-auto">
-            <div className="flex gap-1 text-[#D4CEC4]">
+          <div className="pt-4 border-t border-white/5 flex items-center justify-between mt-auto">
+            <div className="flex gap-1 text-[#a67c52]">
               {[...Array(5)].map((_, i) => (
                 <Star key={i} className="w-3.5 h-3.5 fill-current" />
               ))}
             </div>
             <button
               onClick={handleAddToCart}
-              className="p-2 rounded-full hover:bg-brand-beige transition-colors text-brand-brown z-20 relative"
+              className="p-2.5 rounded-full bg-white/5 hover:bg-white/10 text-white border border-white/10 z-20 relative transition-all duration-300"
               disabled={product.stock === 0}
             >
               <ShoppingBag className="w-4 h-4" />
@@ -138,10 +138,10 @@ const OurProducts: React.FC = () => {
   return (
     <section
       id="products"
-      className="py-16 md:py-24 bg-brand-beige/30 relative overflow-hidden"
+      className="py-16 md:py-24 bg-transparent relative overflow-hidden"
     >
       {/* Background Decoration */}
-      <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-b from-[#D4CEC4]/10 to-transparent -z-10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
+      <div className="absolute top-0 right-0 w-1/2 h-1/2 bg-gradient-to-b from-[#a67c52]/5 to-transparent -z-10 rounded-full blur-3xl transform translate-x-1/2 -translate-y-1/2"></div>
 
       <div className="max-w-7xl mx-auto px-6 md:px-12">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
@@ -150,10 +150,10 @@ const OurProducts: React.FC = () => {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6"
+              className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-lg mb-6"
             >
-              <div className="w-1.5 h-1.5 bg-[#6B4A2D] rounded-full"></div>
-              <span className="text-[11px] font-medium tracking-wide text-[#6B4A2D] uppercase">
+              <div className="w-1.5 h-1.5 bg-[#a67c52] rounded-full shadow-[0_0_8px_#a67c52]"></div>
+              <span className="text-[11px] font-medium tracking-wide text-[#a67c52] uppercase">
                 Collection
               </span>
             </motion.div>
@@ -170,7 +170,7 @@ const OurProducts: React.FC = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="text-[#8B7E6F] text-base md:text-lg max-w-lg"
+              className="text-white/40 text-base md:text-lg max-w-lg"
             >
               Thoughtfully designed gear to elevate your workflow, wherever life
               takes you.

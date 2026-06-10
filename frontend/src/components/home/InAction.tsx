@@ -22,17 +22,17 @@ const InAction: React.FC = () => {
   return (
     <section 
       ref={containerRef}
-      className="bg-brand-beige py-24 md:py-32 flex flex-col items-center overflow-hidden"
+      className="bg-transparent py-24 md:py-32 flex flex-col items-center overflow-hidden"
     >
       {/* Badge */}
       <motion.div 
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6 text-center"
+        className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-lg mb-6 text-center"
       >
-        <Play className="w-3 h-3 brand-primary" />
-        <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+        <Play className="w-3 h-3 text-[#a67c52] fill-[#a67c52]" />
+        <span className="text-[11px] font-medium tracking-wide text-[#a67c52] uppercase">
           In Action
         </span>
       </motion.div>
@@ -54,7 +54,7 @@ const InAction: React.FC = () => {
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ delay: 0.2 }}
-        className="light-text text-base md:text-xl max-w-2xl mx-auto leading-relaxed text-center mb-16 xl:mb-24 px-6"
+        className="text-white/40 text-base md:text-xl max-w-2xl mx-auto leading-relaxed text-center mb-16 xl:mb-24 px-6"
       >
         See how Kangpack transforms any space into a hands-free mobile
         workspace.
@@ -67,7 +67,7 @@ const InAction: React.FC = () => {
             opacity: springOpacity,
             rotateX: springRotateX,
           }}
-          className="relative aspect-video w-full rounded-[30px] md:rounded-[60px] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.15)] bg-black"
+          className="relative aspect-video w-full rounded-[30px] md:rounded-[60px] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.8),0_0_50px_rgba(166,124,82,0.15)] border border-white/10 bg-black"
         >
           {/* Video Element */}
           <video 

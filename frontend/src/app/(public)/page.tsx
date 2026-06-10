@@ -32,13 +32,11 @@ import GlobalVideoModal from '@/components/common/GlobalVideoModal';
 
 const HomePage: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-brand-beige">
+    <div className="min-h-screen flex flex-col font-sans bg-[#030303] text-white selection:bg-[#a67c52]/30 selection:text-white">
       <Navbar />
       <GlobalVideoModal />
       <main className="flex-grow">
-        <ScrollSection>
-          <Hero />
-        </ScrollSection>
+        <Hero />
 
         <SectionDivider />
 

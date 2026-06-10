@@ -50,12 +50,14 @@ export const ParallaxImage: React.FC<{ src: string; alt: string; className?: str
     const smoothY = useSpring(y, { stiffness: 100, damping: 30 });
 
     return (
-        <div ref={ref} className={`relative overflow-hidden ${className}`}>
+        <div ref={ref} className={`relative overflow-hidden w-full h-full ${className}`}>
             <motion.img
                 src={src}
                 alt={alt}
                 style={{ y: smoothY, scale }}
                 className="w-full h-full object-cover"
+                draggable={false}
+                loading="lazy"
             />
         </div>
     );

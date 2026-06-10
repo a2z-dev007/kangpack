@@ -40,11 +40,11 @@ const Features: React.FC = () => {
   ];
 
   return (
-    <section className="bg-brand-beige py-16 md:py-24 px-6 md:px-16 relative overflow-hidden">
+    <section className="bg-transparent py-16 md:py-24 px-6 md:px-16 relative overflow-hidden">
       {/* Background Blobs */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40">
-        <div className="absolute top-[10%] left-[-5%] w-[40%] h-[60%] bg-[#E8E2DA] rounded-full blur-[100px] transform -rotate-12"></div>
-        <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[60%] bg-[#E8E2DA] rounded-full blur-[100px]"></div>
+        <div className="absolute top-[10%] left-[-5%] w-[40%] h-[60%] bg-[#a67c52]/5 rounded-full blur-[120px] transform -rotate-12"></div>
+        <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[60%] bg-[#a67c52]/5 rounded-full blur-[120px]"></div>
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -55,14 +55,14 @@ const Features: React.FC = () => {
             viewport={{ once: false }}
             className="w-full md:w-1/3 mb-8 md:mb-0"
           >
-            <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg">
-              <div className="w-1.5 h-1.5 bg-[#6B4A2D] rounded-full"></div>
-              <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+            <div className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-lg">
+              <div className="w-1.5 h-1.5 bg-[#a67c52] rounded-full shadow-[0_0_8px_#a67c52]"></div>
+              <span className="text-[11px] font-medium tracking-wide text-[#a67c52] uppercase">
                 About Kangpack
               </span>
             </div>
           </motion.div>
-          <div className="w-full ">
+          <div className="w-full">
             <h2 className="text-3xl md:text-5xl leading-[1.2] tracking-tight font-bold">
               <motion.span
                 initial={{ opacity: 0, scale: 0.98 }}
@@ -74,12 +74,13 @@ const Features: React.FC = () => {
                 We turn mobility into productivity, redefining how modern
                 professionals work on the move.
               </motion.span>
+              <br />
               <motion.span
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: false }}
                 transition={{ duration: 0.8, delay: 0.2 }}
-                className="text-[#B8AFA1]"
+                className="text-white/40"
               >
                 A wearable workstation designed for comfort, focus, and freedom
                 anywhere.
@@ -88,9 +89,9 @@ const Features: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6 items-center bg-[#EEEAE2] p-2 rounded-[24px]">
+        <div className="flex flex-col lg:flex-row gap-8 items-center bg-white/[0.01] border border-white/5 p-4 rounded-[32px] backdrop-blur-md shadow-2xl">
           {/* Feature List Column */}
-          <div className="flex-1 flex flex-col gap-3">
+          <div className="flex-1 flex flex-col gap-4 w-full">
             {features.map((f, i) => (
               <motion.div
                 key={i}
@@ -98,16 +99,16 @@ const Features: React.FC = () => {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: false }}
                 transition={{ delay: i * 0.1 }}
-                className="bg-white/40 backdrop-blur-sm p-6 xl:p-4 rounded-2xl flex items-center gap-6 xl:gap-4 hover:bg-white/80 transition-all cursor-default group border border-white/20 shadow-sm"
+                className="bg-white/[0.02] backdrop-blur-md p-6 rounded-2xl flex items-center gap-6 hover:bg-white/[0.04] border border-white/5 hover:border-[#a67c52]/20 dark-glass-hover cursor-default group shadow-lg"
               >
-                <div className="w-12 h-12 xl:w-16 xl:h-16 bg-white rounded-xl flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-110 transition-transform">
-                  <div className="text-primary">{f.icon}</div>
+                <div className="w-12 h-12 xl:w-16 xl:h-16 bg-white/5 border border-white/10 rounded-xl flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-110 transition-transform">
+                  <div className="text-white">{f.icon}</div>
                 </div>
                 <div>
-                  <h4 className="font-bold text-primary mb-1 text-lg xl:text-xl">
+                  <h4 className="font-bold text-white mb-1 text-lg xl:text-xl">
                     {f.title}
                   </h4>
-                  <p className="text-primary/40 text-[14px] xl:text-base font-medium leading-tight">
+                  <p className="text-white/45 text-[14px] xl:text-base font-medium leading-tight">
                     {f.desc}
                   </p>
                 </div>
@@ -117,7 +118,7 @@ const Features: React.FC = () => {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="btn-premium p-7 xl:p-5 rounded-2xl flex items-center justify-between group transition-all mt-1 shadow-xl border-none opacity-90 hover:opacity-100"
+              className="btn-premium p-6 rounded-2xl flex items-center justify-between group transition-all mt-1 shadow-xl border-none opacity-90 hover:opacity-100"
             >
               <span className="font-bold text-base tracking-wide uppercase">
                 More about us
@@ -131,11 +132,10 @@ const Features: React.FC = () => {
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
-            className="lg:w-[48%] xl:h-[600px] rounded-2xl overflow-hidden shadow-2xl relative cursor-pointer"
-            onClick={() => openLightbox([side2.src], 0)}
+            className="lg:w-[48%] xl:h-[600px] w-full rounded-2xl overflow-hidden shadow-2xl relative cursor-pointer border border-white/5 hover:border-[#a67c52]/20 transition-all duration-500"
           >
             <ParallaxImage
-              src={side2.src}
+              src={"./assets/products/product-5/6.png"}
               alt="Person using Kangpack"
               className="w-full h-full"
             />

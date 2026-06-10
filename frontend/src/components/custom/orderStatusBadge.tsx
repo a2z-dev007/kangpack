@@ -1,8 +1,5 @@
-import { OrderStatus } from "@/lib/utils";
+import { OrderStatus } from "@/types";
 import { BadgeConfig } from "./types/orderStatusBadgeType";
-
-
-
 
 export type BadgeVariant =
     | "brand"
@@ -14,7 +11,7 @@ export type BadgeVariant =
 
 export type BadgeAppearance = "filled" | "outline";
 
-export interface StatusBadgeConfig {
+export interface StatusBadgeConfig extends BadgeConfig {
     variant: BadgeVariant;
     appearance?: BadgeAppearance;
 }

@@ -61,7 +61,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
   }, [isHomePage]);
 
   useEffect(() => {
-    const count = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const count = cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0);
     setCartCount(count);
   }, [cartItems]);
 
@@ -82,12 +82,20 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
   const isDark = darkText || scrolled || solid;
   const isSolid = solid || scrolled;
 
-  const textColorClass = isDark ? "text-[#6B4A2D]" : "text-white";
-  const textColorClassHover = isDark
+  const textColorClass = isHomePage
+    ? "text-white"
+    : isDark
+    ? "text-[#6B4A2D]"
+    : "text-white";
+  const textColorClassHover = isHomePage
+    ? "hover:text-white/80"
+    : isDark
     ? "hover:text-[#6B4A2D]/80"
     : "hover:text-white/80";
   const bgColorClass = isSolid
-    ? "bg-white/90 backdrop-blur-md shadow-sm py-4"
+    ? isHomePage
+      ? "bg-black/75 border-b border-white/5 backdrop-blur-md shadow-lg py-4"
+      : "bg-white/90 backdrop-blur-md shadow-sm py-4"
     : "bg-transparent py-10 shadow-none";
 
   // ... (lock scroll effect) ...
@@ -123,7 +131,9 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
                   src={ASSETS.LOGO}
                   alt="Kangpack Logo"
                   className={`h-6 md:h-8 transition-all duration-300 ${
-                    !logoScrolled && isHomePage
+                    isHomePage
+                      ? "brightness-0 invert"
+                      : !logoScrolled
                       ? "brightness-100"
                       : isDark
                       ? "brightness-100"
@@ -137,7 +147,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
 
         {/* Desktop Navigation Links (Center) */}
         <div
-          className={`hidden lg:flex gap-4 xl:gap-8 text-xs xl:text-sm font-bold uppercase tracking-widest ${isDark ? "text-[#6B4A2D]/90" : "text-white/90"}`}
+          className={`hidden lg:flex gap-4 xl:gap-8 text-xs xl:text-sm font-bold uppercase tracking-widest ${(isDark && !isHomePage) ? "text-[#6B4A2D]/90" : "text-white/90"}`}
         >
           {navLinks.map((link, index) => (
             <Link key={link.name} href={link.href} passHref>
@@ -153,7 +163,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
               >
                 {link.name}
                 <span
-                  className={`absolute -bottom-2 left-0 w-0 h-[2px] ${isDark ? "bg-[#6B4A2D]" : "bg-white"} transition-all group-hover:w-full duration-300`}
+                  className={`absolute -bottom-2 left-0 w-0 h-[2px] ${(isDark && !isHomePage) ? "bg-[#6B4A2D]" : "bg-white"} transition-all group-hover:w-full duration-300`}
                 />
               </motion.span>
             </Link>

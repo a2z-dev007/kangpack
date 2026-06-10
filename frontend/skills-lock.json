@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "frontend-design": {
+      "source": "blogic-cz/blogic-marketplace",
+      "sourceType": "github",
+      "skillPath": "template-ts/skills/frontend-design/SKILL.md",
+      "computedHash": "7135eba1aeaedf734fb910a2f4d1f3ec5cf08bde1dbfaef79a3b6190b781813a"
+    },
+    "frontend-design-system": {
+      "source": "akillness/oh-my-skills",
+      "sourceType": "github",
+      "skillPath": ".agent-skills/frontend-design-system/SKILL.md",
+      "computedHash": "b2462805111fefe7433eb0a5635793aa11ffe02c245eaede341c07c989317ffd"
+    },
+    "vercel-react-best-practices": {
+      "source": "akillness/oh-my-skills",
+      "sourceType": "github",
+      "skillPath": ".agent-skills/vercel-react-best-practices/SKILL.md",
+      "computedHash": "4897ec17d4085760347773a94425b25752def80c49dc603304c31a0ff46c305d"
+    }
+  }
+}

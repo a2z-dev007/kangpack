@@ -66,7 +66,7 @@ const OfficeAnywhere: React.FC = () => {
   };
 
   return (
-    <section className="py-16 md:py-24 overflow-hidden">
+    <section className="py-16 md:py-24 bg-transparent overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-10 md:mb-12">
@@ -75,10 +75,10 @@ const OfficeAnywhere: React.FC = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: false }}
-            className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6"
+            className="inline-flex items-center gap-2 bg-white/5 border border-white/10 px-4 py-2 rounded-lg mb-6"
           >
-            <ImageIcon className="w-3 h-3 brand-primary" />
-            <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+            <ImageIcon className="w-3 h-3 text-[#a67c52]" />
+            <span className="text-[11px] font-medium tracking-wide text-[#a67c52] uppercase">
               The Experience
             </span>
           </motion.div>
@@ -97,7 +97,7 @@ const OfficeAnywhere: React.FC = () => {
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
             viewport={{ once: false }}
-            className="light-text text-sm md:text-base max-w-2xl mx-auto leading-relaxed"
+            className="text-white/40 text-sm md:text-base max-w-2xl mx-auto leading-relaxed"
           >
             Turn any space into productive workspace instantly, comfortably,
             effortlessly.
@@ -110,19 +110,19 @@ const OfficeAnywhere: React.FC = () => {
         {/* Previous Button */}
         <button
           onClick={() => scroll("left")}
-          className="absolute left-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 bg-white/90 hover:bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100"
+          className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 bg-black/40 border border-white/10 hover:bg-black/60 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 backdrop-blur-md"
           aria-label="Previous"
         >
-          <ChevronLeft className="w-6 h-6 text-[#6B5D4F]" />
+          <ChevronLeft className="w-6 h-6 text-[#a67c52]" />
         </button>
 
         {/* Next Button */}
         <button
           onClick={() => scroll("right")}
-          className="absolute right-0 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 bg-white/90 hover:bg-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100"
+          className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-12 h-12 md:w-14 md:h-14 bg-black/40 border border-white/10 hover:bg-black/60 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 opacity-0 group-hover:opacity-100 backdrop-blur-md"
           aria-label="Next"
         >
-          <ChevronRight className="w-6 h-6 text-[#6B5D4F]" />
+          <ChevronRight className="w-6 h-6 text-[#a67c52]" />
         </button>
 
         <div
@@ -146,7 +146,7 @@ const OfficeAnywhere: React.FC = () => {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: false }}
                 transition={{ delay: index * 0.05 }}
-                className="flex-shrink-0 w-[280px] md:w-[450px] xl:w-[550px] h-[350px] md:h-[450px] xl:h-[550px] rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.18)] transition-shadow duration-300 cursor-pointer"
+                className="flex-shrink-0 w-[280px] md:w-[450px] xl:w-[550px] h-[350px] md:h-[450px] xl:h-[550px] rounded-2xl md:rounded-3xl overflow-hidden shadow-2xl border border-white/5 hover:border-[#a67c52]/20 hover:shadow-[#a67c52]/5 transition-all duration-300 cursor-pointer"
                 whileHover={{ scale: 1.02, y: -5 }}
                 onClick={() => openLightbox(carouselImages, index)}
               >

@@ -13,7 +13,7 @@ const SectionDivider: React.FC = () => {
                     whileInView={{ scaleX: 1, opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="h-[1px] bg-brand-brown/10 flex-1 origin-right"
+                    className="h-[1px] bg-white/10 flex-1 origin-right"
                 />
 
                 {/* Center Cross */}
@@ -22,7 +22,7 @@ const SectionDivider: React.FC = () => {
                     whileInView={{ scale: 1, rotate: 0, opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 0.8, delay: 0.5, ease: "backOut" }}
-                    className="px-4 text-brand-brown/30 text-sm font-light select-none z-10 bg-brand-beige"
+                    className="px-4 text-white/30 text-sm font-light select-none z-10 bg-[#030303]"
                 >
                     +
                 </motion.div>
@@ -33,7 +33,7 @@ const SectionDivider: React.FC = () => {
                     whileInView={{ scaleX: 1, opacity: 1 }}
                     viewport={{ once: true }}
                     transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-                    className="h-[1px] bg-brand-brown/10 flex-1 origin-left"
+                    className="h-[1px] bg-white/10 flex-1 origin-left"
                 />
             </div>
         </div>

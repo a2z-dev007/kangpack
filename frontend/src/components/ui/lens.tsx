@@ -92,7 +92,7 @@ export function Lens({
   return (
     <div
       ref={containerRef}
-      className={`relative z-20 overflow-hidden rounded-2xl cursor-none ${className || ""}`}
+      className={`relative z-20 overflow-hidden cursor-none ${className || ""}`}
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
       onMouseMove={handleMouseMove}

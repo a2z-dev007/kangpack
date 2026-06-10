@@ -14,7 +14,7 @@ const InlineImage = ({
   rotate?: number;
 }) => (
   <motion.div
-    className={`inline-flex items-center justify-center w-[1.3em] h-[1em] rounded-[24px] overflow-hidden translate-y-[0.1em] border-[4px] border-white shadow-lg mx-1 ${className}`}
+    className={`inline-flex items-center justify-center w-[1.3em] h-[1em] rounded-[24px] overflow-hidden translate-y-[0.1em] border-[3px] border-white/10 shadow-2xl mx-1 ${className}`}
     style={{ transform: `translateY(0.1em) rotate(${rotate}deg)` }}
     whileHover={{
       y: [0, -8, 0, -5, 0, -3, 0],
@@ -31,16 +31,16 @@ const InlineImage = ({
 
 const DesignedToMove: React.FC = () => {
   return (
-    <section className="py-16 md:py-24 bg-[#F9F7F4] overflow-hidden">
+    <section className="py-16 md:py-24 bg-transparent overflow-hidden">
       {/* Top Divider */}
       <div className="max-w-7xl mx-auto px-6 mb-24">
         <div className="relative flex items-center justify-center">
-          <div className="absolute h-[1px] w-full bg-[#6B4A2D]/10" />
+          <div className="absolute h-[1px] w-full bg-white/10" />
           <motion.div
             initial={{ scale: 0, rotate: -45 }}
             whileInView={{ scale: 1, rotate: 0 }}
             viewport={{ once: true }}
-            className="relative bg-[#F9F7F4] px-4 text-[#6B4A2D]/30 text-xs font-light select-none"
+            className="relative bg-[#030303] px-4 text-white/30 text-xs font-light select-none"
           >
             +
           </motion.div>
@@ -73,7 +73,7 @@ const DesignedToMove: React.FC = () => {
           </div>
 
           {/* Row 2 */}
-          <div className="text-[clamp(1.8rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] font-bold tracking-[-0.04em] text-[#B8AFA1] leading-[1]">
+          <div className="text-[clamp(1.8rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] font-bold tracking-[-0.04em] text-white/40 leading-[1]">
             Built with Purpose,
           </div>
 
@@ -82,14 +82,14 @@ const DesignedToMove: React.FC = () => {
             <InlineImage
               src={ASSETS.TICKERS.MAIN}
               rotate={-8}
-              className="mr-6 "
+              className="mr-6"
             />
             <span className="heading-gradient">Effortless Focus</span>
           </div>
 
           {/* Row 4 */}
           <div className="flex items-center flex-wrap justify-center text-[clamp(1.8rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] font-bold tracking-[-0.04em] leading-[1]">
-            <span className="text-[#B8AFA1]">Made for</span>
+            <span className="text-white/40">Made for</span>
             <InlineImage
               src={ASSETS.TICKERS.MAIN2}
               rotate={8}
@@ -103,12 +103,12 @@ const DesignedToMove: React.FC = () => {
       {/* Bottom Divider */}
       <div className="max-w-7xl mx-auto px-6 mt-24">
         <div className="relative flex items-center justify-center">
-          <div className="absolute h-[1px] w-full bg-[#6B4A2D]/10" />
+          <div className="absolute h-[1px] w-full bg-white/10" />
           <motion.div
             initial={{ scale: 0, rotate: -45 }}
             whileInView={{ scale: 1, rotate: 0 }}
             viewport={{ once: true }}
-            className="relative bg-[#F9F7F4] px-4 text-[#6B4A2D]/30 text-xs font-light select-none"
+            className="relative bg-[#030303] px-4 text-white/30 text-xs font-light select-none"
           >
             +
           </motion.div>

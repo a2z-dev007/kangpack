@@ -20,7 +20,7 @@ export default function CartPage() {
   const items = useAppSelector((state) => state.cart.items);
 
   const subtotal = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum: number, item: any) => sum + item.product.price * item.quantity,
     0,
   );
 
@@ -62,7 +62,7 @@ export default function CartPage() {
 
           <div className="grid lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2 space-y-6">
-              {items.map((item) => (
+              {items.map((item: any) => (
                 <motion.div
                   layout
                   key={item.productId}

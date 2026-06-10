@@ -27,7 +27,9 @@ const loadState = () => {
         return {
             cart: {
                 items: JSON.parse(serializedState),
-                isOpen: false
+                isOpen: false,
+                isLoading: false,
+                error: null
             }
         };
     } catch (err) {
@@ -40,11 +42,11 @@ export const makeStore = () => {
         reducer: {
             cart: cartReducer,
             checkout: checkoutReducer,
-        },
-        preloadedState: loadState(),
-        middleware: (getDefaultMiddleware) =>
-            getDefaultMiddleware().concat(localStorageMiddleware),
-    });
+        } as any,
+        preloadedState: loadState() as any,
+        middleware: (getDefaultMiddleware: any) =>
+            getDefaultMiddleware().concat(localStorageMiddleware as any),
+    } as any);
 };
 
 export type AppStore = ReturnType<typeof makeStore>;

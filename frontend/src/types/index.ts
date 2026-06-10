@@ -257,6 +257,12 @@ export interface PaginationParams {
   stockStatus?: string;
   minPrice?: string | number;
   maxPrice?: string | number;
+  paymentStatus?: string;
+  paymentMethod?: string;
+  startDate?: string;
+  endDate?: string;
+  minAmount?: string | number;
+  maxAmount?: string | number;
 }
 
 export interface PaginatedResponse<T> {
