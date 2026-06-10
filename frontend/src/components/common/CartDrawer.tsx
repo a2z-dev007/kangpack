@@ -24,7 +24,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const items = useAppSelector((state) => state.cart.items);
 
   const total = items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum: number, item: any) => sum + item.product.price * item.quantity,
     0,
   );
 
@@ -91,7 +91,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   </div>
                 </div>
               ) : (
-                items.map((item) => (
+                items.map((item: any) => (
                   <motion.div
                     layout
                     key={`${item.productId}-${item.variantId || ""}`}

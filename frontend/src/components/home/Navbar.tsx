@@ -61,7 +61,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
   }, [isHomePage]);
 
   useEffect(() => {
-    const count = cartItems.reduce((sum, item) => sum + item.quantity, 0);
+    const count = cartItems.reduce((sum: number, item: any) => sum + item.quantity, 0);
     setCartCount(count);
   }, [cartItems]);
 

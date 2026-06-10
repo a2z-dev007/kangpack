@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminApi, productsAdminApi, ordersAdminApi, usersAdminApi, couponsAdminApi, inventoryAdminApi, cmsAdminApi, settingsAdminApi, categoriesAdminApi } from './api';
+import { adminApi, productsAdminApi, ordersAdminApi, usersAdminApi, couponsAdminApi, inventoryAdminApi, cmsAdminApi, settingsAdminApi, categoriesAdminApi, reviewsAdminApi, paymentsAdminApi } from './api';
 import { PaginationParams } from '@/types';
 import { toast } from 'sonner';
 
@@ -466,6 +466,95 @@ export const useDeletePage = () => {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Failed to delete page');
+    },
+  });
+};
+
+// Reviews Queries
+export const useAdminReviews = (params?: PaginationParams) => {
+  return useQuery({
+    queryKey: ['admin', 'reviews', params],
+    queryFn: () => reviewsAdminApi.getAll(params),
+  });
+};
+
+export const useApproveReview = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: reviewsAdminApi.approve,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] });
+      toast.success('Review approved successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to approve review');
+    },
+  });
+};
+
+export const useRespondToReview = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, message }: { id: string; message: string }) =>
+      reviewsAdminApi.respond(id, message),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] });
+      toast.success('Response added successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to add response');
+    },
+  });
+};
+
+export const useDeleteReview = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: reviewsAdminApi.delete,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'reviews'] });
+      toast.success('Review deleted successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to delete review');
+    },
+  });
+};
+
+// Payments Queries
+export const useAdminPayments = (params?: PaginationParams) => {
+  return useQuery({
+    queryKey: ['admin', 'payments', params],
+    queryFn: () => paymentsAdminApi.getAll(params),
+  });
+};
+
+export const useUpdatePaymentTransactionStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      paymentsAdminApi.updateStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'payments'] });
+      toast.success('Payment status updated successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update payment status');
+    },
+  });
+};
+
+export const useProcessRefund = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, amount, reason }: { id: string; amount: number; reason?: string }) =>
+      paymentsAdminApi.processRefund(id, amount, reason),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'payments'] });
+      toast.success('Refund processed successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to process refund');
     },
   });
 };

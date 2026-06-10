@@ -39,6 +39,32 @@ const footerNav = {
   ],
 };
 
+const footerBrandingContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+    },
+  },
+};
+
+const footerBrandingChar = {
+  hidden: { 
+    opacity: 0, 
+    y: 80,
+  },
+  visible: {
+    opacity: 0.06,
+    y: 0,
+    transition: {
+      type: "spring",
+      damping: 15,
+      stiffness: 100,
+    },
+  },
+};
+
 export const Footer: React.FC = () => {
   return (
     <footer className="relative bg-[#F9F7F4] pt-20 overflow-hidden border-t border-[#6B4A2D]/10">
@@ -219,10 +245,30 @@ export const Footer: React.FC = () => {
       </div>
 
       {/* Massive Branding Background Text - Edge to Edge */}
-      <div className="relative w-full h-[18vw] mt-[-5vw] pointer-events-none select-none">
-        <h1 className="w-full text-[20vw] sm:text-[22vw] lg:text-[17vw] font-black text-center leading-none tracking-tighter uppercase whitespace-nowrap heading-gradient opacity-[0.06] translate-y-[4vw]">
-            KANGPACK
-          </h1>
+      <div className="relative w-full h-[18vw] mt-[-5vw] pointer-events-none select-none flex justify-center overflow-hidden">
+        <motion.h1 
+          variants={footerBrandingContainer}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          className="w-full text-[20vw] sm:text-[22vw] lg:text-[17vw] font-black text-center leading-none tracking-tighter uppercase whitespace-nowrap translate-y-[4vw] flex justify-center"
+        >
+          {"KANGPACK".split("").map((char, index) => (
+            <motion.span
+              key={index}
+              variants={footerBrandingChar}
+              whileHover={{ 
+                scale: 1.15, 
+                opacity: 0.22,
+                y: -15,
+                transition: { duration: 0.2, type: "spring", stiffness: 300 }
+              }}
+              className="inline-block cursor-default select-none pointer-events-auto heading-gradient"
+            >
+              {char}
+            </motion.span>
+          ))}
+        </motion.h1>
       </div>
     </footer>
   );

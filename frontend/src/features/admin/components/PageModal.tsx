@@ -78,7 +78,7 @@ export function PageModal({ isOpen, onClose, pageData }: PageModalProps) {
     const onSubmit = (values: PageFormValues) => {
         if (isEditing) {
             updatePage(
-                { id: pageData._id, data: values },
+                { id: pageData.id || pageData._id, data: values },
                 {
                     onSuccess: () => {
                         onClose();

@@ -15,7 +15,6 @@ import {
   LogOut,
   FolderTree,
   Warehouse,
-  FileText,
   Menu,
   X,
   Search,
@@ -33,6 +32,9 @@ import {
   Layers,
   BarChart3,
   Image as ImageIcon,
+  FileText,
+  Star,
+  CreditCard,
 } from "lucide-react";
 import { useLogout } from "@/features/auth/queries";
 import { useAuth } from "@/hooks/use-auth";
@@ -71,13 +73,15 @@ const navigationGroups = [
       { name: "Orders", href: ROUTES.ADMIN_ORDERS, icon: ShoppingCart },
       { name: "Customers", href: ROUTES.ADMIN_CUSTOMERS, icon: Users },
       { name: "Coupons", href: ROUTES.ADMIN_COUPONS, icon: Tag },
+      { name: "Reviews", href: ROUTES.ADMIN_REVIEWS, icon: Star },
+      { name: "Payments", href: ROUTES.ADMIN_PAYMENTS, icon: CreditCard },
     ],
   },
   {
     title: "SETTING",
     items: [
       { name: "Settings", href: ROUTES.ADMIN_SETTINGS, icon: Settings },
-      { name: "CMS Pages", href: "/admin/cms", icon: FileText },
+      // { name: "CMS Pages", href: ROUTES.ADMIN_CMS, icon: FileText },
     ],
   },
 ];

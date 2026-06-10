@@ -105,7 +105,7 @@ export default function OrdersPage() {
         ) : (
           orders.map((order: any) => (
             <Card
-              key={order._id}
+              key={order.id || order._id}
               className="border-none shadow-md hover:shadow-lg transition-all bg-white overflow-hidden group"
             >
               <CardContent className="p-0">

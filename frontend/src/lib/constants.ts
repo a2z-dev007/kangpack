@@ -22,6 +22,9 @@ export const ROUTES = {
   ADMIN_CUSTOMERS: '/admin/customers',
   ADMIN_COUPONS: '/admin/coupons',
   ADMIN_SETTINGS: '/admin/settings',
+  ADMIN_CMS: '/admin/cms',
+  ADMIN_REVIEWS: '/admin/reviews',
+  ADMIN_PAYMENTS: '/admin/payments',
 } as const;
 
 export const QUERY_KEYS = {

@@ -306,3 +306,54 @@ export const categoriesAdminApi = {
     return data;
   },
 };
+
+// Reviews Admin APIs
+export const reviewsAdminApi = {
+  getAll: async (params?: PaginationParams) => {
+    const { data } = await api.get('/reviews', { params });
+    return data;
+  },
+
+  getById: async (id: string) => {
+    const { data } = await api.get(`/reviews/${id}`);
+    return data.data;
+  },
+
+  approve: async (id: string) => {
+    const { data } = await api.post(`/reviews/${id}/approve`);
+    return data.data;
+  },
+
+  respond: async (id: string, message: string) => {
+    const { data } = await api.post(`/reviews/${id}/respond`, { message });
+    return data.data;
+  },
+
+  delete: async (id: string) => {
+    const { data } = await api.delete(`/reviews/${id}`);
+    return data;
+  },
+};
+
+// Payments Admin APIs
+export const paymentsAdminApi = {
+  getAll: async (params?: PaginationParams) => {
+    const { data } = await api.get('/payments', { params });
+    return data;
+  },
+
+  getById: async (id: string) => {
+    const { data } = await api.get(`/payments/${id}`);
+    return data.data;
+  },
+
+  updateStatus: async (id: string, status: string) => {
+    const { data } = await api.put(`/payments/${id}/status`, { status });
+    return data.data;
+  },
+
+  processRefund: async (id: string, amount: number, reason?: string) => {
+    const { data } = await api.post(`/payments/${id}/refund`, { amount, reason });
+    return data.data;
+  },
+};

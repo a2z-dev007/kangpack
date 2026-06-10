@@ -1,5 +1,5 @@
 import { BadgeConfig } from "@/components/custom/types/orderStatusBadgeType";
-import { OrderStatus } from "@/lib/utils";
+import { OrderStatus } from "@/types";
 import {
     Clock,
     Loader2,

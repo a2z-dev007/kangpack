@@ -98,7 +98,7 @@ export default function CheckoutPage() {
 
   // Calculate totals based on backend logic
   const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum: number, item: any) => sum + item.product.price * item.quantity,
     0,
   );
   const tax = subtotal * 0.1; // 10% Tax
@@ -240,7 +240,7 @@ export default function CheckoutPage() {
           tax,
           shipping,
           total,
-          items: cartItems.map((item) => ({
+          items: cartItems.map((item: any) => ({
             name: item.product.name,
             price: item.product.price,
             quantity: item.quantity,
@@ -282,7 +282,7 @@ export default function CheckoutPage() {
                   tax,
                   shipping,
                   total,
-                  items: cartItems.map((item) => ({
+                  items: cartItems.map((item: any) => ({
                     name: item.product.name,
                     price: item.product.price,
                     quantity: item.quantity,
@@ -1005,7 +1005,7 @@ export default function CheckoutPage() {
                 </h2>
 
                 <div className="space-y-6 mb-8 max-h-[40vh] overflow-y-auto pr-2 scrollbar-thin">
-                  {cartItems.map((item) => (
+                  {cartItems.map((item: any) => (
                     <div
                       key={`${item.productId}-${item.variantId || ""}`}
                       className="flex gap-4"

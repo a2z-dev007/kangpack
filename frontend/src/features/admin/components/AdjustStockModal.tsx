@@ -64,7 +64,7 @@ export function AdjustStockModal({
 
   const onSubmit = (values: StockFormValues) => {
     adjustStock(
-      { productId: product._id, ...values },
+      { productId: product.id || product._id, ...values },
       {
         onSuccess: () => {
           onClose();

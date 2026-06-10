@@ -1,4 +1,4 @@
-import { OrderStatus } from "@/lib/utils";
+import { OrderStatus } from "@/types";
 import { BadgeConfig } from "./types/orderStatusBadgeType";
 
 
@@ -17,6 +17,7 @@ export type BadgeAppearance = "filled" | "outline";
 export interface StatusBadgeConfig {
     variant: BadgeVariant;
     appearance?: BadgeAppearance;
+    icon?: any;
 }
 
 /* 🔥 Single source of truth */
