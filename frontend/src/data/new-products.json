@@ -1,0 +1,102 @@
+{
+  "products": [
+    {
+      "id": "dual-side-reversible-kangpack",
+      "slug": "dual-side-reversible-kangpack-series",
+      "name": "Dual Side Reversible Kangpack Series",
+      "shortName": "DSR Kangpack",
+      "brandTagline": "Carry Smart. Live Your Way.",
+      "tagline": "Dual by Design. Flip It. Wear It. Own It.",
+      "highlight": "Two Styles. One Backpack.",
+      "description": "The DSR (Dual Side Reversible) Backpack Series offers two distinct looks in one smart backpack. It is designed for people who want variety in their everyday carry for school, college, work, or travel. Simply reverse the backpack to reveal a different colour and design combination for a fresh new look.",
+      "category": "Everyday Carry",
+      "featuredVariant": "Terra Noir DSR",
+      "isNew": true,
+      "isFeatured": true,
+      "poster": "/new-assets/dual-side-reversable/poster.png",
+      "images": {
+        "poster": "/new-assets/dual-side-reversable/poster.png",
+        "main": "/new-assets/dual-side-reversable/front-main.png",
+        "model": "/new-assets/dual-side-reversable/model.png",
+        "front1": "/new-assets/dual-side-reversable/front-1.png",
+        "front2": "/new-assets/dual-side-reversable/front-2.png",
+        "front3": "/new-assets/dual-side-reversable/front-3.png"
+      },
+      "features": [
+        { "label": "Reversible dual-side design", "icon": "repeat" },
+        { "label": "Spacious main compartment", "icon": "package" },
+        { "label": "Utility pockets", "icon": "layers" },
+        { "label": "Smooth zip closures", "icon": "zap" },
+        { "label": "Sturdy carry handle", "icon": "grip" },
+        { "label": "Comfortable adjustable shoulder straps", "icon": "backpack" },
+        { "label": "Ideal for school, college, office, and travel", "icon": "plane" }
+      ],
+      "variants": [
+        { "name": "Ocean Breeze DSR", "colors": ["#2563EB", "#FFFFFF"] },
+        { "name": "Terra Noir DSR", "colors": ["#1A1A1A", "#633927"], "featured": true },
+        { "name": "Black Frost DSR", "colors": ["#1A1A1A", "#F5F5F5"] },
+        { "name": "Blue Shadow DSR", "colors": ["#1A1A1A", "#1E3A5F"] }
+      ],
+      "trustBadges": [
+        { "title": "Premium Quality", "subtitle": "Built to Last", "icon": "shield" },
+        { "title": "Lightweight", "subtitle": "Carry with Ease", "icon": "leaf" },
+        { "title": "Versatile Design", "subtitle": "One Bag. Endless Uses.", "icon": "layers" },
+        { "title": "Trusted Brand", "subtitle": "Reliable. Durable. Stylish.", "icon": "star" }
+      ],
+      "accentColor": "#633927"
+    },
+    {
+      "id": "greystone-backpack",
+      "slug": "greystone-backpack",
+      "name": "Greystone Backpack",
+      "shortName": "Greystone",
+      "tagline": "Stay organized. Look confident. Carry Greystone.",
+      "description": "The Greystone Backpack is designed for those who appreciate understated style and everyday practicality. With its professional look and modern functionality, it is perfect for school, college, or the office. The clean silhouette and multiple stylish pockets make it a smart choice for daily use. Whether you are carrying books, notebooks, documents, or gadgets, Greystone offers spacious storage with comfortable shoulder straps, durable construction, and thoughtfully designed compartments for a hassle-free carrying experience.",
+      "category": "Professional",
+      "isNew": true,
+      "isFeatured": false,
+      "poster": "/new-assets/greystone/poster.png",
+      "images": {
+        "poster": "/new-assets/greystone/poster.png",
+        "front": "/new-assets/greystone/front.png",
+        "back": "/new-assets/greystone/back.png",
+        "model": "/new-assets/greystone/model.png"
+      },
+      "features": [
+        { "label": "Professional Look", "icon": "briefcase" },
+        { "label": "Multiple Stylish Pockets", "icon": "layers" },
+        { "label": "Spacious Storage", "icon": "bookOpen" },
+        { "label": "Comfortable Shoulder Straps", "icon": "backpack" },
+        { "label": "Durable Construction", "icon": "shield" }
+      ],
+      "accentColor": "#6B7280"
+    },
+    {
+      "id": "trailblazer-backpack",
+      "slug": "trailblazer-backpack",
+      "name": "Trailblazer Backpack",
+      "shortName": "Trailblazer",
+      "brandTagline": "Gear for Every Journey",
+      "tagline": "Made for Trails, Treks, and Beyond.",
+      "description": "Built for those who are always ready for the next adventure, the KangPack Trailblazer Backpack is designed to carry everything you need when the journey takes you beyond the ordinary. Its spacious main compartment easily accommodates clothing, camping gear, travel essentials, gadgets, and everyday necessities, making it ideal for trekking, hiking, weekend getaways, road trips, and outdoor adventures. Designed with comfort in mind, the Trailblazer features padded shoulder straps, multiple utility pockets, and durable construction for rugged use. Its rich saddle-brown finish gives it a distinctive outdoor-inspired look, while its practical design keeps your belongings organized and accessible wherever you go.",
+      "category": "Outdoor Adventure",
+      "isNew": true,
+      "isFeatured": false,
+      "poster": "/new-assets/trail-blazer/poster.png",
+      "images": {
+        "poster": "/new-assets/trail-blazer/poster.png",
+        "main": "/new-assets/trail-blazer/main.png",
+        "front": "/new-assets/trail-blazer/front.png",
+        "back": "/new-assets/trail-blazer/back.png"
+      },
+      "features": [
+        { "label": "Spacious Main Compartment", "icon": "package" },
+        { "label": "Multiple Utility Pockets", "icon": "layers" },
+        { "label": "Padded Shoulder Straps", "icon": "backpack" },
+        { "label": "Durable Construction", "icon": "shield" },
+        { "label": "Outdoor-Inspired Saddle-Brown Finish", "icon": "mountain" }
+      ],
+      "accentColor": "#92400E"
+    }
+  ]
+}

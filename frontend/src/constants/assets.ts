@@ -37,6 +37,35 @@ export const ASSETS = {
         CARD_4TH: '/assets/benefits/4th-card.png',
         CARD_5TH: '/assets/benefits/5th-card.png',
     },
+    NEW_PRODUCTS: {
+        DSR: {
+            POSTER: '/new-assets/dual-side-reversable/poster.png',
+            MAIN: '/new-assets/dual-side-reversable/front-main.png',
+            MODEL: '/new-assets/dual-side-reversable/model.png',
+        },
+        GREYSTONE: {
+            POSTER: '/new-assets/greystone/poster.png',
+            FRONT: '/new-assets/greystone/front.png',
+            MODEL: '/new-assets/greystone/model.png',
+        },
+        TRAILBLAZER: {
+            POSTER: '/new-assets/trail-blazer/poster.png',
+            MAIN: '/new-assets/trail-blazer/main.png',
+            FRONT: '/new-assets/trail-blazer/front.png',
+            BACK: '/new-assets/trail-blazer/back.png',
+        },
+        FLAGSHIP: {
+            MAIN: '/new-assets/flagship-main-product/main.png',
+            FRONT: '/new-assets/flagship-main-product/front.png',
+            MODEL: '/new-assets/flagship-main-product/model.png',
+            FRONT_MODEL: '/new-assets/flagship-main-product/front-model.png',
+            SIDE_MODEL: '/new-assets/flagship-main-product/side-model.png',
+            OPEN: '/new-assets/flagship-main-product/open.png',
+            SIDE_OPEN: '/new-assets/flagship-main-product/side-open.png',
+            BACK: '/new-assets/flagship-main-product/back.png',
+            MODEL_BACK: '/new-assets/flagship-main-product/model-back.png',
+        },
+    },
 } as const;
 
 export type Assets = typeof ASSETS;

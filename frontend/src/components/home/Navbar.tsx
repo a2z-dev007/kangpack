@@ -36,7 +36,6 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [logoScrolled, setLogoScrolled] = useState(false);
   const [showLogoutModal, setShowLogoutModal] = useState(false); // Add state
 
   const { isAuthenticated, user, logout } = useAuth();
@@ -50,9 +49,8 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
     const handleScroll = () => {
       // For the home page, the Hero section is very long (cinematic)
       // Otherwise, we use a standard small threshold.
-      const threshold = isHomePage ? window.innerHeight * 2.8 : 50;
+      const threshold = isHomePage ? window.innerHeight * 0.75 : 50;
       setScrolled(window.scrollY > threshold);
-      setLogoScrolled(window.scrollY > 50);
     };
 
     handleScroll();
@@ -123,11 +121,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
                   src={ASSETS.LOGO}
                   alt="Kangpack Logo"
                   className={`h-6 md:h-8 transition-all duration-300 ${
-                    !logoScrolled && isHomePage
-                      ? "brightness-100"
-                      : isDark
-                      ? "brightness-100"
-                      : "brightness-0 invert"
+                    isDark ? "brightness-100" : "brightness-0 invert"
                   }`}
                 />
               </div>

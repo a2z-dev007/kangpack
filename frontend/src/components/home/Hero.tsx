@@ -1,412 +1,660 @@
 "use client";
-import React, { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
+
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 import {
   motion,
-  useScroll,
-  useTransform,
+  AnimatePresence,
   useMotionValue,
   useSpring,
-  AnimatePresence,
-  useMotionValueEvent,
+  useTransform,
+  useReducedMotion,
 } from "framer-motion";
-import { Play, ArrowRight, ShieldCheck, Zap, Globe, Cpu, Smartphone, Briefcase, Maximize2, X } from "lucide-react";
-import PrimaryButton from "../common/PrimaryButton";
-import Link from "next/link";
-import { Lens } from "@/components/ui/lens"
-const SLIDES = [
-  {
-    id: "01",
-    pretitle: "Work Without Limits",
-    title1: "Work",
-    title2: "Anywhere",
-    highlight: "Portable Workstation",
-    description: "The world's first truly wearable workstation, engineered for those who demand excellence in every environment.",
-    image: "/assets/bag.png",
-    bg: "/assets/hero-bg.png",
-    accentColor: "text-[#a67c52]",
-    features: ["Portable Design", "Ergonomic Support", "Modular Storage"],
-    stats: [
-      { label: "Deployment", value: "0.1s" },
-      { label: "Waterproof", value: "100%" },
-      { label: "Warranty", value: "LIFETIME" },
-    ],
-  },
-  {
-    id: "02",
-    pretitle: "Technical Excellence",
-    title1: "Engineered",
-    title2: "Precision",
-    highlight: "Military-Grade Durability",
-    description: "Every stitch and seam is a testament to our commitment to durability and ergonomic perfection. Built to last a lifetime.",
-    image: "/assets/bag.png",
-    bg: "/assets/hero/Background-Image.png",
-    accentColor: "text-[#8b6a4e]",
-    features: ["Ballistic Nylon", "Reinforced Joints", "Tech Protection"],
-    stats: [
-      { label: "Stitch Count", value: "12k+" },
-      { label: "Tensile", value: "800N" },
-      { label: "Modular", value: "100%" },
-    ],
-  },
-  {
-    id: "03",
-    pretitle: "Urban Versatility",
-    title1: "Adaptive",
-    title2: "Lifestyle",
-    highlight: "Seamless Transition",
-    description: "Seamlessly transition from the rugged outdoors to the city streets. The only bag you'll ever need for work and play.",
-    image: "/assets/bag.png",
-    bg: "/assets/tickers/main.jpeg",
-    accentColor: "text-[#a67c52]",
-    features: ["City-Ready", "Office Sleek", "Adventure Tough"],
-    stats: [
-      { label: "Weight", value: "1.2kg" },
-      { label: "Adaptability", value: "Infinite" },
-      { label: "Capacity", value: "35L" },
-    ],
-  },
-];
+import { useSwipeable } from "react-swipeable";
+import {
+  ArrowRight,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  Star,
+  ShieldCheck,
+  ZoomIn,
+  Play,
+  CheckCircle2,
+  X,
+} from "lucide-react";
+import newProductsData from "@/data/new-products.json";
+import type { NewProduct, NewProductImages } from "@/types/newProduct";
+import { ASSETS } from "@/constants/assets";
+import PrimaryButton from "@/components/common/PrimaryButton";
+import { Lens } from "@/components/ui/lens";
+import { Lightbox, useLightbox } from "@/components/ui/Lightbox";
+import { cn } from "@/lib/utils";
+
+const products = newProductsData.products as NewProduct[];
+
+interface HeroSlide {
+  id: string;
+  shortName: string;
+  name: string;
+  brandTagline?: string;
+  tagline: string;
+  highlight?: string;
+  category: string;
+  accentColor: string;
+  isNew: boolean;
+  isFeatured: boolean;
+  heroImage: string;
+  secondaryImage?: string;
+  thumbImage: string;
+  posterBg: string;
+  galleryImages: string[];
+  features: string[];
+  variants?: NewProduct["variants"];
+}
+
+/** Product shots first, poster last — deduped. */
+const buildGalleryImages = (images: Record<string, string | undefined>): string[] => {
+  const entries = Object.entries(images).filter(([, src]) => Boolean(src)) as [
+    string,
+    string,
+  ][];
+  const ordered = [
+    ...entries.filter(([key]) => key !== "poster").map(([, src]) => src),
+    ...entries.filter(([key]) => key === "poster").map(([, src]) => src),
+  ];
+  return [...new Set(ordered)];
+};
+
+const buildGalleryFromProduct = (images: NewProductImages): string[] => {
+  const record: Record<string, string | undefined> = {
+    poster: images.poster,
+    main: images.main,
+    front: images.front,
+    back: images.back,
+    model: images.model,
+    front1: images.front1,
+    front2: images.front2,
+    front3: images.front3,
+  };
+  return buildGalleryImages(record);
+};
+
+const FLAGSHIP_GALLERY = buildGalleryImages({
+  frontModel: ASSETS.NEW_PRODUCTS.FLAGSHIP.FRONT_MODEL,
+  model: ASSETS.NEW_PRODUCTS.FLAGSHIP.MODEL,
+  main: ASSETS.NEW_PRODUCTS.FLAGSHIP.MAIN,
+  front: ASSETS.NEW_PRODUCTS.FLAGSHIP.FRONT,
+  open: ASSETS.NEW_PRODUCTS.FLAGSHIP.OPEN,
+  sideOpen: ASSETS.NEW_PRODUCTS.FLAGSHIP.SIDE_OPEN,
+  sideModel: ASSETS.NEW_PRODUCTS.FLAGSHIP.SIDE_MODEL,
+  back: ASSETS.NEW_PRODUCTS.FLAGSHIP.BACK,
+  modelBack: ASSETS.NEW_PRODUCTS.FLAGSHIP.MODEL_BACK,
+});
+
+const FLAGSHIP_SLIDE: HeroSlide = {
+  id: "flagship",
+  shortName: "Flagship",
+  name: "KangPack Flagship Series",
+  brandTagline: "Carry Smart. Live Your Way.",
+  tagline: "The ultimate wearable workstation — engineered for professionals on the move.",
+  highlight: "Premium Build. Infinite Versatility.",
+  category: "Flagship",
+  accentColor: "#A67C52",
+  isNew: true,
+  isFeatured: true,
+  heroImage: ASSETS.NEW_PRODUCTS.FLAGSHIP.FRONT_MODEL,
+  secondaryImage: ASSETS.NEW_PRODUCTS.FLAGSHIP.OPEN,
+  thumbImage: ASSETS.NEW_PRODUCTS.FLAGSHIP.MAIN,
+  posterBg: ASSETS.NEW_PRODUCTS.FLAGSHIP.SIDE_MODEL,
+  galleryImages: FLAGSHIP_GALLERY,
+  features: ["Modular Storage System", "Ergonomic Weight Balance", "Lifetime Durability"],
+};
+
+const buildSlides = (): HeroSlide[] => {
+  const fromJson: HeroSlide[] = products.map((product) => ({
+    id: product.id,
+    shortName: product.shortName,
+    name: product.name,
+    brandTagline: product.brandTagline,
+    tagline: product.tagline,
+    highlight: product.highlight,
+    category: product.category,
+    accentColor: product.accentColor,
+    isNew: product.isNew,
+    isFeatured: product.isFeatured,
+    heroImage:
+      product.images.model ??
+      product.images.main ??
+      product.images.front ??
+      product.poster,
+    secondaryImage:
+      product.images.main ??
+      product.images.front ??
+      product.images.front1,
+    thumbImage:
+      product.images.main ??
+      product.images.front ??
+      product.poster,
+    posterBg: product.poster,
+    galleryImages: buildGalleryFromProduct(product.images),
+    features: product.features.slice(0, 3).map((f) => f.label),
+    variants: product.variants,
+  }));
+
+  const featured = fromJson.find((s) => s.isFeatured) ?? fromJson[0];
+  const rest = fromJson.filter((s) => s.id !== featured.id);
+  return [featured, FLAGSHIP_SLIDE, ...rest];
+};
+
+const SLIDES = buildSlides();
+const AUTO_PLAY_MS = 7000;
+
+function useIsMobile(breakpoint = 1024) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${breakpoint - 1}px)`);
+    const update = () => setIsMobile(mq.matches);
+    update();
+    mq.addEventListener("change", update);
+    return () => mq.removeEventListener("change", update);
+  }, [breakpoint]);
+
+  return isMobile;
+}
 
 const Hero: React.FC = () => {
-  const targetRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: targetRef,
-    offset: ["start start", "end end"],
-  });
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [lightboxProductName, setLightboxProductName] = useState("");
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  
+  const stageRef = useRef<HTMLDivElement>(null);
+  const reduceMotion = useReducedMotion();
+  const isMobile = useIsMobile();
+  
+  const {
+    isOpen: isLightboxOpen,
+    images: lightboxImages,
+    currentIndex: lightboxIndex,
+    openLightbox,
+    closeLightbox,
+    setIndex: setLightboxIndex,
+  } = useLightbox();
 
-  const [activeSlide, setActiveSlide] = useState(0);
-  const [isVideoOpen, setIsVideoOpen] = useState(false);
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const slide = SLIDES[activeIndex] ?? SLIDES[0];
 
-  // Derive active slide from scroll progress using useMotionValueEvent
-  useMotionValueEvent(scrollYProgress, "change", (latest) => {
-    const slideIndex = Math.min(
-      Math.floor(latest * SLIDES.length),
-      SLIDES.length - 1
-    );
-    const clampedIndex = Math.max(0, slideIndex);
-    
-    // Functional update to avoid dependencies and redundant renders
-    setActiveSlide((prev) => (prev !== clampedIndex ? clampedIndex : prev));
-  });
-
-  // Mouse tracking for the pinned content
   const mouseX = useMotionValue(0.5);
   const mouseY = useMotionValue(0.5);
-  const springX = useSpring(mouseX, { stiffness: 50, damping: 20 });
-  const springY = useSpring(mouseY, { stiffness: 50, damping: 20 });
+  const springX = useSpring(mouseX, { stiffness: 60, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 60, damping: 20 });
+  const rotateY = useTransform(springX, [0, 1], [-6, 6]);
+  const rotateX = useTransform(springY, [0, 1], [4, -4]);
+  const parallaxX = useTransform(springX, [0, 1], [-12, 12]);
+  const parallaxY = useTransform(springY, [0, 1], [-8, 8]);
 
-  const rotateX = useTransform(springY, [0, 1], [5, -5]);
-  const rotateY = useTransform(springX, [0, 1], [-5, 5]);
-  const moveX = useTransform(springX, [0, 1], [-40, 40]);
-  const moveY = useTransform(springY, [0, 1], [-40, 40]);
+  const goTo = useCallback((index: number, dir?: number) => {
+    setProgress(0);
+    setDirection(dir ?? (index > activeIndex ? 1 : -1));
+    setActiveIndex((index + SLIDES.length) % SLIDES.length);
+  }, [activeIndex]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    const { clientX, clientY } = e;
-    const { innerWidth, innerHeight } = window;
-    mouseX.set(clientX / innerWidth);
-    mouseY.set(clientY / innerHeight);
+  const goNext = useCallback(() => {
+    goTo(activeIndex + 1, 1);
+  }, [activeIndex, goTo]);
+
+  const goPrev = useCallback(() => {
+    goTo(activeIndex - 1, -1);
+  }, [activeIndex, goTo]);
+
+  const openProductGallery = useCallback(
+    (targetSlide: HeroSlide, startSrc?: string) => {
+      const gallery =
+        targetSlide.galleryImages.length > 0
+          ? targetSlide.galleryImages
+          : [targetSlide.heroImage];
+      const src = startSrc ?? targetSlide.heroImage;
+      const startIndex = Math.max(0, gallery.indexOf(src));
+      setLightboxProductName(targetSlide.name);
+      openLightbox(gallery, startIndex);
+      setIsPaused(true);
+      setProgress(0);
+    },
+    [openLightbox],
+  );
+
+  const handleCloseLightbox = useCallback(() => {
+    closeLightbox();
+    setIsPaused(false);
+    setProgress(0);
+  }, [closeLightbox]);
+
+  useEffect(() => {
+    if (reduceMotion || isPaused || isLightboxOpen || isVideoModalOpen) return;
+
+    const tick = 50;
+    const id = window.setInterval(() => {
+      setProgress((prev) => {
+        const next = prev + tick / AUTO_PLAY_MS;
+        if (next >= 1) {
+          goTo(activeIndex + 1, 1);
+          return 0;
+        }
+        return next;
+      });
+    }, tick);
+
+    return () => window.clearInterval(id);
+  }, [activeIndex, goTo, isPaused, isLightboxOpen, isVideoModalOpen, reduceMotion]);
+
+  const swipeHandlers = useSwipeable({
+    onSwipedLeft: goNext,
+    onSwipedRight: goPrev,
+    onTap: () => openProductGallery(slide),
+    trackMouse: false,
+    preventScrollOnSwipe: true,
+    delta: 40,
+  });
+
+  const handleStageMove = (e: React.MouseEvent) => {
+    if (!stageRef.current || reduceMotion || isMobile) return;
+    const rect = stageRef.current.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width);
+    mouseY.set((e.clientY - rect.top) / rect.height);
   };
 
-  const slide = SLIDES[activeSlide] || SLIDES[0];
+  const handleStageLeave = () => {
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  };
 
-  const toggleFullscreen = () => {
-    // Fullscreen the entire document to preserve scroll-driven animations
-    const elem = document.documentElement;
-    if (!document.fullscreenElement) {
-      elem.requestFullscreen().catch((err) => {
-        console.error(`Error attempting to enable fullscreen: ${err.message}`);
-      });
-    } else {
-      document.exitFullscreen();
-    }
+  const productMotionStyle =
+    !reduceMotion && !isMobile
+      ? { rotateX, rotateY, x: parallaxX, y: parallaxY }
+      : undefined;
+
+  const slideVariants = {
+    enter: (dir: number) => ({
+      opacity: 0,
+      x: dir > 0 ? 60 : -60,
+      scale: 0.96,
+    }),
+    center: {
+      opacity: 1,
+      x: 0,
+      scale: 1,
+    },
+    exit: (dir: number) => ({
+      opacity: 0,
+      x: dir > 0 ? -40 : 40,
+      scale: 1.02,
+    }),
   };
 
   return (
-    <div ref={targetRef} className="relative h-[300vh] bg-[#0a0a0a]">
-      <section
-        onMouseMove={handleMouseMove}
-        className="sticky top-0 h-screen w-full flex flex-col items-center justify-center overflow-hidden bg-[#0a0a0a] text-white selection:bg-[#a67c52]/30"
-      >
-        {/* --- BACKGROUND LAYER --- */}
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={`bg-${activeSlide}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 1.2, ease: "easeInOut" }}
-            className="absolute inset-0 z-0"
-          >
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(0,0,0,0.2)_0%,transparent_100%)] z-10" />
-            <img
-              src={slide.bg}
-              alt="Slide Background"
-              className="w-full h-full object-cover opacity-50 scale-110 brightness-[0.5] grayscale-[0.1]"
-            />
-            
-            {/* Animated Light Leaks */}
-            <motion.div 
-              style={{ x: moveX, y: moveY, opacity: 0.5 }}
-              className="absolute top-[-20%] left-[-10%] w-[70%] h-[70%] bg-[#a67c52]/20 blur-[180px] rounded-full mix-blend-screen"
-            />
-            
-            <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-[#0a0a0a] via-[#0a0a0a]/70 to-transparent z-20" />
-          </motion.div>
-        </AnimatePresence>
+    <section
+      className="relative min-h-screen lg:h-screen w-full overflow-hidden bg-[#07080A] text-white pt-24 pb-8 md:pt-28 md:pb-10 lg:pt-32 lg:pb-12 flex flex-col justify-between"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => {
+        setIsPaused(false);
+        setProgress(0);
+      }}
+      aria-label="Hero showcase"
+    >
+      {/* ── Ambient Background Lighting & Image Blur ── */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={`hero-bg-${slide.id}`}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.2, ease: "easeOut" }}
+          className="pointer-events-none absolute inset-0 z-0"
+          aria-hidden
+        >
+          {/* Faded Background Image */}
+          <Image
+            src={slide.posterBg}
+            alt=""
+            fill
+            priority={activeIndex === 0}
+            className="object-cover object-center opacity-20 saturate-[0.7] blur-md scale-105"
+            sizes="100vw"
+          />
+          {/* Gradient Overlays */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#07080A]/85 via-[#07080A]/92 to-[#07080A]" />
+          <div
+            className="absolute -top-40 right-0 h-[650px] w-[650px] rounded-full opacity-25 blur-[130px] transition-colors duration-1000"
+            style={{ backgroundColor: slide.accentColor }}
+          />
+          <div className="absolute top-1/3 -left-32 h-[500px] w-[500px] rounded-full bg-sky-900/20 blur-[140px]" />
+        </motion.div>
+      </AnimatePresence>
 
-        {/* --- TOP HEADER VIDEO BUTTON --- */}
-        <div className="hidden absolute md:bottom-12 md:right-12 z-50">
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 md:px-8 lg:px-12 w-full flex-1 flex flex-col justify-center">
+        
+        {/* ── Top Bar: Social Proof & Model Selector ── */}
+        <div className="mb-4 sm:mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between border-b border-white/10 pb-4">
+          {/* Trust Pill */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 1, duration: 0.8 }}
-            onClick={() => setIsVideoOpen(true)}
-            className="flex flex-col items-center gap-2 md:gap-4 group cursor-pointer"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="inline-flex items-center gap-2.5 rounded-full border border-white/15 bg-white/[0.06] px-4 py-1.5 backdrop-blur-md self-start sm:self-auto"
           >
-            <div className="relative w-28 md:w-52 lg:w-64 aspect-video rounded-2xl md:rounded-[2.5rem] overflow-hidden border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.6)] group-hover:border-white/20 transition-all duration-700">
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent z-10 transition-colors duration-500" />
-              <img
-                src="https://picsum.photos/seed/kang-action/800/450"
-                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[1.5s] brightness-[0.7]"
-                alt="Video thumbnail"
-              />
-              <div className="absolute inset-0 flex items-center justify-center z-20">
-                <div className="w-8 h-8 md:w-16 md:h-16 bg-white/10 backdrop-blur-2xl rounded-full flex items-center justify-center ring-1 ring-white/30 group-hover:scale-110 transition-transform group-hover:bg-white/20 duration-500">
-                  <Play className="w-3 h-3 md:w-6 md:h-6 text-white fill-white ml-0.5 md:ml-1" />
+            <div className="flex items-center text-amber-400">
+              <Star className="size-3.5 fill-amber-400 text-amber-400" />
+              <Star className="size-3.5 fill-amber-400 text-amber-400" />
+              <Star className="size-3.5 fill-amber-400 text-amber-400" />
+              <Star className="size-3.5 fill-amber-400 text-amber-400" />
+              <Star className="size-3.5 fill-amber-400 text-amber-400" />
+            </div>
+            <span className="text-[10px] sm:text-[11px] font-semibold tracking-wide uppercase text-white/90">
+              4.9/5 Rated by 2,500+ Professionals
+            </span>
+          </motion.div>
+
+          {/* Minimal Product Selector Switcher */}
+          <div className="flex items-center gap-1.5 overflow-x-auto scrollbar-none py-1">
+            <span className="text-xs font-medium text-white/40 mr-2 hidden md:inline">Series:</span>
+            {SLIDES.map((item, index) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => goTo(index, index > activeIndex ? 1 : -1)}
+                className={cn(
+                  "cursor-pointer rounded-full px-3 py-1 text-xs font-semibold transition-all duration-200 whitespace-nowrap",
+                  activeIndex === index
+                    ? "bg-white text-black shadow-md"
+                    : "bg-white/[0.05] text-white/60 hover:bg-white/10 hover:text-white border border-white/10",
+                )}
+              >
+                {item.shortName}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Main Hero Grid Layout (Content Left, Product Stage Right) ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 lg:items-center lg:gap-10 xl:gap-14 py-2 my-auto">
+          
+          {/* LEFT COLUMN: Essential Value Proposition & CTAs */}
+          <div className="lg:col-span-6 space-y-4 sm:space-y-6">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={`copy-${slide.id}`}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.45, ease: "easeOut" }}
+                className="space-y-4"
+              >
+                {/* Category & Badge */}
+                <div className="flex items-center gap-2.5">
+                  <span
+                    className="rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm"
+                    style={{ backgroundColor: slide.accentColor }}
+                  >
+                    {slide.category} Edition
+                  </span>
+                  {slide.isNew && (
+                    <span className="inline-flex items-center gap-1 rounded-md border border-amber-400/30 bg-amber-500/10 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-300">
+                      <Sparkles className="size-3" />
+                      2026 Model
+                    </span>
+                  )}
                 </div>
+
+                {/* Main Headline */}
+                <h1 className="text-balance text-3xl font-extrabold tracking-tight text-white sm:text-5xl lg:text-6xl leading-[1.06]">
+                  {slide.name}
+                </h1>
+
+                {/* Tagline / Essential Info */}
+                <p className="text-pretty text-sm font-normal leading-relaxed text-white/70 sm:text-base md:text-lg max-w-xl">
+                  {slide.tagline}
+                </p>
+
+                {/* 3 Vital Feature Highlights */}
+                <div className="pt-1">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-2">
+                    Core Specifications
+                  </p>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    {slide.features.map((feature) => (
+                      <div
+                        key={feature}
+                        className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-3 py-2 text-xs font-semibold text-white/85 backdrop-blur-sm"
+                      >
+                        <CheckCircle2 className="size-4 shrink-0 text-[#C4A882]" />
+                        <span className="truncate">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Buttons Group */}
+                <div className="pt-2 flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5">
+                  <Link href="/products" className="cursor-pointer">
+                    <PrimaryButton
+                      mainColor={slide.accentColor}
+                      circleColor="#FFFFFF"
+                      textColor="#FFFFFF"
+                      hoverTextColor="#000000"
+                      className="w-full justify-center sm:w-auto px-8 py-3.5 cursor-pointer"
+                    >
+                      Shop Collection
+                    </PrimaryButton>
+                  </Link>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsVideoModalOpen(true)}
+                    className="group relative inline-flex items-center justify-center gap-2.5 overflow-hidden rounded-full border border-white/20 bg-white/[0.06] hover:bg-white/[0.14] px-6 py-3.5 text-xs sm:text-sm font-bold uppercase tracking-wider text-white backdrop-blur-md transition-all duration-300 active:scale-95 cursor-pointer"
+                  >
+                    <div className="flex size-6 items-center justify-center rounded-full bg-white text-black transition-transform duration-300 group-hover:scale-110">
+                      <Play className="size-3 fill-black ml-0.5" />
+                    </div>
+                    <span>Watch Demo</span>
+                  </button>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+          {/* RIGHT COLUMN: Premium Interactive Product Showcase */}
+          <div className="lg:col-span-6 mt-6 lg:mt-0 relative flex flex-col items-center justify-center">
+            <div
+              ref={stageRef}
+              onMouseMove={handleStageMove}
+              onMouseLeave={handleStageLeave}
+              className="relative mx-auto aspect-square w-full max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] xl:max-w-[520px] flex items-center justify-center"
+            >
+              {/* Radial Accent Glow Behind Product */}
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`glow-${slide.id}`}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                  className="pointer-events-none absolute inset-4 rounded-full blur-3xl opacity-40"
+                  style={{ backgroundColor: slide.accentColor }}
+                  aria-hidden
+                />
+              </AnimatePresence>
+
+              {/* Product Lens Stage */}
+              <AnimatePresence mode="wait" custom={direction}>
+                <motion.div
+                  key={`hero-${slide.id}`}
+                  custom={direction}
+                  variants={slideVariants}
+                  initial="enter"
+                  animate="center"
+                  exit="exit"
+                  transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1] }}
+                  style={productMotionStyle}
+                  className="relative z-10 w-full h-full flex items-center justify-center [perspective:1200px]"
+                  {...swipeHandlers}
+                >
+                  <Lens
+                    className="relative h-full w-full cursor-pointer flex items-center justify-center"
+                    lensColor={slide.accentColor}
+                    zoomFactor={isMobile ? 1.4 : 1.75}
+                    lensSize={isMobile ? 130 : 180}
+                  >
+                    <button
+                      type="button"
+                      data-hero-gallery-trigger
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        openProductGallery(slide);
+                      }}
+                      aria-label={`View ${slide.name} full gallery`}
+                      className="group relative z-10 h-full w-full cursor-zoom-in flex items-center justify-center focus:outline-none"
+                    >
+                      <motion.div
+                        animate={
+                          reduceMotion ? undefined : { y: [0, -8, 0] }
+                        }
+                        transition={
+                          reduceMotion
+                            ? undefined
+                            : { duration: 5, repeat: Infinity, ease: "easeInOut" }
+                        }
+                        className="relative w-full h-full p-2"
+                      >
+                        <Image
+                          src={slide.heroImage}
+                          alt={slide.name}
+                          fill
+                          priority={activeIndex === 0}
+                          className="object-contain object-center drop-shadow-[0_25px_50px_rgba(0,0,0,0.7)] transition-transform duration-300 group-hover:scale-[1.03]"
+                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
+                        />
+                      </motion.div>
+
+                      {/* Zoom Indicator */}
+                      <span className="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/60 px-3.5 py-1.5 text-[10px] sm:text-[11px] font-semibold uppercase text-white/90 backdrop-blur-md opacity-90 transition-opacity group-hover:opacity-100 shadow-lg whitespace-nowrap">
+                        <ZoomIn className="size-3.5 text-[#C4A882]" />
+                        Hover to Zoom &bull; Click for Gallery
+                      </span>
+                    </button>
+                  </Lens>
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Floating Highlight Card */}
+              {slide.highlight && (
+                <div className="absolute top-2 left-2 z-20 hidden sm:block max-w-[190px] rounded-xl border border-white/15 bg-black/60 p-2.5 shadow-xl backdrop-blur-md">
+                  <div className="flex items-center gap-1.5 text-[10px] font-bold uppercase text-[#C4A882]">
+                    <ShieldCheck className="size-3.5" />
+                    <span>Featured Spec</span>
+                  </div>
+                  <p className="mt-0.5 text-xs font-semibold text-white/90 leading-snug">
+                    {slide.highlight}
+                  </p>
+                </div>
+              )}
+
+              {/* Stage Navigation Arrows */}
+              <div className="absolute inset-y-0 -inset-x-3 z-30 flex items-center justify-between pointer-events-none">
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goPrev();
+                  }}
+                  aria-label="Previous product"
+                  className="pointer-events-auto flex size-9 sm:size-10 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-md transition-all hover:bg-white hover:text-black active:scale-95 shadow-lg"
+                >
+                  <ChevronLeft className="size-5" />
+                </button>
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    goNext();
+                  }}
+                  aria-label="Next product"
+                  className="pointer-events-auto flex size-9 sm:size-10 cursor-pointer items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur-md transition-all hover:bg-white hover:text-black active:scale-95 shadow-lg"
+                >
+                  <ChevronRight className="size-5" />
+                </button>
+              </div>
+
+              {/* Slide Counter Indicator */}
+              <div className="absolute bottom-1 right-2 z-20 flex items-center gap-2 rounded-full border border-white/10 bg-black/50 px-3 py-1 text-[11px] font-mono font-bold text-white/60 backdrop-blur-md">
+                <span>{String(activeIndex + 1).padStart(2, "0")}</span>
+                <span className="text-white/20">/</span>
+                <span>{String(SLIDES.length).padStart(2, "0")}</span>
               </div>
             </div>
-            <div className="flex flex-col items-center gap-1 md:gap-2">
-              <span className="w-1 h-1 md:w-1.5 md:h-1.5 bg-white/30 rounded-full animate-pulse" />
-              <p className="text-[7px] md:text-[10px] font-black text-white/40 uppercase tracking-[0.3em] md:tracking-[0.5em] group-hover:text-white group-hover:tracking-[0.4em] md:group-hover:tracking-[0.6em] transition-all duration-700">
-                Experience Kangpack
-              </p>
-            </div>
-          </motion.div>
-        </div>
 
-        {/* --- CONTENT LAYER --- */}
-        <div className="relative z-30 container mx-auto px-6 h-full flex flex-col items-center pt-8 md:pt-2 lg:pt-2">
-          <div className="flex-grow flex flex-col items-center justify-center w-full relative">
-          
-          {/* Pre-title Reveal */}
-          <div className="overflow-hidden mb-4 md:mb-6">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`pre-${activeSlide}`}
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -20, opacity: 0 }}
-                transition={{ duration: 0.6 }}
-                className="flex items-center gap-4"
-              >
-                <div className="h-[1px] w-10 bg-[#a67c52]/50" />
-                <span className="text-[10px] md:text-xs font-bold text-center uppercase tracking-[0.6em] text-[#a67c52]/80">
-                  {slide.pretitle}
-                </span>
-                <div className="h-[1px] w-10 bg-[#a67c52]/50" />
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* Titles & Hero Text */}
-          <div className="relative text-center mb-1 md:mb-3 lg:mb-4">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`title-${activeSlide}`}
-                className="flex flex-col items-center mb-6"
-              >
-                <motion.h1 
-                  className="text-[18vw] md:text-[clamp(8rem,12vh+3vw,12rem)] font-black leading-[0.8] tracking-tighter uppercase mb-2 md:mb-4 opacity-[0.012] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 select-none whitespace-nowrap z-0 pointer-events-none"
-                >
-                  KANGPACK
-                </motion.h1>
-                <h2 className="text-4xl md:text-3xl mb-2 lg:text-5xl xl:text-6xl w-full font-bold tracking-tighter md:tracking-tight  md:mb-2 lg:mb-4 leading-[0.9] md:leading-[1] z-10 flex flex-col">
-                  <span className="block overflow-hidden">
-                    <motion.span 
-                      initial={{ y: "100%" }}
-                      animate={{ y: 0 }}
-                      exit={{ y: "-100%" }}
-                      transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                      className="block italic font-light text-white/95"
-                    >
-                      {slide.title1}
-                    </motion.span>
-                  </span>
-                  <span className="block overflow-hidden relative mt-2">
-                    <motion.span 
-                      initial={{ y: "100%" }}
-                      animate={{ y: 0 }}
-                      exit={{ y: "-100%" }}
-                      transition={{ duration: 0.8, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                      className="block bg-gradient-to-r from-white via-[#a67c52] to-white/60 bg-clip-text text-transparent px-2"
-                    >
-                      {slide.title2}
-                    </motion.span>
-                  </span>
-                </h2>
-                
-                {/* Highlight text */}
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ delay: 0.8 }}
-                  className="mb-4 md:mb-4 lg:mb-6 mt-4 md:mt-4 lg:mt-6 px-4 py-1.5 rounded-full bg-[#a67c52]/10 border border-[#a67c52]/20 backdrop-blur-md"
-                >
-                  <span className="text-[10px] md:text-xs font-bold uppercase tracking-[0.3em] text-[#a67c52]">
-                    {slide.highlight}
-                  </span>
-                </motion.div>
-
-                <motion.p 
-                   initial={{ opacity: 0, y: 10 }}
-                   animate={{ opacity: 1, y: 0 }}
-                   exit={{ opacity: 0, y: -10 }}
-                   transition={{ delay: 0.4 }}
-                   className="text-[10px] md:text-[clamp(0.9rem,2vh,1.1rem)] text-white/40 max-w-2xl mx-auto font-light leading-relaxed tracking-wide px-10 md:px-6"
-                >
-                  {slide.description}
-                </motion.p>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-
-          {/* --- PRODUCT SHOWCASE --- */}
-          <div className="relative w-full max-w-5xl aspect-[16/8] max-h-[25vh] md:max-h-[35vh] mt-[-1rem] md:mt-[-2rem] lg:mt-[-3rem] z-40">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`product-${activeSlide}`}
-                style={{ 
-                  rotateX,
-                  rotateY,
-                  filter: "drop-shadow(0 60px 100px rgba(0,0,0,0.9))"
+            {/* Progress Bar */}
+            <div className="mt-3 w-full max-w-[360px] sm:max-w-[420px] lg:max-w-[480px] h-1 overflow-hidden rounded-full bg-white/10">
+              <div
+                className="h-full origin-left rounded-full transition-all duration-75 ease-linear"
+                style={{
+                  backgroundColor: slide.accentColor,
+                  transform: `scaleX(${progress})`,
                 }}
-                initial={{ scale: 0.8, opacity: 0, y: 50 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                exit={{ scale: 1.1, opacity: 0, y: -50 }}
-                transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                className="w-full h-full flex items-center justify-center relative perspective-[2000px] mt-4 md:mt-0"
-              >
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[40%] h-[40%] bg-[#a67c52]/10 blur-[130px] rounded-full" />
-                <img
-                    src={slide.image}
-                    alt="Kangpack Prototype"
-                    className="w-[85%] md:w-[min(70%,55vh)] h-auto object-contain z-10  scale-100 md:scale-105 transition-transform duration-700"
-                  />
-                
-                
-                {/* Floating Feature Tags */}
-                <div className="absolute inset-0 z-20 hidden lg:block pointer-events-none">
-                  {slide.features.map((feature, i) => (
-                    <motion.div
-                      key={`${activeSlide}-${i}`}
-                      initial={{ opacity: 0, x: i % 2 === 0 ? -20 : 20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 1 + i * 0.2 }}
-                      style={{ 
-                        top: `${30 + i * 20}%`, 
-                        left: i % 2 === 0 ? '5%' : 'auto',
-                        right: i % 2 !== 0 ? '5%' : 'auto'
-                      }}
-                      className="absolute flex items-center gap-3 px-5 py-3 rounded-2xl bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl"
-                    >
-                      <div className="w-2 h-2 rounded-full bg-[#a67c52] shadow-[0_0_10px_rgba(166,124,82,0.5)]" />
-                      <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/80">{feature}</span>
-                    </motion.div>
-                  ))}
-                </div>
-              </motion.div>
-            </AnimatePresence>
-          </div>
-          </div>
-        </div>
-
-        {/* --- BOTTOM INTERFACE --- */}
-        <div className="absolute inset-x-0 bottom-4 md:bottom-8 z-50 px-4 md:px-8 container mx-auto">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 border-t border-white/5 pt-3 md:pt-6">
-            
-            {/* Stats */}
-            <AnimatePresence mode="wait">
-              <motion.div 
-                key={`stats-${activeSlide}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.2 }}
-                className="grid grid-cols-3 gap-6 md:gap-14 xl:gap-20"
-              >
-                {slide.stats.map((stat, i) => (
-                  <div key={i} className="flex flex-col items-center gap-0 group">
-                    <span className="text-[10px] md:text-[clamp(0.9rem,2.5vh,1.3rem)] font-black text-[#a67c52] tracking-tighter">{stat.value}</span>
-                    <span className="text-[7px] md:text-[8px] uppercase tracking-[0.2em] md:tracking-[0.3em] font-bold text-white/20 group-hover:text-white/40 transition-colors whitespace-nowrap">{stat.label}</span>
-                  </div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
-
-             {/* CTA Group */}
-            <div className="flex items-center gap-4 md:gap-8 mt-2 md:mt-4 lg:mt-6">
-              <Link href="/products">
-                <PrimaryButton 
-                  circleColor="#a67c52"
-                  textColor="#ffffff"
-                  hoverTextColor="#000000"
-                  className="h-12 md:h-12 bg-white/5 backdrop-blur-2xl border border-white/10 shadow-2xl text-[10px] md:text-xs xl:text-sm"
-                >
-                  Explore Collection
-                </PrimaryButton>
-              </Link>
-              
-              <div className="h-8 md:h-12 w-[1px] bg-white/10" />
-              
-              <motion.div 
-                whileHover={{ scale: 1.05 }}
-                onClick={toggleFullscreen}
-                className="flex flex-col items-center gap-1 md:gap-2 group cursor-pointer"
-              >
-                <div className="w-8 h-8 md:w-12 md:h-12 rounded-full border border-white/10 flex items-center justify-center group-hover:border-[#a67c52]/50 group-hover:bg-[#a67c52]/10 transition-all">
-                   <Maximize2 className="w-3 h-3 md:w-4 md:h-4 text-white/40 group-hover:text-[#a67c52]" />
-                </div>
-                <span className="text-[6px] md:text-[8px] font-black uppercase tracking-widest text-white/20 group-hover:text-white/40 transition-all">Full</span>
-              </motion.div>
+              />
             </div>
           </div>
         </div>
-
-        {/* --- GLOBAL DOT NAV --- */}
-        <div className="hidden xl:flex fixed left-12 top-1/2 -translate-y-1/2 z-50 flex-col gap-4 md:gap-6 lg:gap-10">
-           {SLIDES.map((_, i) => (
-             <div 
-               key={i} 
-               className="flex items-center gap-6 group cursor-pointer"
-               onClick={() => {
-                 const windowHeight = window.innerHeight;
-                 window.scrollTo({ top: i * windowHeight * 1.5, behavior: 'smooth' });
-               }}
-             >
-                <span className={`text-[10px] font-black transition-all ${activeSlide === i ? 'text-[#a67c52] scale-150' : 'text-white/20 group-hover:text-white/40'}`}>
-                  0{i + 1}
-                </span>
-                <div className={`h-[1px] md:h-[2px] transition-all duration-700 ${activeSlide === i ? 'w-8 md:w-12 bg-[#a67c52]' : 'w-2 md:w-4 bg-white/10 group-hover:w-8 group-hover:bg-white/20'}`} />
-             </div>
-           ))}
-        </div>
-      </section>
-
-      {/* Scroll indicator - Bottom Center */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-40 flex flex-col items-center gap-4 opacity-20">
-        <span className="text-[10px] font-black uppercase tracking-[0.4em]">Scroll Experience</span>
-        <motion.div 
-          animate={{ scaleY: [0, 1, 0], originY: 0 }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="w-[2px] h-12 bg-[#a67c52]" 
-        />
       </div>
-    </div>
+
+      {/* ── Lightbox Gallery Modal ── */}
+      <Lightbox
+        images={lightboxImages}
+        isOpen={isLightboxOpen}
+        currentIndex={lightboxIndex}
+        onClose={handleCloseLightbox}
+        onIndexChange={setLightboxIndex}
+        altText={lightboxProductName || slide.name}
+      />
+
+      {/* ── Demo Video Modal Overlay ── */}
+      <AnimatePresence>
+        {isVideoModalOpen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 md:p-8">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsVideoModalOpen(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+            />
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 25, stiffness: 300 }}
+              className="relative w-full max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-2xl border border-white/20 bg-black z-10"
+            >
+              <button
+                type="button"
+                onClick={() => setIsVideoModalOpen(false)}
+                aria-label="Close Video"
+                className="absolute top-4 right-4 z-20 p-2.5 rounded-full bg-black/60 text-white hover:bg-white hover:text-black transition-all border border-white/20 cursor-pointer"
+              >
+                <X className="size-5" />
+              </button>
+              <video autoPlay controls className="w-full h-full object-cover">
+                <source src="/assets/videos/product-video.mp4" type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+    </section>
   );
 };
 

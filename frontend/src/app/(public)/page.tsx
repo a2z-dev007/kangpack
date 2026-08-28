@@ -23,6 +23,7 @@ import RealMoments from '@/components/home/RealMoments';
 import Pricing from '@/components/home/Pricing';
 import FAQ from '@/components/home/FAQ';
 import OurProducts from '@/components/home/OurProducts';
+import ProductShowcase from '@/components/home/ProductShowcase';
 import SectionDivider from '@/components/common/SectionDivider';
 import { Footer } from '@/components/layout/footer';
 import { ASSETS } from '@/constants/assets';
@@ -37,9 +38,7 @@ const HomePage: React.FC = () => {
       <GlobalVideoModal />
       <main className="flex-grow">
         {/* 1. Hero banner with high-impact value proposition */}
-        <ScrollSection>
-          <Hero />
-        </ScrollSection>
+        <Hero />
 
         <SectionDivider />
 
@@ -53,6 +52,13 @@ const HomePage: React.FC = () => {
         {/* 3. Product Catalog Grid early in the scroll to convert users quickly */}
         <ScrollSection>
           <OurProducts />
+        </ScrollSection>
+
+        <SectionDivider />
+
+        {/* 3b. New product showcase from poster assets */}
+        <ScrollSection>
+          <ProductShowcase />
         </ScrollSection>
 
         <SectionDivider />
