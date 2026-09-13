@@ -344,8 +344,8 @@ Paste and adjust with your passwords:
 NODE_ENV=production
 PORT=8000
 
-# Local Authenticated MongoDB Connection
-MONGODB_URI=mongodb://kangpack_user:YourAppPasswordHere_2026!@127.0.0.1:27017/kangpack_production?authSource=kangpack_production
+# Local Authenticated MongoDB Connection (Note: @ in password must be URL-encoded as %40)
+MONGODB_URI=mongodb://kangpack_user:K%40ngpack.in@127.0.0.1:27017/kangpack_production?authSource=kangpack_production
 
 # JWT Secrets (Generate with: openssl rand -base64 32)
 JWT_ACCESS_SECRET=replace_with_32_character_random_string_here

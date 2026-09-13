@@ -1,3 +1,16 @@
+const path = require('path');
+const fs = require('fs');
+const dotenv = require('dotenv');
+
+// Automatically load .env.production or .env
+const envProdPath = path.resolve(__dirname, '.env.production');
+const envPath = path.resolve(__dirname, '.env');
+if (fs.existsSync(envProdPath)) {
+  dotenv.config({ path: envProdPath });
+} else if (fs.existsSync(envPath)) {
+  dotenv.config({ path: envPath });
+}
+
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 

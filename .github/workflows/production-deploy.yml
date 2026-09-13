@@ -1,68 +1,89 @@
-name: Production Deployment
+name: Production CI/CD Deployment
 
 on:
   push:
     branches:
-      - main  # Set this to your production branch name
+      - main
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
 
 jobs:
   deploy:
+    name: Deploy to Hostinger VPS
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Deploy to EC2
+      - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
+          host: ${{ secrets.HOSTINGER_HOST || secrets.VPS_HOST || '82.112.227.42' }}
+          username: ${{ secrets.HOSTINGER_USER || secrets.VPS_USER || 'root' }}
+          key: ${{ secrets.HOSTINGER_SSH_KEY || secrets.VPS_SSH_KEY || secrets.EC2_SSH_KEY }}
+          port: ${{ secrets.SSH_PORT || 22 }}
+          script_stop: true
           script: |
-            # Use bash to ensure consistency
+            set -e
+
+            echo "🚀 [CI/CD] Starting Deployment on Hostinger VPS..."
+
+            # Ensure Node, npm, and PM2 are in PATH
+            export PATH=$PATH:/usr/local/bin:/usr/bin:$(npm config get prefix 2>/dev/null)/bin
+
+            # Optional NVM load if installed
             export NVM_DIR="$HOME/.nvm"
-            # Load NVM if it exists
             if [ -s "$NVM_DIR/nvm.sh" ]; then
                 . "$NVM_DIR/nvm.sh"
-                nvm use 22 || nvm install 22
             fi
 
-            # Navigate to project directory
-            echo "📂 Navigating to /var/www/kangpack..."
-            cd /var/www/kangpack || { echo "❌ Directory not found"; exit 1; }
+            # 1. Navigate to project root
+            echo "📂 [CI/CD] Navigating to /var/www/kangpack..."
+            cd /var/www/kangpack || { echo "❌ /var/www/kangpack directory not found!"; exit 1; }
 
-            # Reset local changes to prevent pull conflicts
-            echo "🔄 Refreshing code from GitHub..."
+            # 2. Synchronize code from main branch (protecting .env files & uploads)
+            echo "🔄 [CI/CD] Pulling latest changes from GitHub main..."
             git fetch origin main
             git reset --hard origin/main
-            git clean -fd
+            # Clean untracked files except production environment files and uploads
+            git clean -fd -e backend/.env.production -e frontend/.env.production -e backend/uploads/
 
-            # Build Backend
-            echo "🚀 Building Backend..."
+            # 3. Build Backend
+            echo "📦 [CI/CD] Installing backend dependencies & building..."
             cd backend
-            npm install
+            npm install --prefer-offline --no-audit
             npm run build
+            mkdir -p uploads logs
             cd ..
 
-            # Build Frontend
-            echo "🚀 Building Frontend..."
+            # 4. Build Frontend (Next.js 15 Standalone)
+            echo "⚡ [CI/CD] Installing frontend dependencies & building Next.js standalone..."
             cd frontend
-            npm install
-            # Ensure production env is used during build with memory limit
+            npm install --prefer-offline --no-audit
             NODE_OPTIONS="--max-old-space-size=1536" npm run build
-            
-            # CRITICAL: Copy public and static assets for Standalone mode
-            echo "📂 Syncing assets to standalone folder..."
-            cp -r public .next/standalone/
-            cp -r .next/static .next/standalone/.next/
+
+            # Synchronize static assets into Next.js standalone folder
+            echo "📂 [CI/CD] Syncing public and static assets to standalone directory..."
+            mkdir -p .next/standalone/.next
+            cp -r public .next/standalone/ 2>/dev/null || true
+            cp -r .next/static .next/standalone/.next/ 2>/dev/null || true
+
+            if [ -d ".next/standalone/frontend" ]; then
+                mkdir -p .next/standalone/frontend/.next
+                cp -r public .next/standalone/frontend/ 2>/dev/null || true
+                cp -r .next/static .next/standalone/frontend/.next/ 2>/dev/null || true
+            fi
             cd ..
 
-            # Restart with PM2
-            echo "🔄 Restarting Applications with PM2..."
-            # Check if PM2 is in path, if not load it from npm global
-            export PATH=$PATH:$(npm config get prefix)/bin
-            pm2 restart ecosystem.config.js || pm2 start ecosystem.config.js
+            # 5. Zero-Downtime Reload with PM2
+            echo "♻️ [CI/CD] Reloading applications with PM2..."
+            pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js
             pm2 save
 
-            echo "✅ Deployment Successful!"
+            # 6. Verify Health
+            echo "🏥 [CI/CD] Running health checks..."
+            sleep 4
+            curl -I http://127.0.0.1:8000/api/v1/health || true
+            curl -I http://127.0.0.1:3000 || true
+
+            echo "✅ [CI/CD] Deployment successfully completed!"

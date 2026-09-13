@@ -1,92 +1,94 @@
-import { S3Client, DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { Upload } from "@aws-sdk/lib-storage";
-import { env } from "../../config/env";
+import fs from "fs";
+import path from "path";
+import { v4 as uuidv4 } from "uuid";
 import { AppError } from "../middlewares/error.middleware";
 import { HTTP_STATUS } from "../constants";
 
-const s3Client = new S3Client({
-  region: env.AWS_REGION,
-  credentials: {
-    accessKeyId: env.AWS_ACCESS_KEY_ID,
-    secretAccessKey: env.AWS_SECRET_ACCESS_KEY,
-  },
-});
-
 export class S3Service {
+  private static getUploadBaseDir(): string {
+    const baseDir = path.resolve(process.cwd(), "uploads");
+    if (!fs.existsSync(baseDir)) {
+      fs.mkdirSync(baseDir, { recursive: true });
+    }
+    return baseDir;
+  }
+
   /**
-   * Upload a file to S3
-   * @param file - Multer file object
-   * @param folder - Folder in bucket
-   * @returns Public URL of the uploaded file
+   * Upload a file to the local uploads directory
+   * @param file - Multer file object (buffer or disk file)
+   * @param folder - Subfolder inside uploads (e.g. 'products', 'avatars')
+   * @returns Public relative path of the uploaded file (e.g. '/uploads/products/xyz.jpg')
    */
   public static async uploadFile(file: any, folder: string = "general"): Promise<string> {
     try {
-      const fileName = `${folder}/${Date.now()}-${file.originalname.replace(/\s/g, "-")}`;
-      
-      const upload = new Upload({
-        client: s3Client,
-        params: {
-          Bucket: env.S3_BUCKET_NAME,
-          Key: fileName,
-          Body: file.buffer,
-          ContentType: file.mimetype,
-          // Note: public-read requires ACLs to be enabled on the bucket.
-          // If using block public access, you might need a different approach (like signed URLs)
-          // or a bucket policy that allows public read on the objects.
-          // ACL: "public-read", 
-        },
-      });
+      if (!file) {
+        throw new AppError("No file provided", HTTP_STATUS.BAD_REQUEST);
+      }
 
-      await upload.done();
+      const targetDir = path.join(this.getUploadBaseDir(), folder);
+      if (!fs.existsSync(targetDir)) {
+        fs.mkdirSync(targetDir, { recursive: true });
+      }
 
-      // Return the public URL
-      return `https://${env.S3_BUCKET_NAME}.s3.${env.AWS_REGION}.amazonaws.com/${fileName}`;
+      // Generate a clean, unique file name
+      const ext = path.extname(file.originalname || "") || ".jpg";
+      const sanitizedName = (file.originalname || "file")
+        .replace(/\.[^/.]+$/, "")
+        .replace(/[^a-zA-Z0-9]/g, "-")
+        .toLowerCase();
+      const fileName = `${Date.now()}-${uuidv4().substring(0, 8)}-${sanitizedName}${ext}`;
+      const filePath = path.join(targetDir, fileName);
+
+      // Save file buffer to local disk
+      if (file.buffer) {
+        await fs.promises.writeFile(filePath, file.buffer);
+      } else if (file.path && fs.existsSync(file.path)) {
+        await fs.promises.copyFile(file.path, filePath);
+      } else {
+        throw new Error("File content is missing buffer or path");
+      }
+
+      // Return public URL path accessible via /uploads/...
+      return `/uploads/${folder}/${fileName}`;
     } catch (error: any) {
-      console.error("S3 Upload Error:", error);
-      throw new AppError("Failed to upload file to S3", HTTP_STATUS.INTERNAL_SERVER_ERROR);
+      console.error("Local File Upload Error:", error);
+      throw new AppError("Failed to save uploaded file", HTTP_STATUS.INTERNAL_SERVER_ERROR);
     }
   }
 
   /**
-   * Upload multiple files to S3
+   * Upload multiple files to local storage
    * @param files - Array of Multer file objects
-   * @param folder - Folder in bucket
-   * @returns Array of public URLs
+   * @param folder - Folder in uploads
+   * @returns Array of public file URLs
    */
   public static async uploadMultiple(files: any[], folder: string = "general"): Promise<string[]> {
     if (!files || files.length === 0) return [];
-    
     const uploadPromises = files.map(file => this.uploadFile(file, folder));
     return Promise.all(uploadPromises);
   }
 
   /**
-   * Delete a file from S3
-   * @param fileUrl - Full public URL of the file
+   * Delete a file from local storage
+   * @param fileUrl - File path or URL
    */
   public static async deleteFile(fileUrl: string): Promise<void> {
     try {
-      // Extract key from URL
-      // Example URL: https://bucket-name.s3.region.amazonaws.com/folder/filename.jpg
-      const urlPattern = new RegExp(`https:\/\/${env.S3_BUCKET_NAME}\.s3\.${env.AWS_REGION}\.amazonaws\.com\/(.+)`);
-      const match = fileUrl.match(urlPattern);
-      
-      if (!match || !match[1]) {
-        console.warn("Could not extract S3 key from URL:", fileUrl);
-        return;
+      if (!fileUrl) return;
+
+      // Extract relative path after /uploads/
+      const cleanPath = fileUrl.includes("/uploads/")
+        ? fileUrl.substring(fileUrl.indexOf("/uploads/") + 1)
+        : fileUrl.replace(/^\//, "");
+
+      const fullPath = path.resolve(process.cwd(), cleanPath);
+
+      if (fs.existsSync(fullPath)) {
+        await fs.promises.unlink(fullPath);
+        console.log(`✓ Deleted local file: ${cleanPath}`);
       }
-      
-      const key = match[1];
-
-      const command = new DeleteObjectCommand({
-        Bucket: env.S3_BUCKET_NAME,
-        Key: key,
-      });
-
-      await s3Client.send(command);
     } catch (error: any) {
-      console.error("S3 Delete Error:", error);
-      // Don't throw error to avoid breaking main flows if cleanup fails
+      console.warn("Could not delete local file:", fileUrl, error.message);
     }
   }
 }

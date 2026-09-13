@@ -52,7 +52,7 @@ const envSchema = z.object({
   FROM_EMAIL: z.string().default('support@kangpack.in'),
   AWS_ACCESS_KEY_ID: z.string().default(''),
   AWS_SECRET_ACCESS_KEY: z.string().default(''),
-  AWS_REGION: z.string().default(''),
+  AWS_REGION: z.string().transform(val => val.trim() || 'us-east-1').default('us-east-1'),
   S3_BUCKET_NAME: z.string().default(''),
 });
 
