@@ -35,6 +35,9 @@ export interface PaginationQuery {
 export interface FilterQuery {
   search?: string;
   status?: string;
+  stockStatus?: string;
+  isAdmin?: boolean;
+  isActive?: boolean;
   category?: string;
   minPrice?: number;
   maxPrice?: number;

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   useAdminProducts,
+  useAdminProductStats,
   useDeleteProduct,
   useBulkDeleteProducts,
   useBulkUpdateProducts,
@@ -47,6 +48,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
+
 export default function AdminProducts() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -64,6 +66,7 @@ export default function AdminProducts() {
 
   // Modal states
   const [isDeleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [isBulkDeleteModalOpen, setBulkDeleteModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   // Advanced Filter States
@@ -122,33 +125,24 @@ export default function AdminProducts() {
     maxPrice: activeFilters.maxPrice || undefined,
   });
 
+  const { data: statsData, isLoading: isStatsLoading } = useAdminProductStats();
   const { data: categoriesData } = useAdminCategories();
   const categories = categoriesData?.data || [];
 
   const { mutate: deleteProduct, isPending: isDeleting } = useDeleteProduct();
-  const { mutate: bulkDelete, isPending: isBulkDeleting } =
-    useBulkDeleteProducts();
-  const { mutate: bulkUpdate } = useBulkUpdateProducts();
+  const { mutate: bulkDelete, isPending: isBulkDeleting } = useBulkDeleteProducts();
+  const { mutate: bulkUpdate, isPending: isBulkUpdating } = useBulkUpdateProducts();
 
   const products = data?.data || [];
   const pagination = data?.pagination;
 
-  // Calculate stats safely
-  const stats =
-    isClient && products.length > 0
-      ? {
-          total: pagination?.total || 0,
-          active: products.filter((p: any) => p.isActive).length,
-          lowStock: products.filter((p: any) => p.stock <= 10 && p.stock > 0)
-            .length,
-          outOfStock: products.filter((p: any) => p.stock === 0).length,
-        }
-      : {
-          total: pagination?.total || 0,
-          active: 0,
-          lowStock: 0,
-          outOfStock: 0,
-        };
+  // Calculate stats safely from API or current data
+  const stats = {
+    total: statsData?.totalProducts ?? pagination?.total ?? 0,
+    active: statsData?.activeProducts ?? (isClient ? products.filter((p: any) => p.isActive).length : 0),
+    lowStock: statsData?.lowStockProducts ?? (isClient ? products.filter((p: any) => p.stock <= 10 && p.stock > 0).length : 0),
+    outOfStock: statsData?.outOfStockProducts ?? (isClient ? products.filter((p: any) => p.stock === 0).length : 0),
+  };
 
   const handleSelectAll = () => {
     if (selectedProducts.length === products.length) {
@@ -164,22 +158,38 @@ export default function AdminProducts() {
     );
   };
 
-  const handleBulkDelete = () => {
+  const confirmBulkDelete = () => {
+    if (selectedProducts.length === 0) return;
     bulkDelete(selectedProducts, {
       onSuccess: () => {
         setSelectedProducts([]);
+        setBulkDeleteModalOpen(false);
       },
     });
   };
 
   const handleBulkActivate = () => {
-    bulkUpdate({ ids: selectedProducts, updates: { isActive: true } });
-    setSelectedProducts([]);
+    if (selectedProducts.length === 0) return;
+    bulkUpdate(
+      { ids: selectedProducts, updates: { isActive: true } },
+      {
+        onSuccess: () => {
+          setSelectedProducts([]);
+        },
+      }
+    );
   };
 
   const handleBulkDeactivate = () => {
-    bulkUpdate({ ids: selectedProducts, updates: { isActive: false } });
-    setSelectedProducts([]);
+    if (selectedProducts.length === 0) return;
+    bulkUpdate(
+      { ids: selectedProducts, updates: { isActive: false } },
+      {
+        onSuccess: () => {
+          setSelectedProducts([]);
+        },
+      }
+    );
   };
 
   const openAddModal = () => {
@@ -198,8 +208,6 @@ export default function AdminProducts() {
     setSelectedProduct(product);
     setDeleteModalOpen(true);
   };
-
-  console.log("selectedProduct", selectedProduct);
 
   const confirmDelete = () => {
     if (selectedProduct) {
@@ -435,6 +443,7 @@ export default function AdminProducts() {
                     variant="outline"
                     size="sm"
                     onClick={handleBulkActivate}
+                    disabled={isBulkUpdating || isBulkDeleting}
                     className="text-success hover:text-success/80"
                   >
                     Activate
@@ -443,6 +452,7 @@ export default function AdminProducts() {
                     variant="outline"
                     size="sm"
                     onClick={handleBulkDeactivate}
+                    disabled={isBulkUpdating || isBulkDeleting}
                     className="text-warning hover:text-warning/80"
                   >
                     Deactivate
@@ -450,8 +460,8 @@ export default function AdminProducts() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={handleBulkDelete}
-                    disabled={isBulkDeleting}
+                    onClick={() => setBulkDeleteModalOpen(true)}
+                    disabled={isBulkDeleting || isBulkUpdating}
                     className="text-destructive hover:text-destructive/80"
                   >
                     <Trash2 className="h-4 w-4" />
@@ -899,6 +909,15 @@ export default function AdminProducts() {
           title="Delete Product"
           description={`Are you sure you want to delete "${selectedProduct?.name}"? This action cannot be undone.`}
           isLoading={isDeleting}
+        />
+
+        <ConfirmModal
+          isOpen={isBulkDeleteModalOpen}
+          onClose={() => setBulkDeleteModalOpen(false)}
+          onConfirm={confirmBulkDelete}
+          title="Delete Selected Products"
+          description={`Are you sure you want to permanently delete ${selectedProducts.length} selected product${selectedProducts.length > 1 ? "s" : ""}? This action cannot be undone.`}
+          isLoading={isBulkDeleting}
         />
 
         {/* Filters Side Drawer */}

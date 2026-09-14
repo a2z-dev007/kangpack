@@ -19,10 +19,17 @@ export const useRecentActivity = () => {
 };
 
 // Products Queries
-export const useAdminProducts = (params?: PaginationParams) => {
+export const useAdminProducts = (params?: PaginationParams & { isAdmin?: boolean }) => {
   return useQuery({
     queryKey: ['admin', 'products', params],
     queryFn: () => productsAdminApi.getAll(params),
+  });
+};
+
+export const useAdminProductStats = () => {
+  return useQuery({
+    queryKey: ['admin', 'products', 'stats'],
+    queryFn: productsAdminApi.getStats,
   });
 };
 
@@ -40,6 +47,7 @@ export const useCreateProduct = () => {
     mutationFn: productsAdminApi.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'stats'] });
       toast.success('Product created successfully');
     },
     onError: (error: any) => {
@@ -54,6 +62,7 @@ export const useUpdateProduct = () => {
     mutationFn: ({ id, data }: { id: string; data: any }) => productsAdminApi.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'stats'] });
       toast.success('Product updated successfully');
     },
     onError: (error: any) => {
@@ -68,6 +77,7 @@ export const useDeleteProduct = () => {
     mutationFn: productsAdminApi.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'stats'] });
       toast.success('Product deleted successfully');
     },
     onError: (error: any) => {
@@ -82,6 +92,7 @@ export const useBulkUpdateProducts = () => {
     mutationFn: productsAdminApi.bulkUpdate,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'stats'] });
       toast.success('Products updated successfully');
     },
     onError: (error: any) => {
@@ -96,6 +107,7 @@ export const useBulkDeleteProducts = () => {
     mutationFn: productsAdminApi.bulkDelete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'stats'] });
       toast.success('Products deleted successfully');
     },
     onError: (error: any) => {

@@ -66,9 +66,14 @@ export const adminApi = {
 
 // Products Admin APIs
 export const productsAdminApi = {
-  getAll: async (params?: PaginationParams) => {
-    const { data } = await api.get('/products', { params });
+  getAll: async (params?: PaginationParams & { isAdmin?: boolean }) => {
+    const { data } = await api.get('/products', { params: { ...params, isAdmin: true } });
     return data;
+  },
+
+  getStats: async () => {
+    const { data } = await api.get('/products/admin/stats');
+    return data.data;
   },
 
   getById: async (id: string) => {

@@ -13,11 +13,17 @@ export class ProductsController {
       order: req.query.order as 'asc' | 'desc' || 'desc',
     };
 
+    const authReq = req as any;
+    const isAdmin = authReq.user?.role === 'admin' || authReq.user?.role === 'staff' || req.query.isAdmin === 'true';
+
     const filters = {
       search: req.query.search as string,
       category: req.query.category as string,
+      status: req.query.status as string,
+      stockStatus: req.query.stockStatus as string,
       minPrice: req.query.minPrice ? parseFloat(req.query.minPrice as string) : undefined,
       maxPrice: req.query.maxPrice ? parseFloat(req.query.maxPrice as string) : undefined,
+      isAdmin,
     };
 
     const result = await ProductsService.getProducts(pagination, filters);
@@ -104,7 +110,23 @@ export class ProductsController {
   });
 
   public static bulkUpdateProducts = asyncHandler(async (req: Request, res: Response) => {
-    const { productIds, updateData } = req.body;
+    const productIds = req.body.productIds || req.body.ids;
+    const updateData = req.body.updateData || req.body.updates;
+
+    if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+      res.status(HTTP_STATUS.BAD_REQUEST).json(
+        ResponseUtils.error('Please provide a valid list of product IDs', HTTP_STATUS.BAD_REQUEST)
+      );
+      return;
+    }
+
+    if (!updateData || typeof updateData !== 'object' || Object.keys(updateData).length === 0) {
+      res.status(HTTP_STATUS.BAD_REQUEST).json(
+        ResponseUtils.error('Please provide valid update data', HTTP_STATUS.BAD_REQUEST)
+      );
+      return;
+    }
+
     const count = await ProductsService.bulkUpdateProducts(productIds, updateData);
 
     res.status(HTTP_STATUS.OK).json(
@@ -113,7 +135,15 @@ export class ProductsController {
   });
 
   public static bulkDeleteProducts = asyncHandler(async (req: Request, res: Response) => {
-    const { productIds } = req.body;
+    const productIds = req.body.productIds || req.body.ids;
+
+    if (!productIds || !Array.isArray(productIds) || productIds.length === 0) {
+      res.status(HTTP_STATUS.BAD_REQUEST).json(
+        ResponseUtils.error('Please provide a valid list of product IDs', HTTP_STATUS.BAD_REQUEST)
+      );
+      return;
+    }
+
     const count = await ProductsService.bulkDeleteProducts(productIds);
 
     res.status(HTTP_STATUS.OK).json(
