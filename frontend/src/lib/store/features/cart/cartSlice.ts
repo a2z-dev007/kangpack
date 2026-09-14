@@ -16,7 +16,7 @@ export const fetchCart = createAsyncThunk(
     async (_, { rejectWithValue }) => {
         try {
             const response = await api.get('/carts');
-            return response.data.data.items;
+            return response.data?.data?.items || [];
         } catch (error: any) {
             return rejectWithValue(error.response?.data?.message || 'Failed to fetch cart');
         }
@@ -27,16 +27,13 @@ export const addToCart = createAsyncThunk(
     'cart/addToCart',
     async ({ product, quantity, variantId }: { product: Product; quantity: number; variantId?: string }, { rejectWithValue }) => {
         try {
+            const productId = product.id || (product as any)._id;
             const response = await api.post('/carts/items', {
-                productId: product.id,
+                productId,
                 quantity,
                 variantId
             });
-            // Optimistic return or use backend response
-            // The backend returns the updated cart. We can use that or just the item.
-            // For smoother UI, we'll return the input data and let extraReducers handle it, 
-            // but ideally we sync with backend response.
-            return { product, quantity, variantId, cart: response.data.data }; 
+            return { product: { ...product, id: productId }, quantity, variantId, cart: response.data.data }; 
         } catch (error: any) {
              toast.error(error.response?.data?.message || 'Failed to add to cart');
             return rejectWithValue(error.response?.data?.message || 'Failed to add to cart');
@@ -87,7 +84,6 @@ export const clearCartAsync = createAsyncThunk(
     }
 );
 
-
 const initialState: CartState = {
     items: [],
     isOpen: false,
@@ -99,10 +95,6 @@ const cartSlice = createSlice({
     name: 'cart',
     initialState,
     reducers: {
-        // Local reducers (if you want to keep them for optimistic updates, or remove them in favor of extraReducers)
-        // We will repurpose them or rely on extraReducers. 
-        // For this implementation, let's rely on extraReducers for syncing.
-        
         clearCart: (state) => {
             state.items = [];
         },
@@ -121,18 +113,12 @@ const cartSlice = createSlice({
         });
         builder.addCase(fetchCart.fulfilled, (state, action) => {
             state.isLoading = false;
-            // Map backend items to frontend structure if needed
-            // Backend returns: { product: {...}, quantity: 5, variantId, ... }
-            // Frontend expects: { productId, product: {...}, quantity, variantId }
-            // It seems the backend `Cart` model has `items: [{ product: Schema.Types.ObjectId, ... }]`
-            // But checking `CartsController.getCart` -> populated 'items.product'
-            // So `action.payload` is an array of items where `product` is an object.
-            
-            state.items = action.payload.map((item: any) => ({
-                productId: item.product._id || item.product.id,
+            const items = action.payload || [];
+            state.items = items.map((item: any) => ({
+                productId: item.product?._id || item.product?.id || item.product,
                 product: item.product,
                 quantity: item.quantity,
-                variantId: item.variant // Note: Backend uses 'variant', frontend 'variantId' - check consistency
+                variantId: item.variant
             }));
         });
         builder.addCase(fetchCart.rejected, (state, action) => {
@@ -140,21 +126,32 @@ const cartSlice = createSlice({
             state.error = action.payload as string;
         });
 
+        // Add to Cart
         builder.addCase(addToCart.fulfilled, (state, action) => {
-            const { product, quantity, variantId } = action.payload;
-            const existingItem = state.items.find(
-                (item) => item.productId === product.id && (item.variantId || null) === (variantId || null)
-            );
-
-            if (existingItem) {
-                existingItem.quantity += quantity;
+            const { product, quantity, variantId, cart } = action.payload;
+            if (cart?.items && Array.isArray(cart.items)) {
+                state.items = cart.items.map((item: any) => ({
+                    productId: item.product?._id || item.product?.id || item.product,
+                    product: typeof item.product === 'object' ? item.product : product,
+                    quantity: item.quantity,
+                    variantId: item.variant || variantId
+                }));
             } else {
-                state.items.push({
-                    productId: product.id,
-                    product,
-                    quantity,
-                    variantId,
-                });
+                const prodId = product.id || (product as any)._id;
+                const existingItem = state.items.find(
+                    (item) => item.productId === prodId && (item.variantId || null) === (variantId || null)
+                );
+
+                if (existingItem) {
+                    existingItem.quantity += quantity;
+                } else {
+                    state.items.push({
+                        productId: prodId,
+                        product,
+                        quantity,
+                        variantId,
+                    });
+                }
             }
         });
 

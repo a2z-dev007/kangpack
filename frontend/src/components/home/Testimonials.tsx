@@ -127,28 +127,27 @@ const Testimonials: React.FC = () => {
   );
 
   return (
-    <section className="py-16 md:py-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 mb-12">
+    <section className="py-12 sm:py-14 md:py-16 lg:py-20 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16 mb-8 sm:mb-10 md:mb-12">
         {/* Header */}
         <div className="text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6">
+          <div className="inline-flex items-center gap-2 bg-[#D4CEC4]/70 px-3.5 py-1.5 rounded-full mb-3">
             <MessageSquare className="w-3 h-3 brand-primary" />
-            <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-widest brand-primary uppercase">
               Testimonial
             </span>
           </div>
 
-          <h2 className="text-3xl md:text-5xl leading-[1.2] font-bold mb-6 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3">
             <span className="heading-gradient">Trusted By </span>
             <span className="text-[#B8AFA1]">Experts.</span>
           </h2>
 
           {/* Description */}
-          <p className="light-text text-sm md:text-base max-w-3xl mx-auto leading-relaxed">
+          <p className="light-text text-sm sm:text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
             Real stories from real clients. See how our designs have transformed
-            international and elevated businesses, and created lasting
-            impressions.
+            daily routines and elevated mobile productivity.
           </p>
         </div>
       </div>

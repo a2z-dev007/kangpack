@@ -50,6 +50,14 @@ const envSchema = z.object({
   SMTP_PASS: z.string().transform(val => val.replace(/^["']|["']$/g, '')).optional(),
   FROM_NAME: z.string().default('Kangpack Support'),
   FROM_EMAIL: z.string().default('support@kangpack.in'),
+  // Cloudflare R2 Object Storage
+  R2_ACCOUNT_ID: z.string().default(''),
+  R2_ACCESS_KEY_ID: z.string().default(''),
+  R2_SECRET_ACCESS_KEY: z.string().default(''),
+  R2_BUCKET_NAME: z.string().default(''),
+  R2_PUBLIC_URL: z.string().transform(val => val.trim().replace(/\/$/, '')).default(''),
+  
+  // Legacy AWS S3 (optional fallback)
   AWS_ACCESS_KEY_ID: z.string().default(''),
   AWS_SECRET_ACCESS_KEY: z.string().default(''),
   AWS_REGION: z.string().transform(val => val.trim() || 'us-east-1').default('us-east-1'),

@@ -13,7 +13,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useAuth } from "@/hooks/use-auth";
 import { ASSETS } from "@/constants/assets";
-import { useAppSelector } from "@/lib/store/hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/store/hooks";
+import { fetchCart, setCartOpen } from "@/lib/store/features/cart/cartSlice";
 import CartDrawer from "@/components/common/CartDrawer";
 import { Button } from "@/components/ui/button";
 import {
@@ -36,13 +37,20 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [showLogoutModal, setShowLogoutModal] = useState(false); // Add state
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
+  const dispatch = useAppDispatch();
+  const isReduxCartOpen = useAppSelector((state) => state.cart.isOpen);
   const { isAuthenticated, user, logout } = useAuth();
   const cartItems = useAppSelector((state) => state.cart.items);
   const [cartCount, setCartCount] = useState(0);
   const pathname = usePathname();
   const isHomePage = pathname === "/";
+
+  // Fetch active cart on mount from backend API
+  useEffect(() => {
+    dispatch(fetchCart());
+  }, [dispatch]);
 
   // Scroll track for background transparency
   useEffect(() => {
@@ -85,8 +93,8 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
     ? "hover:text-[#6B4A2D]/80"
     : "hover:text-white/80";
   const bgColorClass = isSolid
-    ? "bg-white/90 backdrop-blur-md shadow-sm py-4"
-    : "bg-transparent py-10 shadow-none";
+    ? "bg-white/90 backdrop-blur-md shadow-sm py-3 sm:py-4"
+    : "bg-transparent py-4 sm:py-6 md:py-8 shadow-none";
 
   // ... (lock scroll effect) ...
   useEffect(() => {
@@ -103,7 +111,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
   return (
     <>
       <nav
-        className={`fixed top-0 w-full z-50 px-6 md:px-16 transition-all duration-300 flex justify-between items-center ${bgColorClass}`}
+        className={`fixed top-0 w-full z-50 px-4 sm:px-6 md:px-12 lg:px-16 transition-all duration-300 flex justify-between items-center ${bgColorClass}`}
       >
         {/* ... (Logo) ... */}
         <Link href="/">
@@ -432,7 +440,13 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
       </AnimatePresence>
 
       {/* Cart Drawer */}
-      <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
+      <CartDrawer
+        isOpen={isCartOpen || isReduxCartOpen}
+        onClose={() => {
+          setIsCartOpen(false);
+          dispatch(setCartOpen(false));
+        }}
+      />
 
       {/* Logout Modal */}
       <LogoutConfirmModal

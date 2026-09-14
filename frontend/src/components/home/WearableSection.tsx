@@ -5,13 +5,11 @@ import {
   useScroll,
   useTransform,
   AnimatePresence,
-  useMotionValueEvent,
 } from "framer-motion";
 import { Check, ArrowRight, Briefcase, Zap, Shield } from "lucide-react";
 import { ASSETS } from "@/constants/assets";
 import PrimaryButton from "../common/PrimaryButton";
 import Link from "next/link";
-import { Lens } from "../ui/lens";
 
 const slides = [
   {
@@ -68,74 +66,29 @@ const WearableSection: React.FC = () => {
     [0, 0, 1, 2],
   );
 
+  // State-like derived value for AnimatePresence
   const [currentSlide, setCurrentSlide] = React.useState(0);
 
-  useMotionValueEvent(activeIndex, "change", (v) => {
-    const index = Math.round(v);
-    setCurrentSlide((prev) => (prev !== index ? index : prev));
-  });
-
-  const nextSlide = () => {
-    if (!containerRef.current) return;
-    const nextIdx = (currentSlide + 1) % slides.length;
-    const containerTop = containerRef.current.offsetTop;
-    const containerHeight = containerRef.current.offsetHeight;
-    const viewportHeight = window.innerHeight;
-
-    // Calculate the target scroll position based on where the slides are mapped
-    // [0, 0.33, 0.66, 1] means:
-    // Slide 0: 0% to 33%
-    // Slide 1: 33% to 66%
-    // Slide 2: 66% to 100%
-    const targets = [0, 0.45, 0.8]; // Midpoints or starts of slide regions
-    const targetScroll =
-      containerTop + (containerHeight - viewportHeight) * targets[nextIdx];
-
-    window.scrollTo({
-      top: targetScroll,
-      behavior: "smooth",
-    });
-  };
+  React.useEffect(() => {
+    const handleValue = (v: number) => {
+      const index = Math.min(2, Math.max(0, Math.round(v)));
+      setCurrentSlide(index);
+    };
+    if ((activeIndex as any).on) {
+      return (activeIndex as any).on("change", handleValue);
+    }
+    return activeIndex.onChange(handleValue);
+  }, [activeIndex]);
 
   return (
     <div
       ref={containerRef}
-      className="relative bg-[#F9F7F2] py-24 md:py-32 overflow-hidden"
+      className="relative h-[180vh] md:h-[220vh] bg-brand-beige"
     >
-      {/* Background Pattern - Topographical / Technical */}
-      <div className="absolute inset-0 opacity-[0.05] pointer-events-none">
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern
-              id="grid"
-              width="40"
-              height="40"
-              patternUnits="userSpaceOnUse"
-            >
-              <path
-                d="M 40 0 L 0 0 0 40"
-                fill="none"
-                stroke="#6B4A2D"
-                strokeWidth="0.5"
-              />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#grid)" />
-        </svg>
-      </div>
-
-      {/* Floating Decorative Elements */}
-      <motion.div
-        style={{ y: useTransform(scrollYProgress, [0, 1], [0, -100]) }}
-        className="absolute top-20 left-[10%] text-[15rem] font-black text-[#6B4A2D]/[0.02] select-none pointer-events-none leading-none"
-      >
-        0{currentSlide + 1}
-      </motion.div>
-
-      <div className="relative w-full flex items-center justify-center px-4 md:px-6">
-        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-14 py-4 md:py-0">
+      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden py-4 sm:py-6 md:py-8 lg:py-12 px-4 sm:px-6 md:px-12 lg:px-16">
+        <div className="max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 h-full md:max-h-[750px] py-2 md:py-0">
           {/* Left Content Card */}
-          <div className="relative h-auto min-h-[55%] md:h-[70%] lg:h-full bg-white shadow-[0_40px_100px_rgba(0,0,0,0.08)] rounded-[30px] md:rounded-[50px] flex flex-col justify-between items-start overflow-hidden order-2 lg:order-1 border border-black/5">
+          <div className="relative h-auto min-h-[50%] md:h-[65%] lg:h-full bg-[#F2EFE9] shadow-xl rounded-2xl md:rounded-[36px] flex flex-col justify-between items-start overflow-hidden order-2 lg:order-1">
             {/* Dot Grid Background Pattern (Persistent) */}
             <div
               className="absolute inset-0 opacity-[0.03] pointer-events-none"
@@ -146,65 +99,58 @@ const WearableSection: React.FC = () => {
               }}
             />
 
-            <div className="relative z-10 w-full h-full p-6 md:p-14 flex flex-col justify-center">
+            <div className="relative z-10 w-full h-full p-4 sm:p-6 md:p-10 flex flex-col justify-between">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentSlide}
-                  initial={{ opacity: 0, x: -30 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: 30 }}
-                  transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.25, ease: "easeOut" }}
                   className="flex-1 flex flex-col justify-center"
                 >
                   <div className="w-full">
                     {/* Badge */}
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      className="flex items-center w-max gap-3 mb-8 bg-[#F2EFE9] px-5 py-2 rounded-full border border-black/5"
-                    >
-                      <div className="text-[#6B4A2D]">
+                    <div className="flex items-center w-max gap-2 mb-3 md:mb-5 bg-[#D4CEC4]/70 px-3 py-1.5 rounded-full">
+                      <div className="text-[#6B4A2D] scale-75 md:scale-90">
                         {slides[currentSlide].icon}
                       </div>
-                      <span className="text-[10px] md:text-[11px] font-bold tracking-[0.2em] brand-primary uppercase">
+                      <span className="text-[9px] md:text-[10px] font-bold tracking-widest brand-primary uppercase">
                         {slides[currentSlide].badge}
                       </span>
-                    </motion.div>
+                    </div>
 
-                    <h2 className="text-[clamp(1.8rem,6vw,4rem)] md:text-[3.5rem] xl:text-[4.5rem] leading-[1] mb-8 tracking-tighter">
-                      <span className="heading-gradient font-black block">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl leading-[1.05] mb-3 md:mb-5 tracking-tight font-black">
+                      <span className="heading-gradient block">
                         {slides[currentSlide].title1}
                       </span>
-                      <span className="text-[#D4CEC4] font-black block">
+                      <span className="text-[#B8AFA1] block">
                         {slides[currentSlide].title2}
                       </span>
                     </h2>
 
                     {/* Description */}
-                    <p className="text-[#6B4A2D]/70 mb-10 md:mb-14 max-w-lg leading-relaxed text-[16px] md:text-lg">
+                    <p className="light-text mb-4 md:mb-6 max-w-lg leading-relaxed text-xs sm:text-sm md:text-base opacity-85">
                       {slides[currentSlide].description}
                     </p>
 
-                    {/* Feature Items */}
-                    <div className="flex flex-wrap gap-3 md:gap-4">
+                    {/* Feature Items - Grid on mobile for space */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:flex lg:flex-wrap gap-2 md:gap-4">
                       {slides[currentSlide].items.map((item, i) => (
-                        <motion.div
+                        <div
                           key={i}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.1 * i }}
-                          className="flex items-center gap-3 bg-[#F9F7F2] border border-black/5 px-4 py-3 rounded-2xl"
+                          className="flex items-center gap-2 md:gap-3 bg-white/50 backdrop-blur-sm border border-[#6B4A2D]/10 px-3 py-2 md:px-4 md:py-2.5 rounded-xl"
                         >
-                          <div className="w-5 h-5 rounded-full bg-brand-brown/10 flex items-center justify-center">
+                          <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-brand-brown transition-transform hover:scale-110 flex items-center justify-center">
                             <Check
-                              className="w-2.5 h-2.5 text-brand-brown"
+                              className="w-2.5 h-2.5 text-white"
                               strokeWidth={4}
                             />
                           </div>
-                          <span className="text-[11px] md:text-xs font-bold text-[#6B4A2D] uppercase tracking-wider">
+                          <span className="text-[10px] md:text-sm font-bold text-[#6B4A2D] uppercase tracking-wider">
                             {item}
                           </span>
-                        </motion.div>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -212,77 +158,46 @@ const WearableSection: React.FC = () => {
               </AnimatePresence>
 
               {/* Footer and Navigation Indicators (Persistent) */}
-              <div className="relative z-10 w-full flex flex-col sm:flex-row items-center justify-between gap-8 sm:gap-0 mt-8 sm:mt-12 md:mt-auto md:pt-10">
+              <div className="relative z-10 w-full flex items-center justify-between  md:mt-auto md:pt-10">
                 <Link href="/products">
                   <PrimaryButton className="btn-premium">
-                    Shop Collection
+                    Shop Now
                   </PrimaryButton>
                 </Link>
 
-                <div className="flex items-center gap-4">
-                  <div className="flex gap-2.5">
-                    {slides.map((_, i) => (
-                      <motion.div
-                        key={i}
-                        animate={{
-                          width: i === currentSlide ? 32 : 10,
-                          backgroundColor:
-                            i === currentSlide ? "#6B4A2D" : "#D4CEC4",
-                        }}
-                        className="h-1.5 rounded-full transition-all duration-500"
-                      />
-                    ))}
-                  </div>
-                  <span className="text-[10px] font-black text-[#6B4A2D]/40 font-mono">
-                    0{currentSlide + 1} / 0{slides.length}
-                  </span>
+                <div className="flex gap-2">
+                  {slides.map((_, i) => (
+                    <div
+                      key={i}
+                      className={`h-1.5 rounded-full transition-all duration-500 ${i === currentSlide ? "bg-brand-brown w-8" : "bg-[#D4CEC4] w-2.5"}`}
+                    />
+                  ))}
                 </div>
               </div>
             </div>
           </div>
 
           {/* Right Image Card */}
-          <div className="relative h-[250px] md:h-auto lg:h-full rounded-[30px] md:rounded-[50px] overflow-hidden shadow-[0_50px_100px_rgba(0,0,0,0.12)] bg-[#E8E2DA] order-1 lg:order-2 shrink-0 md:shrink border border-black/5">
+          <div className="relative h-[200px] md:h-auto lg:h-full rounded-[20px] md:rounded-[40px] overflow-hidden shadow-2xl bg-[#E8E2DA] order-1 lg:order-2 shrink-0 md:shrink">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentSlide}
-                initial={{ opacity: 0, scale: 1.15 }}
+                initial={{ opacity: 0, scale: 1.1 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
                 className="absolute inset-0 group"
               >
-                <Lens
-                  className="w-full h-full"
-                  lensColor="#a67c52"
-                  zoomFactor={1.8}
-                >
-                  <img
-                    src={slides[currentSlide].image}
-                    alt={slides[currentSlide].title1}
-                    className="w-full h-full object-cover transition-transform duration-[2.5s] group-hover:scale-110"
-                  />
-                </Lens>
+                <img
+                  src={slides[currentSlide].image}
+                  alt={slides[currentSlide].title1}
+                  className="w-full h-full object-cover transition-transform duration-[2s] group-hover:scale-110"
+                />
 
-                {/* Manual Navigation Button */}
-                <motion.button
-                  onClick={() =>
-                    setCurrentSlide((prev) => (prev + 1) % slides.length)
-                  }
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="absolute bottom-6 right-6 z-20 bg-white/40 backdrop-blur-xl border border-white/40 p-3 rounded-full shadow-xl flex items-center justify-center group/btn"
-                >
-                  <ArrowRight className="w-5 h-5 text-brand-brown group-hover/btn:text-[#a67c52] transition-colors" />
-                </motion.button>
-
-                {/* Product Status Label */}
-                <div className="absolute top-8 left-8 z-20">
-                  <div className="bg-black/20 backdrop-blur-xl border border-white/10 px-4 py-2 rounded-full flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-[#a67c52] animate-pulse" />
-                    <span className="text-[9px] font-black uppercase tracking-widest text-white">
-                      Live Prototype v2.4
-                    </span>
+                {/* Floating Image Badge - Smaller on Mobile */}
+                <div className="absolute bottom-6 right-6 md:bottom-10 md:right-10 z-20 bg-white/20 backdrop-blur-xl border border-white/20 p-3 md:p-4 rounded-2xl shadow-2xl">
+                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full bg-white flex items-center justify-center">
+                    <ArrowRight className="w-3 h-3 md:w-4 md:h-4 text-brand-brown" />
                   </div>
                 </div>
               </motion.div>

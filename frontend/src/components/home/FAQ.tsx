@@ -8,58 +8,53 @@ const FAQ: React.FC = () => {
 
   const faqs = [
     {
-      q: "What is Kangpack?",
-      a: "Kangpack is a wearable workstation designed for professionals who work on the go.",
+      q: "What makes Kangpack different from regular backpacks?",
+      a: "Kangpack is specifically designed as a wearable mobile workstation that lets you work hands-free anywhere, combining ergonomic balance, laptop protection, and instant access.",
     },
     {
-      q: "How does Kangpack work?",
-      a: "It uses an ergonomic harness and a stable tray to provide a desk-like surface anywhere.",
+      q: "Can I use Kangpack while walking or standing?",
+      a: "Yes! The harness and support structure keep your laptop stable and secure while standing or moving.",
     },
     {
-      q: "What laptop sizes does it support?",
-      a: "It supports laptops from 13 inches to 15.6 inches comfortably.",
+      q: "What laptops fit inside Kangpack?",
+      a: "Kangpack comfortably accommodates laptops up to 16 inches, including MacBook Pro 16\", Dell XPS 15/16, and ThinkPad models.",
     },
     {
-      q: "Is it comfortable for long use?",
-      a: "Yes, its ergonomic design distributes weight across your shoulders and back.",
+      q: "How does the weight distribution work?",
+      a: "Our dual-point ergonomic harness distributes weight evenly across your shoulders, core, and hips, significantly reducing neck and back strain.",
     },
     {
-      q: "Can I walk or stand while using it?",
-      a: "Absolutely! It's designed for use while standing, walking, or sitting.",
-    },
-    {
-      q: "Is Kangpack heavy?",
-      a: "No, it weighs only 820g, which is lighter than many typical leather backpacks.",
+      q: "Is it water-resistant?",
+      a: "Yes, Kangpack features weather-treated full-grain leather and water-repellent ballistic fabrics with waterproof zippers.",
     },
     {
       q: "Does it protect my laptop?",
-      a: "Yes, it features padding and a radiation shield (on specific models).",
+      a: "Yes, it features multi-layer shock-absorbing EVA foam padding and radiation shield technology.",
     },
     {
       q: "Is it suitable for travel and public spaces?",
-      a: "Perfectly! It's ideal for trains, airports, and waiting lines.",
+      a: "Perfectly! It's TSA-compliant, compact, and ideal for trains, airports, cafes, and outdoor workspaces.",
     },
   ];
 
   return (
-    <section className="bg-transparent py-16 md:py-24 px-6">
-      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-12 lg:gap-16 items-start">
+    <section className="bg-transparent py-12 sm:py-14 md:py-16 lg:py-20 px-4 sm:px-6 md:px-12 lg:px-16">
+      <div className="max-w-7xl mx-auto flex flex-col lg:flex-row gap-8 lg:gap-16 items-start">
         {/* Left Header Section */}
-        <div className="lg:w-[450px] lg:sticky lg:top-32 w-full">
+        <div className="lg:w-[400px] lg:sticky lg:top-24 w-full shrink-0">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6">
+          <div className="inline-flex items-center gap-2 bg-[#D4CEC4]/70 px-3.5 py-1.5 rounded-full mb-3">
             <div className="w-1.5 h-1.5 bg-[#6B4A2D] rounded-full"></div>
-            <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-widest brand-primary uppercase">
               Common Questions
             </span>
           </div>
 
-          <h2 className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tighter font-bold">
-            <span className="heading-gradient">FAQ's</span>
-            <br />
-            <span className="text-[#B8AFA1]">Asked</span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3">
+            <span className="heading-gradient font-bold">Frequently </span>
+            <span className="text-[#B8AFA1] font-bold">Asked</span>
           </h2>
-          <p className="light-text text-[16px] md:text-lg xl:text-xl leading-relaxed max-w-[400px] mb-10 lg:mb-0">
+          <p className="light-text text-xs sm:text-sm md:text-base leading-relaxed max-w-sm mb-4 lg:mb-0">
             Find quick answers to common questions about Kangpack usage, care,
             and support essentials.
           </p>
@@ -72,26 +67,34 @@ const FAQ: React.FC = () => {
               <div key={i} className="border-b border-[#6B4A2D]/10">
                 <button
                   onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                  className="w-full flex items-center justify-between py-6 md:py-10 xl:py-12 2xl:py-14 text-left group transition-all"
+                  className="w-full flex items-center justify-between py-4 sm:py-5 md:py-6 text-left group transition-colors"
                 >
-                  <div className="flex items-center gap-6 md:gap-24">
-                    <span className="text-[12px] md:text-[16px] text-[#6B4A2D]/40 font-mono w-6 md:w-8">
+                  <div className="flex items-center gap-3 sm:gap-6">
+                    <span className="text-xs sm:text-sm text-[#6B4A2D]/40 font-mono w-5 sm:w-6">
                       {String(i + 1).padStart(2, "0")}
                     </span>
                     <span
-                      className={`text-[15px] md:text-[20px] xl:text-[24px] 2xl:text-[28px] font-bold md:font-medium tracking-tight transition-colors duration-300 ${openIndex === i ? "text-[#6B4A2D]" : "text-[#6B4A2D]/80 group-hover:text-[#6B4A2D]"}`}
+                      className={`text-sm sm:text-base md:text-lg font-bold tracking-tight transition-colors duration-200 ${
+                        openIndex === i
+                          ? "text-[#6B4A2D]"
+                          : "text-[#6B4A2D]/80 group-hover:text-[#6B4A2D]"
+                      }`}
                     >
                       {faq.q}
                     </span>
                   </div>
-                  <div className="flex-shrink-0 ml-4">
+                  <div className="flex-shrink-0 ml-3">
                     <div
-                      className={`w-7 h-7 md:w-8 md:h-8 rounded-full flex items-center justify-center transition-all duration-300 ${openIndex === i ? "btn-premium" : "text-[#6B4A2D] border border-black/5"}`}
+                      className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center transition-all duration-300 ${
+                        openIndex === i
+                          ? "btn-premium shadow-sm"
+                          : "text-[#6B4A2D] bg-[#6B4A2D]/5 group-hover:bg-[#6B4A2D]/10"
+                      }`}
                     >
                       {openIndex === i ? (
-                        <Minus className="w-4 h-4 md:w-5 md:h-5" />
+                        <Minus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                       ) : (
-                        <Plus className="w-4 h-4 md:w-5 md:h-5 transition-transform group-hover:rotate-90" />
+                        <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 transition-transform group-hover:rotate-90" />
                       )}
                     </div>
                   </div>
@@ -104,12 +107,12 @@ const FAQ: React.FC = () => {
                       animate={{ height: "auto", opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{
-                        duration: 0.4,
+                        duration: 0.35,
                         ease: [0.04, 0.62, 0.23, 0.98],
                       }}
                       className="overflow-hidden"
                     >
-                      <p className="pb-8 pl-12 md:pl-[120px] lg:pl-[136px] xl:pl-[160px] text-[#8B7E6F] leading-relaxed text-[15px] md:text-[18px] xl:text-[20px] max-w-4xl">
+                      <p className="pb-4 sm:pb-6 pl-8 sm:pl-12 text-[#8B7E6F] leading-relaxed text-xs sm:text-sm md:text-base max-w-3xl">
                         {faq.a}
                       </p>
                     </motion.div>

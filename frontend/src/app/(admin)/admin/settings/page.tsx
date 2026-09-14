@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -26,20 +26,20 @@ export default function AdminSettings() {
   });
 
   // Update form when settings load
-  useState(() => {
+  useEffect(() => {
     if (settings) {
       setFormData({
-        storeName: settings.storeName || '',
-        storeDescription: settings.storeDescription || '',
-        email: settings.email || '',
-        phone: settings.phone || '',
+        storeName: settings.businessName || settings.storeName || '',
+        storeDescription: settings.businessDescription || settings.storeDescription || '',
+        email: settings.contactInfo?.email || settings.email || '',
+        phone: settings.contactInfo?.phone || settings.phone || '',
         currency: settings.currency || 'INR',
-        taxRate: settings.taxRate || 0,
-        shippingFee: settings.shippingFee || 0,
-        freeShippingThreshold: settings.freeShippingThreshold || 0,
+        taxRate: settings.tax?.rate ?? settings.taxRate ?? 0,
+        shippingFee: settings.shipping?.defaultRate ?? settings.shippingFee ?? 0,
+        freeShippingThreshold: settings.shipping?.freeShippingThreshold ?? settings.freeShippingThreshold ?? 0,
       });
     }
-  });
+  }, [settings]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

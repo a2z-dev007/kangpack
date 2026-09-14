@@ -15,10 +15,7 @@ module.exports = {
       env: {
         NODE_ENV: "production",
         PORT: 8000
-      },
-      error_file: "logs/backend-error.log",
-      out_file: "logs/backend-out.log",
-      merge_logs: true
+      }
     },
     {
       name: "kangpack-frontend",
@@ -36,10 +33,7 @@ module.exports = {
         NODE_ENV: "production",
         PORT: 3000,
         HOSTNAME: "127.0.0.1"
-      },
-      error_file: "../../../logs/frontend-error.log",
-      out_file: "../../../logs/frontend-out.log",
-      merge_logs: true
+      }
     }
   ]
 };

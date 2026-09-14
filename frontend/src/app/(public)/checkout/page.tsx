@@ -33,6 +33,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
+import { usePublicSettings } from "@/features/settings/queries";
 import Lottie from "react-lottie";
 import Confetti from "react-confetti-boom";
 import successLottie from "@/assets/lottie/success-tick.json";
@@ -96,14 +97,28 @@ export default function CheckoutPage() {
     setIsMounted(true);
   }, []);
 
-  // Calculate totals based on backend logic
+  const { data: publicSettings } = usePublicSettings();
+
+  const isTaxEnabled = publicSettings?.tax?.enabled !== false;
+  const taxRate = isTaxEnabled ? (publicSettings?.tax?.rate ?? publicSettings?.taxRate ?? 0) : 0;
+
+  const isShippingEnabled = publicSettings?.shipping?.enabled !== false;
+  const freeShippingThreshold = publicSettings?.shipping?.freeShippingThreshold ?? publicSettings?.freeShippingThreshold ?? 0;
+  const defaultShippingRate = publicSettings?.shipping?.defaultRate ?? publicSettings?.shippingFee ?? 0;
+
+  // Calculate totals based on dynamic store settings
   const subtotal = cartItems.reduce(
     (sum: number, item: any) => sum + item.product.price * item.quantity,
     0,
   );
-  const tax = subtotal * 0.1; // 10% Tax
-  const shipping = cartItems.length > 0 ? 10 : 0; // Standard Shipping
-  const total = subtotal + tax + shipping;
+
+  const isFreeShipping = isShippingEnabled && freeShippingThreshold > 0 && subtotal >= freeShippingThreshold;
+  const shipping = cartItems.length > 0 
+    ? (isShippingEnabled ? (isFreeShipping ? 0 : defaultShippingRate) : 0) 
+    : 0;
+
+  const tax = Number(((subtotal * taxRate) / 100).toFixed(2));
+  const total = Number((subtotal + tax + shipping).toFixed(2));
 
   const [formData, setFormData] = useState({
     email: user?.email || "",
@@ -779,7 +794,7 @@ export default function CheckoutPage() {
                           </div>
                         </div>
                         <span className="font-black text-[#6B4A2D] uppercase text-xs">
-                          Free
+                          {shipping === 0 ? "Free" : formatPrice(shipping)}
                         </span>
                       </div>
                       <div className="p-6 rounded-2xl border border-[#6B4A2D]/10 opacity-50 flex items-center justify-between cursor-not-allowed">
@@ -1047,11 +1062,11 @@ export default function CheckoutPage() {
                   <div className="flex justify-between text-sm text-[#8B7E6F]">
                     <span>Shipping</span>
                     <span className="font-bold text-[#6B4A2D]">
-                      {formatPrice(shipping)}
+                      {shipping === 0 ? "Free" : formatPrice(shipping)}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm text-[#8B7E6F]">
-                    <span>Tax (10%)</span>
+                    <span>Tax {taxRate > 0 ? `(${taxRate}%)` : ""}</span>
                     <span className="font-bold text-[#6B4A2D]">
                       {formatPrice(tax)}
                     </span>

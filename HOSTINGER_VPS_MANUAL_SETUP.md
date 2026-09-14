@@ -376,6 +376,13 @@ SMTP_PASS=YourEmailPasswordHere
 FROM_EMAIL=support@kangpack.in
 FROM_NAME="Kangpack Support"
 
+# Cloudflare R2 Object Storage
+R2_ACCOUNT_ID=your_cloudflare_account_id
+R2_ACCESS_KEY_ID=your_r2_access_key_id
+R2_SECRET_ACCESS_KEY=your_r2_secret_access_key
+R2_BUCKET_NAME=your_r2_bucket_name
+R2_PUBLIC_URL=https://assets.kangpack.in
+
 # Payment Gateway (Razorpay)
 RAZORPAY_KEY_ID=rzp_live_xxxxxxxxxxxx
 RAZORPAY_KEY_SECRET=xxxxxxxxxxxxxxxxxxxx

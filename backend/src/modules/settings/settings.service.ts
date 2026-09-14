@@ -14,15 +14,54 @@ export class SettingsService {
     return settings;
   }
 
-  public static async updateSettings(data: Partial<ISettings>): Promise<ISettings> {
+  public static async updateSettings(data: any): Promise<ISettings> {
     let settings = await Settings.findOne();
     
     if (!settings) {
       // Create new settings if none exist
-      settings = new Settings(data);
-    } else {
-      // Update existing settings
-      Object.assign(settings, data);
+      settings = await this.createDefaultSettings();
+    }
+
+    // Support flat field mappings from admin dashboard form
+    if (data.storeName !== undefined) settings.businessName = data.storeName;
+    if (data.businessName !== undefined) settings.businessName = data.businessName;
+    if (data.storeDescription !== undefined) settings.businessDescription = data.storeDescription;
+    if (data.businessDescription !== undefined) settings.businessDescription = data.businessDescription;
+
+    if (!settings.contactInfo) settings.contactInfo = { email: '' } as any;
+    if (data.email !== undefined) settings.contactInfo.email = data.email;
+    if (data.phone !== undefined) settings.contactInfo.phone = data.phone;
+    if (data.contactInfo) Object.assign(settings.contactInfo, data.contactInfo);
+
+    if (data.currency !== undefined) settings.currency = data.currency;
+    if (data.currencySymbol !== undefined) settings.currencySymbol = data.currencySymbol;
+
+    if (!settings.tax) settings.tax = { enabled: true, rate: 0, inclusive: false, displayPricesWithTax: false };
+    if (data.taxRate !== undefined) {
+      settings.tax.rate = Number(data.taxRate);
+      settings.tax.enabled = true;
+    }
+    if (data.tax) {
+      Object.assign(settings.tax, data.tax);
+    }
+
+    if (!settings.shipping) settings.shipping = { enabled: true, defaultRate: 0, freeShippingThreshold: 0, zones: [] };
+    if (data.shippingFee !== undefined) {
+      settings.shipping.defaultRate = Number(data.shippingFee);
+      settings.shipping.enabled = true;
+    }
+    if (data.freeShippingThreshold !== undefined) {
+      settings.shipping.freeShippingThreshold = Number(data.freeShippingThreshold);
+    }
+    if (data.shipping) {
+      Object.assign(settings.shipping, data.shipping);
+    }
+
+    // Apply any other top-level fields
+    for (const key of Object.keys(data)) {
+      if (!['storeName', 'storeDescription', 'email', 'phone', 'taxRate', 'shippingFee', 'freeShippingThreshold', 'tax', 'shipping', 'contactInfo', 'currency', 'currencySymbol'].includes(key)) {
+        (settings as any)[key] = data[key];
+      }
     }
 
     await settings.save();

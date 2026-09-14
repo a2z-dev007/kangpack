@@ -7,17 +7,36 @@ import { asyncHandler } from '../../common/middlewares/error.middleware';
 export class SettingsController {
   public static getSettings = asyncHandler(async (req: Request, res: Response) => {
     const settings = await SettingsService.getSettings();
+    const settingsObj = settings.toObject ? settings.toObject() : { ...settings };
     
+    // Add convenient flat aliases for frontend admin & public consumers
+    settingsObj.taxRate = settings.tax?.rate ?? 0;
+    settingsObj.shippingFee = settings.shipping?.defaultRate ?? 0;
+    settingsObj.freeShippingThreshold = settings.shipping?.freeShippingThreshold ?? 0;
+    settingsObj.storeName = settings.businessName || '';
+    settingsObj.storeDescription = settings.businessDescription || '';
+    settingsObj.email = settings.contactInfo?.email || '';
+    settingsObj.phone = settings.contactInfo?.phone || '';
+
     res.status(HTTP_STATUS.OK).json(
-      ResponseUtils.success(MESSAGES.FETCHED_SUCCESS, settings)
+      ResponseUtils.success(MESSAGES.FETCHED_SUCCESS, settingsObj)
     );
   });
 
   public static updateSettings = asyncHandler(async (req: Request, res: Response) => {
     const settings = await SettingsService.updateSettings(req.body);
+    const settingsObj = settings.toObject ? settings.toObject() : { ...settings };
     
+    settingsObj.taxRate = settings.tax?.rate ?? 0;
+    settingsObj.shippingFee = settings.shipping?.defaultRate ?? 0;
+    settingsObj.freeShippingThreshold = settings.shipping?.freeShippingThreshold ?? 0;
+    settingsObj.storeName = settings.businessName || '';
+    settingsObj.storeDescription = settings.businessDescription || '';
+    settingsObj.email = settings.contactInfo?.email || '';
+    settingsObj.phone = settings.contactInfo?.phone || '';
+
     res.status(HTTP_STATUS.OK).json(
-      ResponseUtils.success(MESSAGES.UPDATED_SUCCESS, settings)
+      ResponseUtils.success(MESSAGES.UPDATED_SUCCESS, settingsObj)
     );
   });
 

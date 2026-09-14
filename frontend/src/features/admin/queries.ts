@@ -307,6 +307,7 @@ export const useUpdateSettings = () => {
     mutationFn: settingsAdminApi.update,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'settings'] });
+      queryClient.invalidateQueries({ queryKey: ['public-settings'] });
       toast.success('Settings updated successfully');
     },
     onError: (error: any) => {

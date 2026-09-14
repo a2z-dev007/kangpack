@@ -2,16 +2,30 @@
 import React, { useState } from "react";
 import { Check, X, Briefcase } from "lucide-react";
 import PrimaryButton from "@/components/common/PrimaryButton";
-import { motion } from "framer-motion";
+import { useAppDispatch } from "@/lib/store/hooks";
+import { addToCart, setCartOpen } from "@/lib/store/features/cart/cartSlice";
+import { useQuery } from "@tanstack/react-query";
+import { productsApi } from "@/features/products/api";
+import { QUERY_KEYS } from "@/lib/constants";
+import { ASSETS } from "@/constants/assets";
+import { toast } from "sonner";
 
 const Pricing: React.FC = () => {
   const [activePlan, setActivePlan] = useState<"shield" | "standard">("shield");
+  const dispatch = useAppDispatch();
+
+  const { data } = useQuery({
+    queryKey: [QUERY_KEYS.PRODUCTS, "pricing"],
+    queryFn: () => productsApi.getProducts({ limit: 10 }),
+  });
 
   const plans = [
     {
       id: "shield" as const,
+      slug: "kangpack-flagship-edition",
       name: "Radiation Shield Edition",
       price: "14,999",
+      numericPrice: 14999,
       description:
         "Built-in shielding for added peace of mind during extended laptop use.",
       features: [
@@ -26,8 +40,10 @@ const Pricing: React.FC = () => {
     },
     {
       id: "standard" as const,
+      slug: "kangpack-classic",
       name: "Standard Edition",
       price: "12,999",
+      numericPrice: 12999,
       description:
         "All essential features for mobile productivity without radiation shielding.",
       features: [
@@ -41,61 +57,88 @@ const Pricing: React.FC = () => {
     },
   ];
 
+  const handleBuyNow = async (plan: (typeof plans)[0]) => {
+    const foundProduct = data?.data?.find(
+      (p) => p.slug === plan.slug || p.name.toLowerCase().includes(plan.id)
+    );
+
+    const productToOrder: any = foundProduct || {
+      id: plan.slug,
+      _id: plan.slug,
+      name: plan.name,
+      slug: plan.slug,
+      price: plan.numericPrice,
+      images: [plan.id === "shield" ? ASSETS.TICKERS.MAIN : ASSETS.TICKERS.FIRST],
+      stock: 50,
+    };
+
+    try {
+      await dispatch(
+        addToCart({
+          product: productToOrder,
+          quantity: 1,
+        })
+      ).unwrap();
+      toast.success(`Added ${plan.name} to cart`);
+      dispatch(setCartOpen(true));
+    } catch {
+      // Handled in thunk
+    }
+  };
+
   return (
-    <section className="bg-transparent py-16 md:py-24 px-6 overflow-hidden relative">
+    <section className="bg-transparent py-12 sm:py-14 md:py-16 lg:py-20 px-4 sm:px-6 md:px-12 lg:px-16 overflow-hidden relative">
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="text-center flex flex-col items-center mb-12">
+        <div className="text-center flex flex-col items-center mb-8 sm:mb-10 md:mb-12">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-8">
+          <div className="inline-flex items-center gap-2 bg-[#D4CEC4]/70 px-3.5 py-1.5 rounded-full mb-3">
             <Briefcase className="w-3.5 h-3.5 brand-primary" />
-            <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-widest brand-primary uppercase">
               Variants & Edition
             </span>
           </div>
 
-          <h2 className="text-4xl md:text-6xl leading-snug md:leading-[1.1] mb-8 md:mb-12 tracking-tight font-bold">
-            <span className="heading-gradient underline decoration-[#6B4A2D]/20 decoration-2 underline-offset-[8px] md:underline-offset-[12px]">
-              Choose Your Edition
-            </span>
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3">
+            <span className="heading-gradient">Choose Your Edition</span>
           </h2>
 
-          <p className="light-text text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+          <p className="light-text text-sm sm:text-base md:text-lg max-w-xl mx-auto leading-relaxed">
             Pick the variant that fits your workflow and lifestyle.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 max-w-5xl mx-auto">
           {plans.map((plan) => (
             <div
               key={plan.id}
               onClick={() => setActivePlan(plan.id)}
-              className={`relative cursor-pointer transition-all duration-500 rounded-[40px] p-8 md:p-12 xl:p-14 2xl:p-16 border-[2px] shadow-sm flex flex-col h-full
+              className={`relative cursor-pointer transition-all duration-300 rounded-2xl sm:rounded-3xl p-6 sm:p-8 md:p-10 border-2 shadow-xs flex flex-col h-full
                 ${
                   activePlan === plan.id
-                    ? "bg-[#EAE5DC] border-[#6B4A2D]/20 border-dashed border-[3px] shadow-md scale-[1.02]"
-                    : "bg-[#F9F7F4] border-[#6B4A2D]/10 hover:border-[#6B4A2D]/30"
+                    ? "bg-[#EAE5DC] border-[#6B4A2D]/30 shadow-md scale-[1.01]"
+                    : "bg-[#F9F7F4] border-[#6B4A2D]/10 hover:border-[#6B4A2D]/25 hover:shadow-md"
                 }
               `}
             >
               {plan.tag && (
-                <div className="absolute -top-3 left-10">
-                  <span className="btn-premium text-[10px] font-bold uppercase tracking-widest px-4 py-1.5 rounded-full shadow-lg border-none">
+                <div className="absolute -top-3 left-6 sm:left-8">
+                  <span className="btn-premium text-[9px] sm:text-[10px] font-bold uppercase tracking-widest px-3.5 py-1 rounded-full shadow-md border-none">
                     {plan.tag}
                   </span>
                 </div>
               )}
 
-              <h3 className="text-2xl md:text-3xl xl:text-4xl font-bold mb-6 xl:mb-8 text-[#2D241E]">
+              <h3 className="text-xl sm:text-2xl md:text-3xl font-bold mb-3 text-[#2D241E]">
                 {plan.name}
               </h3>
 
-              <div className="mb-8 xl:mb-10">
-                <span className="text-4xl md:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-[#6B4A2D]">
-                  ₹{plan.price}
+              <div className="mb-4 sm:mb-6">
+                <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#6B4A2D]">
+                  ₹{plan.price.toLocaleString()}
                 </span>
               </div>
 
-              <p className="text-[#8B7E6F] text-base xl:text-sm leading-relaxed mb-10 xl:mb-4 min-h-[3rem] xl:min-h-[2.5rem]">
+              <p className="text-[#8B7E6F] text-xs sm:text-sm leading-relaxed mb-6">
                 {plan.description}
               </p>
 
@@ -126,7 +169,13 @@ const Pricing: React.FC = () => {
                 ))}
               </div>
 
-              <PrimaryButton className="mt-auto pointer-events-none btn-premium">
+              <PrimaryButton
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleBuyNow(plan);
+                }}
+                className="mt-auto btn-premium"
+              >
                 Buy Now
               </PrimaryButton>
             </div>

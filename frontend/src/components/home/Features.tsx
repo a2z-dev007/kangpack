@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import side2 from "@/assets/side2.png";
 import { Laptop, Briefcase, User, Zap, ArrowUpRight } from "lucide-react";
 import { Lightbox, useLightbox } from "@/components/ui/Lightbox";
-import { ParallaxImage, FadeInScale } from "@/components/common/ScrollSection";
+import Link from "next/link";
 
 const Features: React.FC = () => {
   const {
@@ -40,7 +40,7 @@ const Features: React.FC = () => {
   ];
 
   return (
-    <section className="bg-brand-beige py-16 md:py-24 px-6 md:px-16 relative overflow-hidden">
+    <section className="bg-brand-beige py-12 sm:py-14 md:py-16 lg:py-20 px-4 sm:px-6 md:px-12 lg:px-16 relative overflow-hidden">
       {/* Background Blobs */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40">
         <div className="absolute top-[10%] left-[-5%] w-[40%] h-[60%] bg-[#E8E2DA] rounded-full blur-[100px] transform -rotate-12"></div>
@@ -48,37 +48,37 @@ const Features: React.FC = () => {
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row md:justify-center mb-12 md:mb-16">
+        <div className="flex flex-col md:flex-row md:justify-between mb-8 sm:mb-10 md:mb-12 gap-6">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
+            initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: false }}
-            className="w-full md:w-1/3 mb-8 md:mb-0"
+            viewport={{ once: true }}
+            className="w-full md:w-1/4 shrink-0"
           >
-            <div className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg">
+            <div className="inline-flex items-center gap-2 bg-[#D4CEC4]/70 px-3.5 py-1.5 rounded-full">
               <div className="w-1.5 h-1.5 bg-[#6B4A2D] rounded-full"></div>
-              <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+              <span className="text-[10px] sm:text-[11px] font-bold tracking-widest brand-primary uppercase">
                 About Kangpack
               </span>
             </div>
           </motion.div>
-          <div className="w-full ">
-            <h2 className="text-3xl md:text-5xl leading-[1.2] tracking-tight font-bold">
+          <div className="w-full md:w-3/4">
+            <h2 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold tracking-tight leading-[1.2]">
               <motion.span
                 initial={{ opacity: 0, scale: 0.98 }}
                 whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: false }}
-                transition={{ duration: 0.8 }}
-                className="inline-block mb-2 heading-gradient"
+                viewport={{ once: true }}
+                transition={{ duration: 0.6 }}
+                className="inline-block mb-1.5 heading-gradient"
               >
                 We turn mobility into productivity, redefining how modern
                 professionals work on the move.
-              </motion.span>
+              </motion.span>{" "}
               <motion.span
                 initial={{ opacity: 0 }}
                 whileInView={{ opacity: 1 }}
-                viewport={{ once: false }}
-                transition={{ duration: 0.8, delay: 0.2 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.15 }}
                 className="text-[#B8AFA1]"
               >
                 A wearable workstation designed for comfort, focus, and freedom
@@ -88,57 +88,61 @@ const Features: React.FC = () => {
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row gap-6 items-center bg-[#EEEAE2] p-2 rounded-[24px]">
+        <div className="flex flex-col lg:flex-row gap-6 items-stretch bg-[#EEEAE2] p-3 sm:p-4 rounded-[28px] shadow-sm">
           {/* Feature List Column */}
-          <div className="flex-1 flex flex-col gap-3">
+          <div className="flex-1 flex flex-col justify-between gap-3">
             {features.map((f, i) => (
               <motion.div
                 key={i}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: false }}
-                transition={{ delay: i * 0.1 }}
-                className="bg-white/40 backdrop-blur-sm p-6 xl:p-4 rounded-2xl flex items-center gap-6 xl:gap-4 hover:bg-white/80 transition-all cursor-default group border border-white/20 shadow-sm"
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.08 }}
+                className="bg-white/60 backdrop-blur-sm p-4 sm:p-5 rounded-2xl flex items-center gap-4 hover:bg-white transition-all duration-300 cursor-default group border border-white/40 shadow-xs hover:shadow-md hover:-translate-y-0.5"
               >
-                <div className="w-12 h-12 xl:w-16 xl:h-16 bg-white rounded-xl flex items-center justify-center shadow-md flex-shrink-0 group-hover:scale-110 transition-transform">
+                <div className="w-11 h-11 sm:w-12 sm:h-12 bg-white rounded-xl flex items-center justify-center shadow-sm flex-shrink-0 group-hover:scale-105 group-hover:shadow-md transition-all duration-300">
                   <div className="text-primary">{f.icon}</div>
                 </div>
                 <div>
-                  <h4 className="font-bold text-primary mb-1 text-lg xl:text-xl">
+                  <h4 className="font-bold text-primary mb-0.5 text-base sm:text-lg">
                     {f.title}
                   </h4>
-                  <p className="text-primary/40 text-[14px] xl:text-base font-medium leading-tight">
+                  <p className="text-primary/60 text-xs sm:text-sm font-medium leading-relaxed">
                     {f.desc}
                   </p>
                 </div>
               </motion.div>
             ))}
             {/* More About Us Button */}
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              className="btn-premium p-7 xl:p-5 rounded-2xl flex items-center justify-between group transition-all mt-1 shadow-xl border-none opacity-90 hover:opacity-100"
-            >
-              <span className="font-bold text-base tracking-wide uppercase">
-                More about us
-              </span>
-              <ArrowUpRight className="w-6 h-6 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-            </motion.button>
+            <Link href="/about" className="block mt-1">
+              <motion.div
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                className="btn-premium p-4 sm:p-5 rounded-2xl flex items-center justify-between group transition-all shadow-md hover:shadow-lg border-none cursor-pointer"
+              >
+                <span className="font-bold text-sm sm:text-base tracking-wide uppercase">
+                  More about us
+                </span>
+                <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+              </motion.div>
+            </Link>
           </div>
 
           {/* Large Image Column */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
+            initial={{ opacity: 0, scale: 0.98 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false }}
-            className="lg:w-[48%] xl:h-[600px] rounded-2xl overflow-hidden shadow-2xl relative cursor-pointer"
+            viewport={{ once: true }}
+            className="lg:w-[48%] min-h-[280px] sm:min-h-[380px] lg:min-h-[500px] rounded-2xl overflow-hidden shadow-md relative cursor-pointer group"
             onClick={() => openLightbox([side2.src], 0)}
           >
-            <ParallaxImage
+            <img
               src={side2.src}
               alt="Person using Kangpack"
-              className="w-full h-full"
+              loading="lazy"
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             />
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/15 transition-colors duration-300" />
           </motion.div>
         </div>
       </div>

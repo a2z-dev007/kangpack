@@ -14,13 +14,13 @@ const InlineImage = ({
   rotate?: number;
 }) => (
   <motion.div
-    className={`inline-flex items-center justify-center w-[1.3em] h-[1em] rounded-[24px] overflow-hidden translate-y-[0.1em] border-[4px] border-white shadow-lg mx-1 ${className}`}
-    style={{ transform: `translateY(0.1em) rotate(${rotate}deg)` }}
+    className={`inline-flex items-center justify-center w-[1.2em] h-[0.9em] rounded-xl sm:rounded-2xl overflow-hidden translate-y-[0.08em] border-[2px] sm:border-[3px] border-white shadow-md mx-1 sm:mx-2 ${className}`}
+    style={{ transform: `translateY(0.08em) rotate(${rotate}deg)` }}
     whileHover={{
-      y: [0, -8, 0, -5, 0, -3, 0],
-      rotate: [rotate, rotate - 5, rotate + 5, rotate - 3, rotate + 3, rotate],
+      y: [0, -6, 0, -4, 0],
+      rotate: [rotate, rotate - 4, rotate + 4, rotate],
       transition: {
-        duration: 0.6,
+        duration: 0.5,
         ease: "easeInOut",
       },
     }}
@@ -31,29 +31,14 @@ const InlineImage = ({
 
 const DesignedToMove: React.FC = () => {
   return (
-    <section className="py-16 md:py-24 bg-[#F9F7F4] overflow-hidden">
-      {/* Top Divider */}
-      <div className="max-w-7xl mx-auto px-6 mb-24">
-        <div className="relative flex items-center justify-center">
-          <div className="absolute h-[1px] w-full bg-[#6B4A2D]/10" />
-          <motion.div
-            initial={{ scale: 0, rotate: -45 }}
-            whileInView={{ scale: 1, rotate: 0 }}
-            viewport={{ once: true }}
-            className="relative bg-[#F9F7F4] px-4 text-[#6B4A2D]/30 text-xs font-light select-none"
-          >
-            +
-          </motion.div>
-        </div>
-      </div>
-
+    <section className="py-12 sm:py-14 md:py-16 lg:py-20 bg-[#F9F7F4] overflow-hidden">
       {/* Hero Text Content */}
-      <div className="max-w-[1200px] mx-auto px-6 text-center">
-        <div className="flex flex-col items-center gap-1 md:gap-4">
+      <div className="max-w-[1200px] mx-auto px-4 sm:px-6 text-center">
+        <div className="flex flex-col items-center gap-2 sm:gap-3 md:gap-5">
           {/* Row 1 */}
-          <div className="flex items-center flex-wrap justify-center text-[clamp(1.8rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] font-bold tracking-[-0.04em] leading-[1]">
+          <div className="flex items-center flex-wrap justify-center text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.15]">
             <span className="heading-gradient">Designed to Move</span>
-            <div className="inline-flex items-center ml-6 -space-x-5">
+            <div className="inline-flex items-center ml-2 sm:ml-4 -space-x-3 sm:-space-x-4">
               <InlineImage
                 src={ASSETS.TICKERS.SIDE}
                 className="z-30"
@@ -73,45 +58,30 @@ const DesignedToMove: React.FC = () => {
           </div>
 
           {/* Row 2 */}
-          <div className="text-[clamp(1.8rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] font-bold tracking-[-0.04em] text-[#B8AFA1] leading-[1]">
+          <div className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-[#B8AFA1] leading-[1.15]">
             Built with Purpose,
           </div>
 
           {/* Row 3 */}
-          <div className="flex items-center flex-wrap justify-center text-[clamp(2.5rem,5vw,5.5rem)] xl:text-[4vw] 2xl:text-[5vw] font-bold tracking-[-0.04em] leading-[1]">
+          <div className="flex items-center flex-wrap justify-center text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.15]">
             <InlineImage
               src={ASSETS.TICKERS.MAIN}
               rotate={-8}
-              className="mr-6 "
+              className="mr-2 sm:mr-3"
             />
             <span className="heading-gradient">Effortless Focus</span>
           </div>
 
           {/* Row 4 */}
-          <div className="flex items-center flex-wrap justify-center text-[clamp(1.8rem,6vw,4rem)] md:text-[4.5rem] xl:text-[5.5rem] 2xl:text-[6.5rem] font-bold tracking-[-0.04em] leading-[1]">
+          <div className="flex items-center flex-wrap justify-center text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.15]">
             <span className="text-[#B8AFA1]">Made for</span>
             <InlineImage
               src={ASSETS.TICKERS.MAIN2}
               rotate={8}
-              className="mx-6"
+              className="mx-2 sm:mx-3"
             />
             <span className="heading-gradient">Real Life</span>
           </div>
-        </div>
-      </div>
-
-      {/* Bottom Divider */}
-      <div className="max-w-7xl mx-auto px-6 mt-24">
-        <div className="relative flex items-center justify-center">
-          <div className="absolute h-[1px] w-full bg-[#6B4A2D]/10" />
-          <motion.div
-            initial={{ scale: 0, rotate: -45 }}
-            whileInView={{ scale: 1, rotate: 0 }}
-            viewport={{ once: true }}
-            className="relative bg-[#F9F7F4] px-4 text-[#6B4A2D]/30 text-xs font-light select-none"
-          >
-            +
-          </motion.div>
         </div>
       </div>
     </section>

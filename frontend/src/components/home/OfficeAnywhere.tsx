@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import { Image as ImageIcon, ChevronLeft, ChevronRight } from "lucide-react";
 import { ASSETS } from "@/constants/assets";
 import { Lightbox, useLightbox } from "@/components/ui/Lightbox";
-import { ParallaxImage } from "@/components/common/ScrollSection";
 
 const OfficeAnywhere: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -66,28 +65,28 @@ const OfficeAnywhere: React.FC = () => {
   };
 
   return (
-    <section className="py-16 md:py-24 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6">
+    <section className="py-12 sm:py-14 md:py-16 lg:py-20 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16">
         {/* Header */}
-        <div className="text-center mb-10 md:mb-12">
+        <div className="text-center mb-8 sm:mb-10 md:mb-12">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false }}
-            className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-6"
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 bg-[#D4CEC4]/70 px-3.5 py-1.5 rounded-full mb-3"
           >
             <ImageIcon className="w-3 h-3 brand-primary" />
-            <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-widest brand-primary uppercase">
               The Experience
             </span>
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
-            className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tight font-bold"
+            viewport={{ once: true }}
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3"
           >
             <span className="heading-gradient">Your Office Anywhere</span>
           </motion.h2>
@@ -96,8 +95,8 @@ const OfficeAnywhere: React.FC = () => {
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ once: false }}
-            className="light-text text-sm md:text-base max-w-2xl mx-auto leading-relaxed"
+            viewport={{ once: true }}
+            className="light-text text-sm sm:text-base md:text-lg max-w-xl mx-auto leading-relaxed"
           >
             Turn any space into productive workspace instantly, comfortably,
             effortlessly.
@@ -142,18 +141,19 @@ const OfficeAnywhere: React.FC = () => {
             {carouselImages.map((image, index) => (
               <motion.div
                 key={index}
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: false }}
-                transition={{ delay: index * 0.05 }}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.35, delay: Math.min(index * 0.05, 0.3) }}
                 className="flex-shrink-0 w-[280px] md:w-[450px] xl:w-[550px] h-[350px] md:h-[450px] xl:h-[550px] rounded-2xl md:rounded-3xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.12)] hover:shadow-[0_20px_60px_rgba(0,0,0,0.18)] transition-shadow duration-300 cursor-pointer"
                 whileHover={{ scale: 1.02, y: -5 }}
                 onClick={() => openLightbox(carouselImages, index)}
               >
-                <ParallaxImage
+                <img
                   src={image}
-                  className="w-full h-full"
+                  className="w-full h-full object-cover transition-transform duration-700 hover:scale-105"
                   alt={`Office scene ${index + 1}`}
+                  loading="lazy"
                 />
               </motion.div>
             ))}

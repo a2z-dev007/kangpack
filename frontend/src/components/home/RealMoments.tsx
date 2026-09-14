@@ -1,18 +1,15 @@
 "use client";
 import React from "react";
+import { Camera } from "lucide-react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { EffectCoverflow, Autoplay } from "swiper/modules";
-import { Camera } from "lucide-react";
-import { motion } from "framer-motion";
-import { ASSETS } from "@/constants/assets";
-
-// Import Swiper styles
 import "swiper/css";
 import "swiper/css/effect-coverflow";
-
-import PrimaryButton from "@/components/common/PrimaryButton";
+import PrimaryButton from "../common/PrimaryButton";
+import { ASSETS } from "@/constants/assets";
+import { motion } from "framer-motion";
 import { Lightbox, useLightbox } from "@/components/ui/Lightbox";
-import { ParallaxImage } from "@/components/common/ScrollSection";
+import Link from "next/link";
 
 const RealMoments: React.FC = () => {
   const images = [
@@ -36,28 +33,28 @@ const RealMoments: React.FC = () => {
   } = useLightbox();
 
   return (
-    <section className="py-16 md:py-24 overflow-hidden bg-[#FDFCFB]">
-      <div className="max-w-7xl mx-auto px-6 ">
+    <section className="py-12 sm:py-14 md:py-16 lg:py-20 overflow-hidden bg-[#FDFCFB]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16">
         {/* Header */}
-        <div className="text-center flex flex-col items-center mb-12">
+        <div className="text-center flex flex-col items-center mb-8 sm:mb-10">
           {/* Badge */}
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: false }}
-            className="inline-flex items-center gap-2 bg-[#D4CEC4] px-4 py-2 rounded-lg mb-8"
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 bg-[#D4CEC4]/70 px-3.5 py-1.5 rounded-full mb-3"
           >
             <Camera className="w-3.5 h-3.5 brand-primary" />
-            <span className="text-[11px] font-medium tracking-wide brand-primary uppercase">
+            <span className="text-[10px] sm:text-[11px] font-bold tracking-widest brand-primary uppercase">
               Real Moments
             </span>
           </motion.div>
 
           <motion.h2
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: false }}
-            className="text-4xl md:text-6xl leading-[1.1] mb-6 tracking-tight font-bold"
+            viewport={{ once: true }}
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-3"
           >
             <span className="heading-gradient">Designed for Real Life</span>
           </motion.h2>
@@ -66,20 +63,22 @@ const RealMoments: React.FC = () => {
           <motion.p
             initial={{ opacity: 0 }}
             whileInView={{ opacity: 1 }}
-            viewport={{ once: false }}
-            className="light-text text-base md:text-lg xl:text-xl max-w-2xl mx-auto leading-relaxed mb-12 xl:mb-16 text-center"
+            viewport={{ once: true }}
+            className="light-text text-sm sm:text-base md:text-lg max-w-xl mx-auto leading-relaxed mb-6 text-center"
           >
             Explore Kangpack in everyday moments — crafted for movement,
             comfort, and modern work.
           </motion.p>
 
           {/* Action Button */}
-          <PrimaryButton className="btn-premium">Shop Now</PrimaryButton>
+          <Link href="/products">
+            <PrimaryButton className="btn-premium">Shop Now</PrimaryButton>
+          </Link>
         </div>
       </div>
 
-      {/* Swiper Slider - Outside of max-w-7xl to center based on screen width */}
-      <div className="relative mt-12 w-full overflow-visible px-4">
+      {/* Swiper Slider */}
+      <div className="relative mt-6 sm:mt-8 w-full overflow-visible px-4">
         <Swiper
           effect={"coverflow"}
           grabCursor={true}
@@ -89,12 +88,12 @@ const RealMoments: React.FC = () => {
           coverflowEffect={{
             rotate: 0,
             stretch: 0,
-            depth: 100,
-            modifier: 2.5,
+            depth: 80,
+            modifier: 2,
             slideShadows: false,
           }}
           autoplay={{
-            delay: 3000,
+            delay: 3200,
             disableOnInteraction: false,
           }}
           modules={[EffectCoverflow, Autoplay]}
@@ -103,16 +102,16 @@ const RealMoments: React.FC = () => {
           {images.map((img, index) => (
             <SwiperSlide
               key={index}
-              className="!flex justify-center items-center !w-[300px] md:!w-[450px] xl:!w-[400px] 2xl:!w-[550px] cursor-pointer"
+              className="!flex justify-center items-center !w-[250px] sm:!w-[320px] md:!w-[400px] cursor-pointer"
               onClick={() => openLightbox(images, index)}
             >
-              <div className="relative aspect-[4/5] xl:aspect-[3/4] rounded-[24px] md:rounded-[40px] overflow-hidden shadow-2xl border-[8px] border-white mx-auto">
-                <ParallaxImage
+              <div className="relative aspect-[4/5] rounded-2xl sm:rounded-3xl md:rounded-[36px] overflow-hidden shadow-xl border-[4px] sm:border-[6px] md:border-[8px] border-white mx-auto hover:shadow-2xl transition-shadow duration-300">
+                <img
                   src={img}
                   alt={`Real Moment ${index + 1}`}
-                  className="w-full h-full"
+                  loading="lazy"
+                  className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
                 />
-                {/* Subtle radial overlay for depth */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
               </div>
             </SwiperSlide>

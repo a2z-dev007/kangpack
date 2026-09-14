@@ -6,6 +6,7 @@ import { PaginationQuery, FilterQuery, OrderStatus, PaymentStatus, PaymentMethod
 import { MailService } from '../../common/services/mail.service';
 import { RazorpayService } from '../../common/services/razorpay.service';
 import { env } from '../../config/env';
+import { SettingsService } from '../settings/settings.service';
 import crypto from 'crypto';
 
 export interface CreateOrderData {
@@ -172,12 +173,32 @@ export class OrdersService {
     // Generate order number
     const orderNumber = await this.generateOrderNumber();
 
+    // Fetch store settings for tax and shipping
+    const settings = await SettingsService.getSettings();
+
     // Calculate totals
     const subtotal = orderItems.reduce((sum, item) => sum + item.total, 0);
-    const taxAmount = subtotal * 0.1; // 10% tax
-    const shippingAmount = 10; // Fixed shipping
+    
+    // Calculate dynamic tax
+    const isTaxEnabled = settings?.tax?.enabled !== false;
+    const taxRate = isTaxEnabled ? (settings?.tax?.rate ?? settings?.taxRate ?? 0) : 0;
+    const taxAmount = Number(((subtotal * taxRate) / 100).toFixed(2));
+
+    // Calculate dynamic shipping
+    let shippingAmount = 0;
+    const isShippingEnabled = settings?.shipping?.enabled !== false;
+    if (isShippingEnabled) {
+      const freeShippingThreshold = settings?.shipping?.freeShippingThreshold ?? settings?.freeShippingThreshold ?? 0;
+      const defaultShippingRate = settings?.shipping?.defaultRate ?? settings?.shippingFee ?? 0;
+      if (freeShippingThreshold > 0 && subtotal >= freeShippingThreshold) {
+        shippingAmount = 0;
+      } else {
+        shippingAmount = defaultShippingRate;
+      }
+    }
+
     const discountAmount = 0; // TODO: Apply coupon
-    const totalAmount = subtotal + taxAmount + shippingAmount - discountAmount;
+    const totalAmount = Number((subtotal + taxAmount + shippingAmount - discountAmount).toFixed(2));
 
     // Create account if requested
     let finalUserId = userId;
