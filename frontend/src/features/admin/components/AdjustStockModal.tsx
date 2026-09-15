@@ -23,7 +23,13 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAdjustStock } from "../queries";
 import { Loader2 } from "lucide-react";
-import SelectInput from "@/components/ui/select-input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const stockSchema = z.object({
   quantity: z.coerce.number().min(0, "Quantity must be positive"),
@@ -49,7 +55,7 @@ export function AdjustStockModal({
     resolver: zodResolver(stockSchema),
     defaultValues: {
       quantity: 0,
-      reason: "Standard adjustment",
+      reason: "Restocking",
     },
   });
 
@@ -102,28 +108,23 @@ export function AdjustStockModal({
               render={({ field }: { field: any }) => (
                 <FormItem>
                   <FormLabel>Reason for adjustment</FormLabel>
-                  <FormControl>
-                    <SelectInput
-                      options={[
-                        "Restocking",
-                        "Inventory Count",
-                        "Damaged Goods",
-                        "Return",
-                        "Other",
-                      ].map((v) => ({ value: v, label: v }))}
-                      value={[
-                        "Restocking",
-                        "Inventory Count",
-                        "Damaged Goods",
-                        "Return",
-                        "Other",
-                      ]
-                        .map((v) => ({ value: v, label: v }))
-                        .find((opt) => opt.value === field.value)}
-                      onChange={(option: any) => field.onChange(option?.value)}
-                      placeholder="Select reason"
-                    />
-                  </FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    value={field.value || "Restocking"}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select reason" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent className="z-[99999] bg-popover">
+                      <SelectItem value="Restocking">Restocking</SelectItem>
+                      <SelectItem value="Inventory Count">Inventory Count</SelectItem>
+                      <SelectItem value="Damaged Goods">Damaged Goods</SelectItem>
+                      <SelectItem value="Return">Return</SelectItem>
+                      <SelectItem value="Other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

@@ -24,7 +24,13 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { useCreateCoupon, useUpdateCoupon } from "../queries";
 import { Loader2 } from "lucide-react";
-import SelectInput from "@/components/ui/select-input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const couponSchema = z.object({
   code: z.string().min(1, "Code is required").toUpperCase(),
@@ -142,22 +148,20 @@ export function CouponModal({ isOpen, onClose, coupon }: CouponModalProps) {
                 render={({ field }: { field: any }) => (
                   <FormItem>
                     <FormLabel>Type</FormLabel>
-                    <FormControl>
-                      <SelectInput
-                        options={[
-                          { value: "percentage", label: "Percentage" },
-                          { value: "fixed", label: "Fixed Amount" },
-                        ]}
-                        value={[
-                          { value: "percentage", label: "Percentage" },
-                          { value: "fixed", label: "Fixed Amount" },
-                        ].find((opt) => opt.value === field.value)}
-                        onChange={(option: any) =>
-                          field.onChange(option?.value)
-                        }
-                        placeholder="Select type"
-                      />
-                    </FormControl>
+                    <Select
+                      onValueChange={field.onChange}
+                      value={field.value || "percentage"}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select type" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent className="z-[99999] bg-popover">
+                        <SelectItem value="percentage">Percentage</SelectItem>
+                        <SelectItem value="fixed">Fixed Amount</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
