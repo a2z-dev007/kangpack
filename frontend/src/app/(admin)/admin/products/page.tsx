@@ -29,7 +29,6 @@ import {
 import { formatPrice, cn } from "@/lib/utils";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { SideDrawer } from "@/components/ui/SideDrawer";
 import { useAdminCategories } from "@/features/admin/queries";
 import { Label } from "@/components/ui/label";
 import {
@@ -70,7 +69,6 @@ export default function AdminProducts() {
   const [selectedProduct, setSelectedProduct] = useState<any>(null);
 
   // Advanced Filter States
-  const [isFilterOpen, setFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState({
     category: getInitialParam("category", "all"),
     status: getInitialParam("status", "all"),
@@ -79,7 +77,19 @@ export default function AdminProducts() {
     maxPrice: getInitialParam("maxPrice", ""),
   });
 
-  const [pendingFilters, setPendingFilters] = useState(activeFilters);
+  const activeFilterCount = Object.entries(activeFilters).filter(
+    ([_, v]) => v !== "all" && v !== ""
+  ).length;
+
+  const [isFilterOpen, setFilterOpen] = useState(
+    Boolean(
+      (getInitialParam("category", "all") !== "all") ||
+      (getInitialParam("status", "all") !== "all") ||
+      (getInitialParam("stockStatus", "all") !== "all") ||
+      getInitialParam("minPrice", "") ||
+      getInitialParam("maxPrice", "")
+    )
+  );
 
   useEffect(() => {
     setIsClient(true);
@@ -106,13 +116,6 @@ export default function AdminProducts() {
     const newUrl = `${pathname}?${params.toString()}`;
     router.replace(newUrl, { scroll: false });
   }, [page, search, activeFilters, pathname, router]);
-
-  // Sync pending filters when drawer opens
-  useEffect(() => {
-    if (isFilterOpen) {
-      setPendingFilters(activeFilters);
-    }
-  }, [isFilterOpen, activeFilters]);
 
   const { data, isLoading } = useAdminProducts({
     page,
@@ -220,12 +223,6 @@ export default function AdminProducts() {
     }
   };
 
-  const applyFilters = () => {
-    setActiveFilters(pendingFilters);
-    setFilterOpen(false);
-    setPage(1);
-  };
-
   const resetFilters = () => {
     const defaultFilters = {
       category: "all",
@@ -234,7 +231,6 @@ export default function AdminProducts() {
       minPrice: "",
       maxPrice: "",
     };
-    setPendingFilters(defaultFilters);
     setActiveFilters(defaultFilters);
     setSearch("");
     setPage(1);
@@ -408,21 +404,22 @@ export default function AdminProducts() {
                 variant="outline"
                 size="sm"
                 className={cn(
-                  "hidden sm:flex rounded-xl h-10 px-4",
-                  Object.values(activeFilters).some(
-                    (v) => v !== "all" && v !== "",
-                  ) && "border-primary text-primary bg-primary/5",
+                  "rounded-xl h-10 px-4 transition-all flex items-center gap-2",
+                  (isFilterOpen || activeFilterCount > 0) &&
+                    "border-primary text-primary bg-primary/5 font-semibold",
                 )}
-                onClick={() => setFilterOpen(true)}
+                onClick={() => setFilterOpen((prev) => !prev)}
               >
-                <Filter className="mr-2 h-4 w-4" />
-                Filters
+                <Filter className="h-4 w-4" />
+                <span>Filters</span>
+                {activeFilterCount > 0 && (
+                  <Badge className="h-5 min-w-5 px-1.5 flex items-center justify-center rounded-full bg-primary text-primary-foreground text-xs font-bold">
+                    {activeFilterCount}
+                  </Badge>
+                )}
               </Button>
 
-              {(search ||
-                Object.values(activeFilters).some(
-                  (val) => val !== "all" && val !== "",
-                )) && (
+              {(search || activeFilterCount > 0) && (
                 <Button
                   variant="ghost"
                   size="sm"
@@ -469,6 +466,122 @@ export default function AdminProducts() {
                 </div>
               )}
             </div>
+
+            {/* Inline Filter Controls */}
+            {isFilterOpen && (
+              <div className="mt-5 pt-5 border-t border-border grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-in fade-in duration-200">
+                {/* Category Filter */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Category
+                  </Label>
+                  <Select
+                    value={activeFilters.category}
+                    onValueChange={(val) => {
+                      setActiveFilters((prev) => ({ ...prev, category: val }));
+                      setPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="h-10 rounded-xl border-border bg-background">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl shadow-xl">
+                      <SelectItem value="all">All Categories</SelectItem>
+                      {categories.map((cat: any) => (
+                        <SelectItem key={cat.id} value={cat.id}>
+                          {cat.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Status Filter */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Status
+                  </Label>
+                  <Select
+                    value={activeFilters.status}
+                    onValueChange={(val) => {
+                      setActiveFilters((prev) => ({ ...prev, status: val }));
+                      setPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="h-10 rounded-xl border-border bg-background">
+                      <SelectValue placeholder="All Status" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl shadow-xl">
+                      <SelectItem value="all">All Status</SelectItem>
+                      <SelectItem value="active">Active</SelectItem>
+                      <SelectItem value="inactive">Inactive</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Stock Status Filter */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Stock Status
+                  </Label>
+                  <Select
+                    value={activeFilters.stockStatus}
+                    onValueChange={(val) => {
+                      setActiveFilters((prev) => ({
+                        ...prev,
+                        stockStatus: val,
+                      }));
+                      setPage(1);
+                    }}
+                  >
+                    <SelectTrigger className="h-10 rounded-xl border-border bg-background">
+                      <SelectValue placeholder="All Stock Status" />
+                    </SelectTrigger>
+                    <SelectContent className="rounded-xl shadow-xl">
+                      <SelectItem value="all">All Stock Status</SelectItem>
+                      <SelectItem value="in_stock">In Stock</SelectItem>
+                      <SelectItem value="low_stock">Low Stock</SelectItem>
+                      <SelectItem value="out_of_stock">Out of Stock</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Price Range Filter */}
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    Price Range (₹)
+                  </Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Input
+                      type="number"
+                      placeholder="Min"
+                      value={activeFilters.minPrice}
+                      onChange={(e) => {
+                        setActiveFilters((prev) => ({
+                          ...prev,
+                          minPrice: e.target.value,
+                        }));
+                        setPage(1);
+                      }}
+                      className="h-10 rounded-xl border-border bg-background"
+                    />
+                    <Input
+                      type="number"
+                      placeholder="Max"
+                      value={activeFilters.maxPrice}
+                      onChange={(e) => {
+                        setActiveFilters((prev) => ({
+                          ...prev,
+                          maxPrice: e.target.value,
+                        }));
+                        setPage(1);
+                      }}
+                      className="h-10 rounded-xl border-border bg-background"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -920,137 +1033,6 @@ export default function AdminProducts() {
           isLoading={isBulkDeleting}
         />
 
-        {/* Filters Side Drawer */}
-        <SideDrawer
-          isOpen={isFilterOpen}
-          onClose={() => setFilterOpen(false)}
-          title="Advanced Filters"
-          description="Refine your product catalog with detailed criteria."
-          icon={<Filter className="h-6 w-6" />}
-          footer={
-            <div className="flex flex-col gap-3 w-full">
-              <Button
-                onClick={applyFilters}
-                className="w-full h-12 rounded-xl bg-[#6B4A2D] hover:bg-[#5A3E25] font-bold"
-              >
-                Apply Filters
-              </Button>
-              <Button
-                variant="outline"
-                onClick={resetFilters}
-                className="w-full h-12 rounded-xl border-slate-200 text-slate-500 font-bold"
-              >
-                <RefreshCw className="h-4 w-4 mr-2" />
-                Reset Everything
-              </Button>
-            </div>
-          }
-        >
-          <div className="space-y-8">
-            {/* Category Filter */}
-            <div className="space-y-3">
-              <Label className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2">
-                Category
-              </Label>
-              <Select
-                value={pendingFilters.category}
-                onValueChange={(val) =>
-                  setPendingFilters((prev) => ({ ...prev, category: val }))
-                }
-              >
-                <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-medium">
-                  <SelectValue placeholder="All Categories" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-200 bg-white shadow-xl">
-                  <SelectItem value="all">All Categories</SelectItem>
-                  {categories.map((cat: any) => (
-                    <SelectItem key={cat.id} value={cat.id}>
-                      {cat.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Status Filter */}
-            <div className="space-y-3">
-              <Label className="text-xs font-black uppercase text-slate-400 tracking-wider">
-                Status
-              </Label>
-              <Select
-                value={pendingFilters.status}
-                onValueChange={(val) =>
-                  setPendingFilters((prev) => ({ ...prev, status: val }))
-                }
-              >
-                <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-medium">
-                  <SelectValue placeholder="All Status" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-200 bg-white shadow-xl">
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Stock Status Filter */}
-            <div className="space-y-3">
-              <Label className="text-xs font-black uppercase text-slate-400 tracking-wider">
-                Stock Status
-              </Label>
-              <Select
-                value={pendingFilters.stockStatus}
-                onValueChange={(val) =>
-                  setPendingFilters((prev) => ({ ...prev, stockStatus: val }))
-                }
-              >
-                <SelectTrigger className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-medium">
-                  <SelectValue placeholder="All Stock Status" />
-                </SelectTrigger>
-                <SelectContent className="rounded-xl border-slate-200 bg-white shadow-xl">
-                  <SelectItem value="all">All Stock Status</SelectItem>
-                  <SelectItem value="in_stock">In Stock</SelectItem>
-                  <SelectItem value="low_stock">Low Stock</SelectItem>
-                  <SelectItem value="out_of_stock">Out of Stock</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Price Range Filter */}
-            <div className="space-y-3">
-              <Label className="text-xs font-black uppercase text-slate-400 tracking-wider">
-                Price Range (₹)
-              </Label>
-              <div className="grid grid-cols-2 gap-3">
-                <Input
-                  type="number"
-                  placeholder="Min"
-                  value={pendingFilters.minPrice}
-                  onChange={(e) =>
-                    setPendingFilters((prev) => ({
-                      ...prev,
-                      minPrice: e.target.value,
-                    }))
-                  }
-                  className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-medium"
-                />
-                <Input
-                  type="number"
-                  placeholder="Max"
-                  value={pendingFilters.maxPrice}
-                  onChange={(e) =>
-                    setPendingFilters((prev) => ({
-                      ...prev,
-                      maxPrice: e.target.value,
-                    }))
-                  }
-                  className="h-12 rounded-xl border-slate-200 bg-slate-50/50 font-medium"
-                />
-              </div>
-            </div>
-          </div>
-        </SideDrawer>
       </div>
     </div>
   );
