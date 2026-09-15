@@ -35,9 +35,9 @@ const couponSchema = new Schema<ICoupon>({
   },
   name: {
     type: String,
-    required: true,
     trim: true,
     maxlength: 100,
+    default: '',
   },
   description: {
     type: String,
@@ -57,6 +57,7 @@ const couponSchema = new Schema<ICoupon>({
   minimumOrderValue: {
     type: Number,
     min: 0,
+    default: 0,
   },
   maximumDiscountAmount: {
     type: Number,
@@ -64,7 +65,7 @@ const couponSchema = new Schema<ICoupon>({
   },
   usageLimit: {
     type: Number,
-    min: 1,
+    min: 0,
   },
   usageCount: {
     type: Number,
@@ -73,7 +74,7 @@ const couponSchema = new Schema<ICoupon>({
   },
   userUsageLimit: {
     type: Number,
-    min: 1,
+    min: 0,
   },
   isActive: {
     type: Boolean,

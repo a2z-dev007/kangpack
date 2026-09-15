@@ -131,8 +131,8 @@ export default function AdminCoupons() {
                             </Badge>
                           </div>
                           <p className="text-xs sm:text-sm text-muted-foreground mt-1">
-                            {coupon.type === 'percentage' ? `${coupon.value}% off` : `${coupon.value} off`}
-                            {coupon.minOrderAmount && ` • Min order: ${coupon.minOrderAmount}`}
+                            {coupon.type === 'percentage' ? `${coupon.value}% off` : `₹${coupon.value} off`}
+                            {(coupon.minOrderAmount || coupon.minimumOrderValue) ? ` • Min order: ₹${coupon.minOrderAmount || coupon.minimumOrderValue}` : ''}
                           </p>
                           <div className="flex flex-wrap items-center gap-2 sm:gap-4 mt-2 text-xs sm:text-sm text-muted-foreground">
                             {coupon.usageLimit && (

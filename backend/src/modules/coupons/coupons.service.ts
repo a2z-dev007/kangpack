@@ -160,46 +160,82 @@ export class CouponsService {
       if (coupon.maximumDiscountAmount) {
         discount = Math.min(discount, coupon.maximumDiscountAmount);
       }
-    } else if (coupon.type === CouponType.FIXED_AMOUNT) {
+    } else if (
+      coupon.type === CouponType.FIXED_AMOUNT ||
+      (coupon.type as string) === 'fixed' ||
+      (coupon.type as string) === 'fixed_amount'
+    ) {
       discount = coupon.value;
     }
 
     return { valid: true, discount, message: 'Coupon applied successfully' };
   }
 
-  public static async createCoupon(data: CreateCouponData): Promise<ICoupon> {
-    const existingCoupon = await Coupon.findOne({ code: data.code.toUpperCase() });
+  public static async createCoupon(data: CreateCouponData | any): Promise<ICoupon> {
+    const code = (data.code || '').trim().toUpperCase();
+    if (!code) {
+      throw new AppError('Coupon code is required', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    const existingCoupon = await Coupon.findOne({ code });
     if (existingCoupon) {
       throw new AppError('Coupon code already exists', HTTP_STATUS.CONFLICT);
     }
 
-    const coupon = new Coupon({
+    const payload: any = {
       ...data,
-      code: data.code.toUpperCase(),
-    });
+      code,
+      name: data.name || code,
+      type: data.type === 'fixed' ? CouponType.FIXED_AMOUNT : data.type,
+      minimumOrderValue: data.minimumOrderValue ?? data.minOrderAmount ?? 0,
+      usageLimit: data.usageLimit ? Number(data.usageLimit) : undefined,
+      expiresAt: data.expiresAt ? new Date(data.expiresAt) : undefined,
+    };
 
+    const coupon = new Coupon(payload);
     await coupon.save();
     return coupon;
   }
 
   public static async updateCoupon(
     couponId: string,
-    data: Partial<CreateCouponData>
+    data: Partial<CreateCouponData> | any
   ): Promise<ICoupon> {
-    if (data.code) {
+    const payload: any = { ...data };
+
+    if (payload.code) {
+      const code = payload.code.trim().toUpperCase();
       const existingCoupon = await Coupon.findOne({
-        code: data.code.toUpperCase(),
+        code,
         _id: { $ne: couponId },
       });
       if (existingCoupon) {
         throw new AppError('Coupon code already exists', HTTP_STATUS.CONFLICT);
       }
-      data.code = data.code.toUpperCase();
+      payload.code = code;
+    }
+
+    if (payload.type === 'fixed') {
+      payload.type = CouponType.FIXED_AMOUNT;
+    }
+
+    if (payload.minOrderAmount !== undefined && payload.minimumOrderValue === undefined) {
+      payload.minimumOrderValue = Number(payload.minOrderAmount) || 0;
+    }
+
+    if (payload.usageLimit !== undefined) {
+      payload.usageLimit = payload.usageLimit ? Number(payload.usageLimit) : undefined;
+    }
+
+    if (payload.expiresAt === '' || payload.expiresAt === null) {
+      payload.expiresAt = undefined;
+    } else if (payload.expiresAt) {
+      payload.expiresAt = new Date(payload.expiresAt);
     }
 
     const coupon = await Coupon.findByIdAndUpdate(
       couponId,
-      { $set: data },
+      { $set: payload },
       { new: true, runValidators: true }
     );
 

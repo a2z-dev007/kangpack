@@ -272,7 +272,8 @@ export const useCreateCoupon = () => {
       toast.success('Coupon created successfully');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to create coupon');
+      const msg = error.response?.data?.errors?.[0]?.message || error.response?.data?.message || 'Failed to create coupon';
+      toast.error(msg);
     },
   });
 };
@@ -286,7 +287,8 @@ export const useUpdateCoupon = () => {
       toast.success('Coupon updated successfully');
     },
     onError: (error: any) => {
-      toast.error(error.response?.data?.message || 'Failed to update coupon');
+      const msg = error.response?.data?.errors?.[0]?.message || error.response?.data?.message || 'Failed to update coupon';
+      toast.error(msg);
     },
   });
 };

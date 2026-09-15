@@ -87,6 +87,7 @@ export enum PaymentMethod {
 export enum CouponType {
   PERCENTAGE = 'percentage',
   FIXED_AMOUNT = 'fixed_amount',
+  FIXED = 'fixed',
   FREE_SHIPPING = 'free_shipping'
 }
 

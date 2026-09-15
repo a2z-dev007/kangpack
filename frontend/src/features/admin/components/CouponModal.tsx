@@ -34,7 +34,7 @@ import {
 
 const couponSchema = z.object({
   code: z.string().min(1, "Code is required").toUpperCase(),
-  type: z.enum(["percentage", "fixed"]),
+  type: z.enum(["percentage", "fixed_amount", "fixed"]),
   value: z.coerce.number().min(1, "Value must be at least 1"),
   minOrderAmount: z.coerce.number().min(0).optional(),
   usageLimit: z.coerce.number().min(0).optional(),
@@ -71,16 +71,20 @@ export function CouponModal({ isOpen, onClose, coupon }: CouponModalProps) {
 
   useEffect(() => {
     if (coupon) {
+      const rawType = coupon.type;
+      const formattedType =
+        rawType === "fixed" ? "fixed_amount" : rawType || "percentage";
+
       form.reset({
         code: coupon.code,
-        type: coupon.type,
+        type: formattedType as any,
         value: coupon.value,
-        minOrderAmount: coupon.minOrderAmount || 0,
+        minOrderAmount: coupon.minOrderAmount ?? coupon.minimumOrderValue ?? 0,
         usageLimit: coupon.usageLimit || 0,
         expiresAt: coupon.expiresAt
           ? new Date(coupon.expiresAt).toISOString().split("T")[0]
           : "",
-        isActive: coupon.isActive,
+        isActive: coupon.isActive ?? true,
       });
     } else {
       form.reset({
@@ -96,9 +100,21 @@ export function CouponModal({ isOpen, onClose, coupon }: CouponModalProps) {
   }, [coupon, form]);
 
   const onSubmit = (values: CouponFormValues) => {
+    const payload = {
+      code: values.code.trim().toUpperCase(),
+      name: values.code.trim().toUpperCase(),
+      type: values.type === "fixed" ? "fixed_amount" : values.type,
+      value: Number(values.value),
+      minimumOrderValue: Number(values.minOrderAmount) || 0,
+      minOrderAmount: Number(values.minOrderAmount) || 0,
+      usageLimit: values.usageLimit ? Number(values.usageLimit) : undefined,
+      expiresAt: values.expiresAt ? values.expiresAt : undefined,
+      isActive: values.isActive,
+    };
+
     if (isEditing) {
       updateCoupon(
-        { id: coupon.id || coupon._id, data: values },
+        { id: coupon.id || coupon._id, data: payload },
         {
           onSuccess: () => {
             onClose();
@@ -106,7 +122,7 @@ export function CouponModal({ isOpen, onClose, coupon }: CouponModalProps) {
         },
       );
     } else {
-      createCoupon(values, {
+      createCoupon(payload, {
         onSuccess: () => {
           onClose();
         },
@@ -159,7 +175,7 @@ export function CouponModal({ isOpen, onClose, coupon }: CouponModalProps) {
                       </FormControl>
                       <SelectContent className="z-[99999] bg-popover">
                         <SelectItem value="percentage">Percentage</SelectItem>
-                        <SelectItem value="fixed">Fixed Amount</SelectItem>
+                        <SelectItem value="fixed_amount">Fixed Amount</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
