@@ -6,8 +6,12 @@ import { asyncHandler } from '../../common/middlewares/error.middleware';
 
 export class CategoriesController {
   public static getCategories = asyncHandler(async (req: Request, res: Response) => {
-    const includeInactive = req.query.includeInactive === 'true';
-    const categories = await CategoriesService.getCategories(includeInactive);
+    const authReq = req as any;
+    const isAdmin = authReq.user?.role === 'admin' || authReq.user?.role === 'staff' || req.query.isAdmin === 'true';
+    const includeInactive = req.query.includeInactive === 'true' || isAdmin;
+    const search = req.query.search as string;
+
+    const categories = await CategoriesService.getCategories(includeInactive, search);
     
     res.status(HTTP_STATUS.OK).json(
       ResponseUtils.success(MESSAGES.FETCHED_SUCCESS, categories)
@@ -15,7 +19,11 @@ export class CategoriesController {
   });
 
   public static getCategoryTree = asyncHandler(async (req: Request, res: Response) => {
-    const categoryTree = await CategoriesService.getCategoryTree();
+    const authReq = req as any;
+    const isAdmin = authReq.user?.role === 'admin' || authReq.user?.role === 'staff' || req.query.isAdmin === 'true';
+    const includeInactive = req.query.includeInactive === 'true' || isAdmin;
+
+    const categoryTree = await CategoriesService.getCategoryTree(includeInactive);
     
     res.status(HTTP_STATUS.OK).json(
       ResponseUtils.success('Category tree fetched successfully', categoryTree)
@@ -23,7 +31,11 @@ export class CategoriesController {
   });
 
   public static getCategoryById = asyncHandler(async (req: Request, res: Response) => {
-    const category = await CategoriesService.getCategoryById(req.params.id);
+    const authReq = req as any;
+    const isAdmin = authReq.user?.role === 'admin' || authReq.user?.role === 'staff' || req.query.isAdmin === 'true';
+    const includeInactive = req.query.includeInactive === 'true' || isAdmin;
+
+    const category = await CategoriesService.getCategoryById(req.params.id, includeInactive);
     
     res.status(HTTP_STATUS.OK).json(
       ResponseUtils.success(MESSAGES.FETCHED_SUCCESS, category)
@@ -31,7 +43,11 @@ export class CategoriesController {
   });
 
   public static getCategoryBySlug = asyncHandler(async (req: Request, res: Response) => {
-    const category = await CategoriesService.getCategoryBySlug(req.params.slug);
+    const authReq = req as any;
+    const isAdmin = authReq.user?.role === 'admin' || authReq.user?.role === 'staff' || req.query.isAdmin === 'true';
+    const includeInactive = req.query.includeInactive === 'true' || isAdmin;
+
+    const category = await CategoriesService.getCategoryBySlug(req.params.slug, includeInactive);
     
     res.status(HTTP_STATUS.OK).json(
       ResponseUtils.success(MESSAGES.FETCHED_SUCCESS, category)

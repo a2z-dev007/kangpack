@@ -286,8 +286,14 @@ export const settingsAdminApi = {
 
 // Categories Admin APIs
 export const categoriesAdminApi = {
-  getAll: async (params?: PaginationParams) => {
-    const { data } = await api.get('/categories', { params });
+  getAll: async (params?: PaginationParams & { search?: string; includeInactive?: boolean }) => {
+    const { data } = await api.get('/categories', {
+      params: {
+        ...params,
+        includeInactive: true,
+        isAdmin: true,
+      },
+    });
     return data;
   },
 

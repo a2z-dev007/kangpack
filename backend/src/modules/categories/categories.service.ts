@@ -19,22 +19,31 @@ export interface CreateCategoryData {
 }
 
 export class CategoriesService {
-  public static async getCategories(includeInactive: boolean = false) {
-    const query = includeInactive ? {} : { isActive: true };
+  public static async getCategories(includeInactive: boolean = false, search?: string) {
+    const query: any = includeInactive ? {} : { isActive: true };
     
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      query.$or = [
+        { name: searchRegex },
+        { slug: searchRegex },
+        { description: searchRegex }
+      ];
+    }
+
     const categories = await Category.find(query)
       .populate({ 
         path: 'subcategories', 
         match: includeInactive ? {} : { isActive: true } 
       })
-      .sort({ sortOrder: 1, name: 1 })
-      .lean();
+      .sort({ sortOrder: 1, name: 1 });
 
     return categories;
   }
 
-  public static async getCategoryTree() {
-    const categories = await Category.find({ isActive: true })
+  public static async getCategoryTree(includeInactive: boolean = false) {
+    const query = includeInactive ? {} : { isActive: true };
+    const categories = await Category.find(query)
       .sort({ sortOrder: 1, name: 1 })
       .lean();
 
@@ -67,9 +76,17 @@ export class CategoriesService {
     return rootCategories;
   }
 
-  public static async getCategoryById(categoryId: string): Promise<ICategory> {
-    const category = await Category.findById(categoryId)
-      .populate('subcategories');
+  public static async getCategoryById(categoryId: string, includeInactive: boolean = false): Promise<ICategory> {
+    const query: any = { _id: categoryId };
+    if (!includeInactive) {
+      query.isActive = true;
+    }
+
+    const category = await Category.findOne(query)
+      .populate({
+        path: 'subcategories',
+        match: includeInactive ? {} : { isActive: true }
+      });
     
     if (!category) {
       throw new AppError(MESSAGES.CATEGORY_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
@@ -78,9 +95,17 @@ export class CategoriesService {
     return category;
   }
 
-  public static async getCategoryBySlug(slug: string): Promise<ICategory> {
-    const category = await Category.findOne({ slug, isActive: true })
-      .populate('subcategories');
+  public static async getCategoryBySlug(slug: string, includeInactive: boolean = false): Promise<ICategory> {
+    const query: any = { slug };
+    if (!includeInactive) {
+      query.isActive = true;
+    }
+
+    const category = await Category.findOne(query)
+      .populate({
+        path: 'subcategories',
+        match: includeInactive ? {} : { isActive: true }
+      });
     
     if (!category) {
       throw new AppError(MESSAGES.CATEGORY_NOT_FOUND, HTTP_STATUS.NOT_FOUND);

@@ -329,7 +329,7 @@ export const useUpdateSettings = () => {
 };
 
 // Categories Queries
-export const useAdminCategories = (params?: PaginationParams) => {
+export const useAdminCategories = (params?: PaginationParams & { search?: string; includeInactive?: boolean }) => {
   return useQuery({
     queryKey: ['admin', 'categories', params],
     queryFn: () => categoriesAdminApi.getAll(params),
