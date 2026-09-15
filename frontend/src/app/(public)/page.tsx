@@ -19,10 +19,13 @@ import FAQ from '@/components/home/FAQ';
 import OurProducts from '@/components/home/OurProducts';
 import SectionDivider from '@/components/common/SectionDivider';
 import { ASSETS } from '@/constants/assets';
+import { VideoModalProvider } from '@/context/VideoModalContext';
+import VideoModal from '@/components/common/VideoModal';
 
 const HomePage: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-brand-beige">
+    <VideoModalProvider>
+      <div className="min-h-screen flex flex-col font-sans bg-brand-beige">
       <Navbar />
       <main className="flex-grow">
         <Hero />
@@ -68,7 +71,9 @@ const HomePage: React.FC = () => {
         {/* Other Products Section */}
         <OurProducts />
       </main>
+      <VideoModal />
     </div>
+    </VideoModalProvider>
   );
 };
 

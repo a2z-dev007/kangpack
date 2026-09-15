@@ -66,6 +66,10 @@ export const ASSETS = {
             MODEL_BACK: '/new-assets/flagship-main-product/model-back.png',
         },
     },
+    VIDEOS: {
+        HERO: '/assets/videos/hero.mp4',
+        PRODUCT_MAIN: '/assets/videos/product-main-video.mp4',
+    },
 } as const;
 
 export type Assets = typeof ASSETS;
