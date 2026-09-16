@@ -36,7 +36,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
-import { SideDrawer } from "@/components/ui/SideDrawer";
 import { OrderDetailsModal } from "@/features/admin/components/OrderDetailsModal";
 import { ORDER_STATUS } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
@@ -73,7 +72,6 @@ export default function AdminOrders() {
   const [isDetailsModalOpen, setDetailsModalOpen] = useState(false);
 
   // Advanced Filter States
-  const [isFilterOpen, setFilterOpen] = useState(false);
   const [activeFilters, setActiveFilters] = useState({
     status: getInitialParam("status", "all"),
     paymentStatus: getInitialParam("paymentStatus", "all"),
@@ -83,6 +81,21 @@ export default function AdminOrders() {
     minAmount: getInitialParam("minAmount", ""),
     maxAmount: getInitialParam("maxAmount", ""),
   });
+
+  const activeFilterCount = Object.entries(activeFilters).filter(
+    ([k, v]) => k !== "status" && v !== "all" && v !== ""
+  ).length;
+
+  const [isFilterOpen, setFilterOpen] = useState(
+    Boolean(
+      (getInitialParam("paymentStatus", "all") !== "all") ||
+      (getInitialParam("paymentMethod", "all") !== "all") ||
+      getInitialParam("startDate", "") ||
+      getInitialParam("endDate", "") ||
+      getInitialParam("minAmount", "") ||
+      getInitialParam("maxAmount", "")
+    )
+  );
 
   // Sync state to URL whenever filters change
   useEffect(() => {
@@ -106,22 +119,10 @@ export default function AdminOrders() {
     });
 
     const newUrl = `${pathname}?${params.toString()}`;
-    // Use replace to update URL without adding history entry for every keystroke
-    // But push is generally better for filters/pagination if not typing
-    // Here we use replace to persist state on reload
     startTransition(() => {
       router.replace(newUrl, { scroll: false });
     });
   }, [page, search, activeFilters, pathname, router, searchParams]);
-
-  const [pendingFilters, setPendingFilters] = useState(activeFilters);
-
-  // Sync pending filters when drawer opens
-  useEffect(() => {
-    if (isFilterOpen) {
-      setPendingFilters(activeFilters);
-    }
-  }, [isFilterOpen, activeFilters]);
 
   // Compatibility helpers
   const statusFilter = activeFilters.status;
@@ -243,12 +244,6 @@ export default function AdminOrders() {
     setDetailsModalOpen(true);
   };
 
-  const applyFilters = () => {
-    setActiveFilters(pendingFilters);
-    setFilterOpen(false);
-    setPage(1);
-  };
-
   const resetFilters = () => {
     const defaultFilters = {
       status: "all",
@@ -259,7 +254,6 @@ export default function AdminOrders() {
       minAmount: "",
       maxAmount: "",
     };
-    setPendingFilters(defaultFilters);
     setActiveFilters(defaultFilters);
     setSearch("");
     setPage(1);
@@ -286,18 +280,27 @@ export default function AdminOrders() {
             <span className="xs:hidden">Export</span>
           </Button>
           <Button
-            onClick={() => setFilterOpen(true)}
-            className="rounded-full bg-[#6B4A2D] hover:bg-[#5A3E25] shadow-md border-none h-10 sm:h-11 px-3 sm:px-6 text-xs sm:text-sm flex-1 sm:flex-none"
+            onClick={() => setFilterOpen((prev) => !prev)}
+            className={cn(
+              "rounded-full shadow-md border-none h-10 sm:h-11 px-3 sm:px-6 text-xs sm:text-sm flex items-center gap-2 transition-all",
+              isFilterOpen || activeFilterCount > 0
+                ? "bg-[#5A3E25] text-white"
+                : "bg-[#6B4A2D] hover:bg-[#5A3E25] text-white",
+            )}
           >
-            <Filter className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="hidden xs:inline">Advanced Filters</span>
+            <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+            <span className="hidden xs:inline">Filters</span>
             <span className="xs:hidden">Filters</span>
+            {activeFilterCount > 0 && (
+              <Badge className="h-5 min-w-5 px-1.5 flex items-center justify-center rounded-full bg-white text-[#6B4A2D] text-[10px] font-bold">
+                {activeFilterCount}
+              </Badge>
+            )}
           </Button>
 
           {(search ||
-            Object.values(activeFilters).some(
-              (val) => val !== "all" && val !== "",
-            )) && (
+            statusFilter !== "all" ||
+            activeFilterCount > 0) && (
             <Button
               variant="outline"
               onClick={resetFilters}
@@ -312,7 +315,7 @@ export default function AdminOrders() {
       </div>
 
       {/* Main Search & Status Filters */}
-      <div className="bg-white/50 backdrop-blur-sm border border-slate-200 rounded-3xl p-4 sm:p-6 shadow-sm">
+      <div className="bg-white/50 backdrop-blur-sm border border-slate-200 rounded-3xl p-4 sm:p-6 shadow-sm space-y-4">
         <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
           <div className="relative flex-1">
             <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
@@ -353,6 +356,129 @@ export default function AdminOrders() {
             ))}
           </div>
         </div>
+
+        {/* Inline Advanced Filters */}
+        {isFilterOpen && (
+          <div className="pt-4 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-in fade-in duration-200">
+            {/* Payment Status */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                <CreditCard className="h-3 w-3" /> Payment Status
+              </Label>
+              <Select
+                value={activeFilters.paymentStatus}
+                onValueChange={(val) => {
+                  setActiveFilters((prev) => ({ ...prev, paymentStatus: val }));
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs sm:text-sm">
+                  <SelectValue placeholder="All Statuses" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-slate-200 bg-white shadow-xl">
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="completed">Completed (Paid)</SelectItem>
+                  <SelectItem value="failed">Failed</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                  <SelectItem value="refunded">Refunded</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Payment Method */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                <ArrowUpRight className="h-3 w-3" /> Payment Method
+              </Label>
+              <Select
+                value={activeFilters.paymentMethod}
+                onValueChange={(val) => {
+                  setActiveFilters((prev) => ({ ...prev, paymentMethod: val }));
+                  setPage(1);
+                }}
+              >
+                <SelectTrigger className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs sm:text-sm">
+                  <SelectValue placeholder="All Methods" />
+                </SelectTrigger>
+                <SelectContent className="rounded-2xl border-slate-200 bg-white shadow-xl">
+                  <SelectItem value="all">All Methods</SelectItem>
+                  <SelectItem value="cod">Cash on Delivery (COD)</SelectItem>
+                  <SelectItem value="razorpay">Razorpay (Online)</SelectItem>
+                  <SelectItem value="stripe">Stripe</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Date Range */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                <Calendar className="h-3 w-3" /> Date Range
+              </Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  type="date"
+                  value={activeFilters.startDate}
+                  onChange={(e) => {
+                    setActiveFilters((prev) => ({
+                      ...prev,
+                      startDate: e.target.value,
+                    }));
+                    setPage(1);
+                  }}
+                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs"
+                />
+                <Input
+                  type="date"
+                  value={activeFilters.endDate}
+                  onChange={(e) => {
+                    setActiveFilters((prev) => ({
+                      ...prev,
+                      endDate: e.target.value,
+                    }));
+                    setPage(1);
+                  }}
+                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs"
+                />
+              </div>
+            </div>
+
+            {/* Price Range */}
+            <div className="space-y-1.5">
+              <Label className="text-[11px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
+                <ShoppingBag className="h-3 w-3" /> Price Range (₹)
+              </Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Input
+                  placeholder="Min"
+                  type="number"
+                  value={activeFilters.minAmount}
+                  onChange={(e) => {
+                    setActiveFilters((prev) => ({
+                      ...prev,
+                      minAmount: e.target.value,
+                    }));
+                    setPage(1);
+                  }}
+                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs"
+                />
+                <Input
+                  placeholder="Max"
+                  type="number"
+                  value={activeFilters.maxAmount}
+                  onChange={(e) => {
+                    setActiveFilters((prev) => ({
+                      ...prev,
+                      maxAmount: e.target.value,
+                    }));
+                    setPage(1);
+                  }}
+                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs"
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Orders Grid */}
@@ -649,181 +775,6 @@ export default function AdminOrders() {
           </div>
         )}
       </div>
-
-      {/* Advanced Filter Drawer */}
-      <SideDrawer
-        isOpen={isFilterOpen}
-        onClose={() => setFilterOpen(false)}
-        title="Advanced Filters"
-        description="Refine your order list with detailed criteria."
-        icon={<Filter className="h-6 w-6" />}
-        footer={
-          <>
-            <Button
-              onClick={applyFilters}
-              className="w-full h-14 rounded-2xl bg-[#6B4A2D] hover:bg-[#5A3E25] font-black text-lg shadow-xl"
-            >
-              Apply Filters
-            </Button>
-            <Button
-              variant="outline"
-              onClick={resetFilters}
-              className="w-full h-12 rounded-2xl border-slate-200 text-slate-500 font-bold"
-            >
-              <RefreshCw className="h-4 w-4 mr-2" />
-              Reset Everything
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-8">
-          {/* Order Status */}
-          <div className="space-y-3">
-            <Label className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2">
-              <Package className="h-3 w-3" /> Order Status
-            </Label>
-            <Select
-              value={pendingFilters.status}
-              onValueChange={(val) =>
-                setPendingFilters((prev) => ({
-                  ...prev,
-                  status: val,
-                }))
-              }
-            >
-              <SelectTrigger className="h-12 rounded-2xl border-slate-200 bg-slate-50/50 font-bold">
-                <SelectValue placeholder="All Orders" />
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-slate-200 bg-white shadow-xl">
-                <SelectItem value="all">All Orders</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="processing">Processing</SelectItem>
-                <SelectItem value="shipped">Shipped</SelectItem>
-                <SelectItem value="delivered">Delivered</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Payment Status */}
-          <div className="space-y-3">
-            <Label className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2">
-              <CreditCard className="h-3 w-3" /> Payment Status
-            </Label>
-            <Select
-              value={pendingFilters.paymentStatus}
-              onValueChange={(val) =>
-                setPendingFilters((prev) => ({
-                  ...prev,
-                  paymentStatus: val,
-                }))
-              }
-            >
-              <SelectTrigger className="h-12 rounded-2xl border-slate-200 bg-slate-50/50 font-bold">
-                <SelectValue placeholder="All Statuses" />
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-slate-200 bg-white shadow-xl">
-                <SelectItem value="all">All Statuses</SelectItem>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="completed">Completed (Paid)</SelectItem>
-                <SelectItem value="failed">Failed</SelectItem>
-                <SelectItem value="cancelled">Cancelled</SelectItem>
-                <SelectItem value="refunded">Refunded</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Payment Method */}
-          <div className="space-y-3">
-            <Label className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2">
-              <ArrowUpRight className="h-3 w-3" /> Payment Method
-            </Label>
-            <Select
-              value={pendingFilters.paymentMethod}
-              onValueChange={(val) =>
-                setPendingFilters((prev) => ({
-                  ...prev,
-                  paymentMethod: val,
-                }))
-              }
-            >
-              <SelectTrigger className="h-12 rounded-2xl border-slate-200 bg-slate-50/50 font-bold">
-                <SelectValue placeholder="All Methods" />
-              </SelectTrigger>
-              <SelectContent className="rounded-2xl border-slate-200 bg-white shadow-xl">
-                <SelectItem value="all">All Methods</SelectItem>
-                <SelectItem value="cod">Cash on Delivery (COD)</SelectItem>
-                <SelectItem value="razorpay">Razorpay (Online)</SelectItem>
-                <SelectItem value="stripe">Stripe</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
-          {/* Date Range */}
-          <div className="space-y-3">
-            <Label className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2">
-              <Calendar className="h-3 w-3" /> Date Range
-            </Label>
-            <div className="grid grid-cols-2 gap-3">
-              <Input
-                type="date"
-                value={pendingFilters.startDate}
-                onChange={(e) =>
-                  setPendingFilters((prev) => ({
-                    ...prev,
-                    startDate: e.target.value,
-                  }))
-                }
-                className="h-12 rounded-2xl border-slate-200 bg-slate-50/50 font-bold text-xs"
-              />
-              <Input
-                type="date"
-                value={pendingFilters.endDate}
-                onChange={(e) =>
-                  setPendingFilters((prev) => ({
-                    ...prev,
-                    endDate: e.target.value,
-                  }))
-                }
-                className="h-12 rounded-2xl border-slate-200 bg-slate-50/50 font-bold text-xs"
-              />
-            </div>
-          </div>
-
-          {/* Price Range */}
-          <div className="space-y-3">
-            <Label className="text-xs font-black uppercase text-slate-400 tracking-wider flex items-center gap-2">
-              <ShoppingBag className="h-3 w-3" /> Price Range (₹)
-            </Label>
-            <div className="grid grid-cols-2 gap-3">
-              <Input
-                placeholder="Min"
-                type="number"
-                value={pendingFilters.minAmount}
-                onChange={(e) =>
-                  setPendingFilters((prev) => ({
-                    ...prev,
-                    minAmount: e.target.value,
-                  }))
-                }
-                className="h-12 rounded-2xl border-slate-200 bg-slate-50/50 font-bold"
-              />
-              <Input
-                placeholder="Max"
-                type="number"
-                value={pendingFilters.maxAmount}
-                onChange={(e) =>
-                  setPendingFilters((prev) => ({
-                    ...prev,
-                    maxAmount: e.target.value,
-                  }))
-                }
-                className="h-12 rounded-2xl border-slate-200 bg-slate-50/50 font-bold"
-              />
-            </div>
-          </div>
-        </div>
-      </SideDrawer>
 
       <OrderDetailsModal
         isOpen={isDetailsModalOpen}

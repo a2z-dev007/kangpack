@@ -66,9 +66,14 @@ export const adminApi = {
 
 // Products Admin APIs
 export const productsAdminApi = {
-  getAll: async (params?: PaginationParams) => {
-    const { data } = await api.get('/products', { params });
+  getAll: async (params?: PaginationParams & { isAdmin?: boolean }) => {
+    const { data } = await api.get('/products', { params: { ...params, isAdmin: true } });
     return data;
+  },
+
+  getStats: async () => {
+    const { data } = await api.get('/products/admin/stats');
+    return data.data;
   },
 
   getById: async (id: string) => {
@@ -281,8 +286,14 @@ export const settingsAdminApi = {
 
 // Categories Admin APIs
 export const categoriesAdminApi = {
-  getAll: async (params?: PaginationParams) => {
-    const { data } = await api.get('/categories', { params });
+  getAll: async (params?: PaginationParams & { search?: string; includeInactive?: boolean }) => {
+    const { data } = await api.get('/categories', {
+      params: {
+        ...params,
+        includeInactive: true,
+        isAdmin: true,
+      },
+    });
     return data;
   },
 

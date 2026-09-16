@@ -105,16 +105,35 @@ export class ProductsService {
     pagination: any;
   }> {
     const { page = 1, limit = 10, sort = 'createdAt', order = 'desc' } = pagination;
-    const { search, category, minPrice, maxPrice } = filters;
+    const { search, category, minPrice, maxPrice, status, stockStatus, isAdmin } = filters;
 
     // Build query
-    const query: any = { isActive: true };
+    const query: any = {};
 
-    if (search) {
-      query.$text = { $search: search };
+    // Status filtering
+    if (status === 'active') {
+      query.isActive = true;
+    } else if (status === 'inactive') {
+      query.isActive = false;
+    } else if (status === 'all' || isAdmin) {
+      // Admin / All view shows both active and inactive
+    } else {
+      // Default for storefront
+      query.isActive = true;
     }
 
-    if (category) {
+    if (search && search.trim()) {
+      const searchRegex = new RegExp(search.trim(), 'i');
+      query.$or = [
+        { name: searchRegex },
+        { sku: searchRegex },
+        { brand: searchRegex },
+        { description: searchRegex },
+        { tags: { $in: [searchRegex] } },
+      ];
+    }
+
+    if (category && category !== 'all') {
       query.category = category;
     }
 
@@ -122,6 +141,16 @@ export class ProductsService {
       query.price = {};
       if (minPrice !== undefined) query.price.$gte = minPrice;
       if (maxPrice !== undefined) query.price.$lte = maxPrice;
+    }
+
+    if (stockStatus && stockStatus !== 'all') {
+      if (stockStatus === 'in_stock') {
+        query.stock = { $gt: 10 };
+      } else if (stockStatus === 'low_stock') {
+        query.stock = { $gt: 0, $lte: 10 };
+      } else if (stockStatus === 'out_of_stock') {
+        query.stock = { $lte: 0 };
+      }
     }
 
     // Execute query with pagination
@@ -263,16 +292,18 @@ export class ProductsService {
       throw new AppError(MESSAGES.PRODUCT_NOT_FOUND, HTTP_STATUS.NOT_FOUND);
     }
 
-    // Optional: Clean up images from S3 when product is deactivated or deleted
+    // Clean up images from storage when product is deleted
     if (product.images && product.images.length > 0) {
       for (const imageUrl of product.images) {
-        await S3Service.deleteFile(imageUrl);
+        try {
+          await S3Service.deleteFile(imageUrl);
+        } catch (err) {
+          console.warn('Failed to delete image during product removal:', err);
+        }
       }
     }
 
-    // Soft delete by deactivating
-    product.isActive = false;
-    await product.save();
+    await Product.findByIdAndDelete(productId);
   }
 
   public static async getFeaturedProducts(limit: number = 10): Promise<any[]> {
@@ -335,16 +366,25 @@ export class ProductsService {
       { $set: updateData }
     );
 
-    return result.modifiedCount;
+    return result.matchedCount || result.modifiedCount || 0;
   }
 
   public static async bulkDeleteProducts(productIds: string[]): Promise<number> {
-    const result = await Product.updateMany(
-      { _id: { $in: productIds } },
-      { $set: { isActive: false } }
-    );
+    const products = await Product.find({ _id: { $in: productIds } });
+    for (const product of products) {
+      if (product.images && product.images.length > 0) {
+        for (const imageUrl of product.images) {
+          try {
+            await S3Service.deleteFile(imageUrl);
+          } catch (err) {
+            console.warn('Failed to delete image during bulk product deletion:', err);
+          }
+        }
+      }
+    }
 
-    return result.modifiedCount;
+    const result = await Product.deleteMany({ _id: { $in: productIds } });
+    return result.deletedCount || 0;
   }
 
   public static async getProductStats() {

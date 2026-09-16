@@ -52,6 +52,10 @@ const SelectInput = <
         menuPortalTarget={
           typeof document !== "undefined" ? document.body : null
         }
+        styles={{
+          menuPortal: (base) => ({ ...base, zIndex: 99999 }),
+          ...props.styles,
+        }}
         classNames={{
           control: ({ isFocused, isDisabled }) =>
             cn(
@@ -70,8 +74,8 @@ const SelectInput = <
           multiValueRemove: () =>
             "hover:bg-destructive hover:text-destructive-foreground rounded-md px-1 ml-1 transition-colors",
           menu: () =>
-            "mt-1.5 rounded-md border border-border bg-popover text-popover-foreground shadow-lg absolute w-full z-[9999] overflow-hidden min-w-[200px]",
-          menuPortal: () => "z-[9999]",
+            "mt-1.5 rounded-md border border-border bg-popover text-popover-foreground shadow-lg absolute w-full z-[99999] overflow-hidden min-w-[200px]",
+          menuPortal: () => "!z-[99999]",
           menuList: () => "p-1 max-h-[300px] overflow-y-auto bg-popover",
           option: ({ isFocused, isSelected }) =>
             cn(
