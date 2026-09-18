@@ -57,6 +57,10 @@ const envSchema = z.object({
   R2_BUCKET_NAME: z.string().default(''),
   R2_PUBLIC_URL: z.string().transform(val => val.trim().replace(/\/$/, '')).default(''),
   
+  // Payment Gateway (Razorpay)
+  RAZORPAY_KEY_ID: z.string().default(''),
+  RAZORPAY_KEY_SECRET: z.string().default(''),
+
   // Legacy AWS S3 (optional fallback)
   AWS_ACCESS_KEY_ID: z.string().default(''),
   AWS_SECRET_ACCESS_KEY: z.string().default(''),

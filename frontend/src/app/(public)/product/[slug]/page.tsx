@@ -128,27 +128,42 @@ const QuantitySelector = ({
 }: {
   quantity: number;
   setQuantity: (q: number) => void;
-  max: number;
+  max?: number;
 }) => {
+  const stockLimit = typeof max === "number" && max > 0 ? max : 99;
+  const isMaxReached = quantity >= stockLimit;
+
   return (
-    <div className="flex items-center border-2 border-[#6B4A2D]/10 rounded-2xl p-1 bg-white/50 backdrop-blur-sm group-hover:border-[#6B4A2D]/30 transition-colors">
-      <button
-        onClick={() => setQuantity(Math.max(1, quantity - 1))}
-        className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-brand-premium hover:text-white text-[#6B4A2D] transition-all duration-300 shadow-sm"
-        disabled={quantity <= 1}
-      >
-        <Minus className="w-4 h-4" />
-      </button>
-      <span className="w-14 text-center font-black text-xl text-[#6B4A2D]">
-        {quantity}
-      </span>
-      <button
-        onClick={() => setQuantity(Math.min(max, quantity + 1))}
-        className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-brand-premium hover:text-white text-[#6B4A2D] transition-all duration-300 shadow-sm"
-        disabled={quantity >= max}
-      >
-        <Plus className="w-4 h-4" />
-      </button>
+    <div className="space-y-1.5">
+      <div className="flex items-center border-2 border-[#6B4A2D]/10 rounded-2xl p-1 bg-white/50 backdrop-blur-sm group-hover:border-[#6B4A2D]/30 transition-colors w-fit">
+        <button
+          onClick={() => setQuantity(Math.max(1, quantity - 1))}
+          className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-brand-premium hover:text-white text-[#6B4A2D] transition-all duration-300 shadow-sm disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-[#6B4A2D] disabled:cursor-not-allowed"
+          disabled={quantity <= 1}
+          type="button"
+          aria-label="Decrease quantity"
+        >
+          <Minus className="w-4 h-4" />
+        </button>
+        <span className="w-14 text-center font-black text-xl text-[#6B4A2D]">
+          {quantity}
+        </span>
+        <button
+          onClick={() => setQuantity(Math.min(stockLimit, quantity + 1))}
+          className="w-12 h-12 flex items-center justify-center rounded-xl hover:bg-brand-premium hover:text-white text-[#6B4A2D] transition-all duration-300 shadow-sm disabled:opacity-25 disabled:hover:bg-transparent disabled:hover:text-[#6B4A2D] disabled:cursor-not-allowed"
+          disabled={isMaxReached}
+          type="button"
+          aria-label="Increase quantity"
+          title={isMaxReached ? `Maximum stock reached (${stockLimit})` : "Increase quantity"}
+        >
+          <Plus className="w-4 h-4" />
+        </button>
+      </div>
+      {isMaxReached && (
+        <p className="text-[11px] font-semibold text-amber-700 tracking-wide">
+          {stockLimit === 1 ? "Only 1 item available in stock" : `Max available stock reached (${stockLimit})`}
+        </p>
+      )}
     </div>
   );
 };
