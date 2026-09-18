@@ -30,8 +30,10 @@ export interface AuthResponse {
 
 export class AuthService {
   public static async register(data: RegisterData): Promise<AuthResponse> {
+    const email = data.email.toLowerCase().trim();
+
     // Check if user already exists
-    const existingUser = await User.findOne({ email: data.email });
+    const existingUser = await User.findOne({ email });
     if (existingUser) {
       throw new AppError(MESSAGES.USER_EXISTS, HTTP_STATUS.CONFLICT);
     }
@@ -42,26 +44,31 @@ export class AuthService {
     // Create user
     const user = new User({
       ...data,
+      email,
       password: hashedPassword,
       role: data.role || UserRole.USER,
     });
+
+    // In local development or when SMTP is not configured, auto-verify email
+    const shouldAutoVerify = env.NODE_ENV === 'development' || !env.SMTP_PASS;
 
     // Generate verification token
     const verificationToken = crypto.randomBytes(32).toString('hex');
     const hashedVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
     
     user.emailVerificationToken = hashedVerificationToken;
-    user.isEmailVerified = false;
+    user.isEmailVerified = shouldAutoVerify;
     await user.save();
 
-    // Send verification email
-    const verificationUrl = `${env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
-    console.log(`[AuthService] Triggering verification email in background for: ${user.email}`);
-    // Non-blocking call to ensure fast response to the user
-    MailService.sendVerificationEmail(user.email, verificationUrl).catch(err => {
-      console.error(`[AuthService] Background email sending failed for ${user.email}:`, err);
-    });
-    console.log(`[AuthService] Registration successful, tokens generated`);
+    // Send verification email if SMTP is configured
+    if (env.SMTP_PASS) {
+      const verificationUrl = `${env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
+      console.log(`[AuthService] Triggering verification email in background for: ${user.email}`);
+      MailService.sendVerificationEmail(user.email, verificationUrl).catch(err => {
+        console.error(`[AuthService] Background email sending failed for ${user.email}:`, err);
+      });
+    }
+    console.log(`[AuthService] Registration successful for: ${user.email}, isEmailVerified: ${user.isEmailVerified}`);
 
     // Generate tokens
     const { accessToken, refreshToken } = JWTService.generateTokenPair({
@@ -86,25 +93,27 @@ export class AuthService {
   }
 
   public static async login(data: LoginData): Promise<AuthResponse> {
+    const email = data.email?.toLowerCase()?.trim();
+
     // Find user
-    const user = await User.findOne({ email: data.email }).select('+password');
+    const user = await User.findOne({ email }).select('+password');
     if (!user) {
-      throw new AppError(MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
+      throw new AppError('No account found with this email. Please check your email or sign up.', HTTP_STATUS.UNAUTHORIZED);
     }
 
     // Check if user is active
     if (!user.isActive) {
-      throw new AppError('Account is deactivated', HTTP_STATUS.FORBIDDEN);
+      throw new AppError('Account is deactivated. Please contact support.', HTTP_STATUS.FORBIDDEN);
     }
 
     // Verify password
     const isPasswordValid = await PasswordUtils.compare(data.password, user.password);
     if (!isPasswordValid) {
-      throw new AppError(MESSAGES.INVALID_CREDENTIALS, HTTP_STATUS.UNAUTHORIZED);
+      throw new AppError('Incorrect password. Please try again.', HTTP_STATUS.UNAUTHORIZED);
     }
 
-    // Check if email is verified
-    if (!user.isEmailVerified) {
+    // Check if email is verified (enforced in production with SMTP)
+    if (!user.isEmailVerified && env.NODE_ENV !== 'development' && env.SMTP_PASS) {
       throw new AppError(MESSAGES.EMAIL_NOT_VERIFIED, HTTP_STATUS.FORBIDDEN);
     }
 

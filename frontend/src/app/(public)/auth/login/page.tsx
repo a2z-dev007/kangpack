@@ -95,6 +95,16 @@ export default function LoginPage() {
           },
           duration: 6000,
         });
+      } else if (message.toLowerCase().includes("no account found") || message.toLowerCase().includes("sign up")) {
+        toast.error(message, {
+          action: {
+            label: "Sign Up",
+            onClick: () => {
+              router.push("/auth/register");
+            },
+          },
+          duration: 6000,
+        });
       } else {
         toast.error(message);
       }
