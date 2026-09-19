@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -22,10 +22,20 @@ export default function ProfilePage() {
   const { updateProfile, loading: profileLoading } = useProfile();
   
   const [formData, setFormData] = useState({
-    firstName: user?.firstName || user?.name?.split(" ")[0] || "",
-    lastName: user?.lastName || user?.name?.split(" ")[1] || "",
-    phone: user?.phone || "",
+    firstName: user?.firstName || (user as any)?.name?.split(" ")[0] || "",
+    lastName: user?.lastName || (user as any)?.name?.split(" ")?.slice(1)?.join(" ") || "",
+    phone: user?.phone || user?.addresses?.[0]?.phone || "",
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        firstName: user.firstName || (user as any).name?.split(" ")[0] || "",
+        lastName: user.lastName || (user as any).name?.split(" ")?.slice(1)?.join(" ") || "",
+        phone: user.phone || user.addresses?.[0]?.phone || "",
+      });
+    }
+  }, [user]);
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -115,7 +125,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="firstName"
-                  value={formData.firstName}
+                  value={formData.firstName || ""}
                   onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                   className="h-11 rounded-xl bg-white border-muted-foreground/20"
                   required
@@ -127,7 +137,7 @@ export default function ProfilePage() {
                 </Label>
                 <Input
                   id="lastName"
-                  value={formData.lastName}
+                  value={formData.lastName || ""}
                   onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                   className="h-11 rounded-xl bg-white border-muted-foreground/20"
                   required
@@ -143,7 +153,7 @@ export default function ProfilePage() {
                 <Input
                   id="email"
                   type="email"
-                  value={user?.email}
+                  value={user?.email || ""}
                   disabled
                   className="h-11 rounded-xl bg-muted/50 pl-10 border-transparent"
                 />
@@ -161,8 +171,8 @@ export default function ProfilePage() {
               <div className="relative">
                 <Input
                   id="phone"
-                  placeholder="+91 99887 76655"
-                  value={formData.phone}
+                  placeholder="Enter your phone number (e.g. +91 98765 43210)"
+                  value={formData.phone || ""}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                   className="h-11 rounded-xl bg-white border-muted-foreground/20 pl-10"
                 />
@@ -198,7 +208,7 @@ export default function ProfilePage() {
               <Input
                 id="currentPassword"
                 type="password"
-                value={passwordData.currentPassword}
+                value={passwordData.currentPassword || ""}
                 onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                 className="h-11 rounded-xl bg-white border-muted-foreground/20"
                 required
@@ -211,7 +221,7 @@ export default function ProfilePage() {
                 <Input
                   id="newPassword"
                   type="password"
-                  value={passwordData.newPassword}
+                  value={passwordData.newPassword || ""}
                   onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                   className="h-11 rounded-xl bg-white border-muted-foreground/20"
                   required
@@ -222,7 +232,7 @@ export default function ProfilePage() {
                 <Input
                   id="confirmPassword"
                   type="password"
-                  value={passwordData.confirmPassword}
+                  value={passwordData.confirmPassword || ""}
                   onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                   className="h-11 rounded-xl bg-white border-muted-foreground/20"
                   required

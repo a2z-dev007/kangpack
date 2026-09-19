@@ -8,12 +8,18 @@ export class MailService {
 
   public static async sendEmail(to: string, subject: string, html: string): Promise<void> {
     console.log(`[MailService] Attempting to send email to: ${to}`);
-    console.log(`[MailService] Transport: ${env.SMTP_HOST}:${env.SMTP_PORT} (secure: ${env.SMTP_SECURE}, user: ${env.SMTP_USER})`);
 
     if (!env.SMTP_PASS) {
-        console.error('[MailService] SMTP_PASS is missing!');
-        return;
+      console.warn(`\n=============================================================`);
+      console.warn(`⚠️  [MailService] EMAIL NOT SENT: SMTP_PASS is missing in backend/.env`);
+      console.warn(`📧  To: ${to}`);
+      console.warn(`📝  Subject: ${subject}`);
+      console.warn(`💡  To receive live emails in your inbox, set your SMTP password in backend/.env`);
+      console.warn(`=============================================================\n`);
+      return;
     }
+
+    console.log(`[MailService] Transport: ${env.SMTP_HOST}:${env.SMTP_PORT} (secure: ${env.SMTP_SECURE}, user: ${env.SMTP_USER})`);
 
     const transporter = nodemailer.createTransport({
       host: env.SMTP_HOST,
