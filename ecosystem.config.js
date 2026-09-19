@@ -2,33 +2,56 @@ module.exports = {
   apps: [
     {
       name: "kangpack-backend",
-      cwd: "backend",
+
+      cwd: "/var/www/kangpack/backend",
       script: "dist/server.js",
+
       instances: 1,
       exec_mode: "fork",
+
       autorestart: true,
-      max_restarts: 10,
-      restart_delay: 3000,
-      max_memory_restart: "350M",
       watch: false,
+
+      min_uptime: "10s",
+      max_restarts: 20,
+      restart_delay: 5000,
+
+      max_memory_restart: "350M",
+
       time: true,
+
+      error_file: "/var/www/kangpack/logs/backend-error.log",
+      out_file: "/var/www/kangpack/logs/backend-out.log",
+
       env: {
         NODE_ENV: "production",
         PORT: 8000
       }
     },
+
     {
       name: "kangpack-frontend",
-      cwd: "frontend/.next/standalone",
+
+      cwd: "/var/www/kangpack/frontend/.next/standalone",
       script: "server.js",
+
       instances: 1,
       exec_mode: "fork",
+
       autorestart: true,
-      max_restarts: 10,
-      restart_delay: 3000,
-      max_memory_restart: "600M",
       watch: false,
+
+      min_uptime: "10s",
+      max_restarts: 20,
+      restart_delay: 5000,
+
+      max_memory_restart: "600M",
+
       time: true,
+
+      error_file: "/var/www/kangpack/logs/frontend-error.log",
+      out_file: "/var/www/kangpack/logs/frontend-out.log",
+
       env: {
         NODE_ENV: "production",
         PORT: 3000,
@@ -36,4 +59,4 @@ module.exports = {
       }
     }
   ]
-};
+};
