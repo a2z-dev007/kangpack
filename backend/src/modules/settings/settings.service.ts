@@ -57,9 +57,37 @@ export class SettingsService {
       Object.assign(settings.shipping, data.shipping);
     }
 
+    if (!settings.payments) {
+      settings.payments = {
+        stripe: { enabled: false },
+        paypal: { enabled: false, sandbox: true },
+        cashOnDelivery: { enabled: true },
+      } as any;
+    }
+
+    if (data.enableCod !== undefined || data.cashOnDeliveryEnabled !== undefined) {
+      const isCodEnabled = data.enableCod !== undefined ? Boolean(data.enableCod) : Boolean(data.cashOnDeliveryEnabled);
+      if (!settings.payments.cashOnDelivery) {
+        settings.payments.cashOnDelivery = { enabled: isCodEnabled };
+      } else {
+        settings.payments.cashOnDelivery.enabled = isCodEnabled;
+      }
+    }
+
+    if (data.payments) {
+      if (data.payments.cashOnDelivery) {
+        if (!settings.payments.cashOnDelivery) {
+          settings.payments.cashOnDelivery = { enabled: true };
+        }
+        Object.assign(settings.payments.cashOnDelivery, data.payments.cashOnDelivery);
+      }
+      if (data.payments.stripe) Object.assign(settings.payments.stripe, data.payments.stripe);
+      if (data.payments.paypal) Object.assign(settings.payments.paypal, data.payments.paypal);
+    }
+
     // Apply any other top-level fields
     for (const key of Object.keys(data)) {
-      if (!['storeName', 'storeDescription', 'email', 'phone', 'taxRate', 'shippingFee', 'freeShippingThreshold', 'tax', 'shipping', 'contactInfo', 'currency', 'currencySymbol'].includes(key)) {
+      if (!['storeName', 'storeDescription', 'email', 'phone', 'taxRate', 'shippingFee', 'freeShippingThreshold', 'tax', 'shipping', 'contactInfo', 'currency', 'currencySymbol', 'enableCod', 'cashOnDeliveryEnabled', 'payments'].includes(key)) {
         (settings as any)[key] = data[key];
       }
     }

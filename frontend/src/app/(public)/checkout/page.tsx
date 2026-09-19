@@ -99,6 +99,7 @@ export default function CheckoutPage() {
 
   const { data: publicSettings } = usePublicSettings();
 
+  const isCodEnabled = publicSettings?.payments?.cashOnDelivery?.enabled !== false;
   const isTaxEnabled = publicSettings?.tax?.enabled !== false;
   const taxRate = isTaxEnabled ? (publicSettings?.tax?.rate ?? publicSettings?.taxRate ?? 0) : 0;
 
@@ -146,6 +147,12 @@ export default function CheckoutPage() {
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     "razorpay" | "cod"
   >("razorpay");
+
+  useEffect(() => {
+    if (!isCodEnabled && selectedPaymentMethod === "cod") {
+      setSelectedPaymentMethod("razorpay");
+    }
+  }, [isCodEnabled, selectedPaymentMethod]);
 
   const loadRazorpay = () => {
     return new Promise((resolve) => {
@@ -229,6 +236,11 @@ export default function CheckoutPage() {
   };
 
   const handlePaymentSubmit = async () => {
+    if (selectedPaymentMethod === "cod" && !isCodEnabled) {
+      toast.error("Cash on Delivery is currently disabled. Please choose another payment method.");
+      return;
+    }
+
     dispatch(setProcessing(true));
     try {
       const orderData = {
@@ -948,48 +960,50 @@ export default function CheckoutPage() {
                         </div>
                       </div>
 
-                      <div
-                        onClick={() => setSelectedPaymentMethod("cod")}
-                        className={`p-6 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
-                          selectedPaymentMethod === "cod"
-                            ? "border-[#6B4A2D] bg-[#6B4A2D]/5"
-                            : "border-[#6B4A2D]/10 hover:border-[#6B4A2D]/30"
-                        }`}
-                      >
-                        <div className="flex items-center gap-4">
-                          <div
-                            className={`w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center ${
-                              selectedPaymentMethod === "cod"
-                                ? "border-[#6B4A2D]"
-                                : "border-[#6B4A2D]/20"
-                            }`}
-                          >
-                            {selectedPaymentMethod === "cod" && (
-                              <div className="w-2.5 h-2.5 rounded-full bg-[#6B4A2D]" />
-                            )}
-                          </div>
-                          <div className="flex items-center gap-3">
-                            <ShoppingBag
-                              size={20}
-                              className={
+                      {isCodEnabled && (
+                        <div
+                          onClick={() => setSelectedPaymentMethod("cod")}
+                          className={`p-6 rounded-2xl border-2 transition-all cursor-pointer flex items-center justify-between ${
+                            selectedPaymentMethod === "cod"
+                              ? "border-[#6B4A2D] bg-[#6B4A2D]/5"
+                              : "border-[#6B4A2D]/10 hover:border-[#6B4A2D]/30"
+                          }`}
+                        >
+                          <div className="flex items-center gap-4">
+                            <div
+                              className={`w-5 h-5 rounded-full border-2 transition-all flex items-center justify-center ${
                                 selectedPaymentMethod === "cod"
-                                  ? "text-[#6B4A2D]"
-                                  : "text-[#6B4A2D]/40"
-                              }
-                            />
-                            <p
-                              className={`font-bold ${
-                                selectedPaymentMethod === "cod"
-                                  ? "text-[#6B4A2D]"
-                                  : "text-[#6B4A2D]/60"
+                                  ? "border-[#6B4A2D]"
+                                  : "border-[#6B4A2D]/20"
                               }`}
                             >
-                              Cash on Delivery
-                            </p>
+                              {selectedPaymentMethod === "cod" && (
+                                <div className="w-2.5 h-2.5 rounded-full bg-[#6B4A2D]" />
+                              )}
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <ShoppingBag
+                                size={20}
+                                className={
+                                  selectedPaymentMethod === "cod"
+                                    ? "text-[#6B4A2D]"
+                                    : "text-[#6B4A2D]/40"
+                                }
+                              />
+                              <p
+                                className={`font-bold ${
+                                  selectedPaymentMethod === "cod"
+                                    ? "text-[#6B4A2D]"
+                                    : "text-[#6B4A2D]/60"
+                                }`}
+                              >
+                                Cash on Delivery
+                              </p>
+                            </div>
                           </div>
+                          <Truck size={20} className="text-[#6B4A2D]/20" />
                         </div>
-                        <Truck size={20} className="text-[#6B4A2D]/20" />
-                      </div>
+                      )}
                     </div>
                   </div>
 

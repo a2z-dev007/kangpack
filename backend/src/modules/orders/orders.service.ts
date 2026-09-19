@@ -238,6 +238,15 @@ export class OrdersService {
       }
     }
 
+    // Validate Cash on Delivery availability if chosen
+    if (data.paymentMethod === PaymentMethod.COD) {
+      const settings = await SettingsService.getSettings();
+      const isCodEnabled = settings?.payments?.cashOnDelivery?.enabled ?? true;
+      if (!isCodEnabled) {
+        throw new AppError('Cash on Delivery is currently disabled by the store.', HTTP_STATUS.BAD_REQUEST);
+      }
+    }
+
     // Create order
     const order = new Order({
       orderNumber,

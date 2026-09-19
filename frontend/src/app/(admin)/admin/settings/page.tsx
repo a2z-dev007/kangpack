@@ -23,6 +23,7 @@ export default function AdminSettings() {
     taxRate: 0,
     shippingFee: 0,
     freeShippingThreshold: 0,
+    enableCod: true,
   });
 
   // Update form when settings load
@@ -37,6 +38,7 @@ export default function AdminSettings() {
         taxRate: settings.tax?.rate ?? settings.taxRate ?? 0,
         shippingFee: settings.shipping?.defaultRate ?? settings.shippingFee ?? 0,
         freeShippingThreshold: settings.shipping?.freeShippingThreshold ?? settings.freeShippingThreshold ?? 0,
+        enableCod: settings.payments?.cashOnDelivery?.enabled ?? true,
       });
     }
   }, [settings]);
@@ -152,7 +154,7 @@ export default function AdminSettings() {
                   type="number"
                   step="0.01"
                   value={formData.taxRate}
-                  onChange={(e) => setFormData({ ...formData, taxRate: parseFloat(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, taxRate: parseFloat(e.target.value) || 0 })}
                   placeholder="0"
                   className="text-sm"
                 />
@@ -176,7 +178,7 @@ export default function AdminSettings() {
                   type="number"
                   step="0.01"
                   value={formData.shippingFee}
-                  onChange={(e) => setFormData({ ...formData, shippingFee: parseFloat(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, shippingFee: parseFloat(e.target.value) || 0 })}
                   placeholder="0"
                   className="text-sm"
                 />
@@ -188,10 +190,38 @@ export default function AdminSettings() {
                   type="number"
                   step="0.01"
                   value={formData.freeShippingThreshold}
-                  onChange={(e) => setFormData({ ...formData, freeShippingThreshold: parseFloat(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, freeShippingThreshold: parseFloat(e.target.value) || 0 })}
                   placeholder="0"
                   className="text-sm"
                 />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Payment Methods */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg sm:text-xl">Payment Methods</CardTitle>
+            <CardDescription className="text-xs sm:text-sm">Enable or disable checkout payment options</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-start space-x-3 p-4 rounded-xl border bg-muted/20 hover:bg-muted/30 transition-colors">
+              <Checkbox
+                id="enableCod"
+                checked={formData.enableCod}
+                onCheckedChange={(checked) =>
+                  setFormData({ ...formData, enableCod: Boolean(checked) })
+                }
+                className="mt-0.5"
+              />
+              <div className="space-y-1">
+                <Label htmlFor="enableCod" className="text-sm font-semibold cursor-pointer">
+                  Enable Cash on Delivery (COD)
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  Allow customers to place orders with Cash on Delivery. When disabled, customers must pay online via Razorpay / UPI / Cards.
+                </p>
               </div>
             </div>
           </CardContent>
@@ -205,15 +235,15 @@ export default function AdminSettings() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center space-x-2">
-              <Checkbox id="enableReviews" />
+              <Checkbox id="enableReviews" defaultChecked />
               <Label htmlFor="enableReviews" className="text-sm">Enable Product Reviews</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox id="enableWishlist" />
+              <Checkbox id="enableWishlist" defaultChecked />
               <Label htmlFor="enableWishlist" className="text-sm">Enable Wishlist</Label>
             </div>
             <div className="flex items-center space-x-2">
-              <Checkbox id="enableCoupons" />
+              <Checkbox id="enableCoupons" defaultChecked />
               <Label htmlFor="enableCoupons" className="text-sm">Enable Coupons</Label>
             </div>
           </CardContent>
