@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminApi, productsAdminApi, ordersAdminApi, usersAdminApi, couponsAdminApi, inventoryAdminApi, cmsAdminApi, settingsAdminApi, categoriesAdminApi, reviewsAdminApi, paymentsAdminApi } from './api';
+import { adminApi, productsAdminApi, ordersAdminApi, usersAdminApi, couponsAdminApi, inventoryAdminApi, cmsAdminApi, settingsAdminApi, categoriesAdminApi, reviewsAdminApi, paymentsAdminApi, contactsAdminApi } from './api';
 import { PaginationParams } from '@/types';
 import { toast } from 'sonner';
 
@@ -573,3 +573,58 @@ export const useProcessRefund = () => {
     },
   });
 };
+
+// Contacts Queries
+export const useAdminContacts = (params?: PaginationParams & { status?: string; search?: string }) => {
+  return useQuery({
+    queryKey: ['admin', 'contacts', params],
+    queryFn: () => contactsAdminApi.getAll(params),
+  });
+};
+
+export const useAdminContactStats = () => {
+  return useQuery({
+    queryKey: ['admin', 'contacts', 'stats'],
+    queryFn: contactsAdminApi.getStats,
+  });
+};
+
+export const useAdminContact = (id: string) => {
+  return useQuery({
+    queryKey: ['admin', 'contacts', id],
+    queryFn: () => contactsAdminApi.getById(id),
+    enabled: !!id,
+  });
+};
+
+export const useUpdateContactStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status, adminNotes }: { id: string; status?: string; adminNotes?: string }) =>
+      contactsAdminApi.updateStatus(id, { status, adminNotes }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] });
+      toast.success('Contact inquiry updated successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update contact inquiry');
+    },
+  });
+};
+
+export const useDeleteContact = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => contactsAdminApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'contacts'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard'] });
+      toast.success('Contact inquiry deleted successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to delete contact inquiry');
+    },
+  });
+};
+

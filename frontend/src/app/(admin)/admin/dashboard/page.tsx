@@ -185,6 +185,21 @@ const ClockIcon = () => (
   </svg>
 );
 
+const MessageSquareIcon = () => (
+  <svg
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+  >
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+  </svg>
+);
+
 /* =======================
    UTILS
 ======================= */
@@ -343,7 +358,7 @@ export default function AdminDashboard() {
         )}
 
         {/* QUICK STATS */}
-        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
+        <div className="grid gap-4 sm:gap-5 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           <QuickStat
             title="Processing Orders"
             value={stats?.orders?.processingOrders || 0}
@@ -361,6 +376,12 @@ export default function AdminDashboard() {
             value={stats?.users?.activeUsers || 0}
             icon={CheckCircleIcon}
             color="green"
+          />
+          <QuickStat
+            title="Unread Messages"
+            value={stats?.contacts?.unread || 0}
+            icon={MessageSquareIcon}
+            color="amber"
           />
         </div>
 
@@ -391,7 +412,7 @@ export default function AdminDashboard() {
 
                 return (
                   <Link
-                    key={order.id}
+                    key={order.id || order._id}
                     href={`/admin/orders`}
                     className="block"
                   >
@@ -403,7 +424,7 @@ export default function AdminDashboard() {
                           </p>
                           <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1.5">
                             <ClockIcon />
-                            {order.items.length} items
+                            {order.items?.length || 0} items
                           </p>
                         </div>
                         <span
@@ -443,8 +464,8 @@ export default function AdminDashboard() {
             <div className="space-y-3">
               {activity.users.map((user: any) => (
                 <Link
-                  key={user.id}
-                  href={`/admin/customers?id=${user.id}`}
+                  key={user.id || user._id}
+                  href={`/admin/customers?id=${user.id || user._id}`}
                   className="block"
                 >
                   <div className="flex items-center gap-3 border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors cursor-pointer">
@@ -470,6 +491,61 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
+
+        {/* RECENT CONTACT INQUIRIES */}
+        {activity.contacts && activity.contacts.length > 0 && (
+          <div className="bg-card border border-border rounded-lg p-6">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-3">
+                <div className="h-9 w-9 rounded-full bg-gradient-variant-2 flex items-center justify-center text-primary-foreground">
+                  <MessageSquareIcon />
+                </div>
+                <h3 className="text-lg font-semibold text-foreground">
+                  Recent Contact Inquiries
+                </h3>
+              </div>
+              <Link href="/admin/contacts" className="text-sm font-medium text-primary hover:underline flex items-center gap-1">
+                View All Messages
+                <ArrowUpRightIcon />
+              </Link>
+            </div>
+
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+              {activity.contacts.map((contact: any) => (
+                <Link
+                  key={contact._id || contact.id}
+                  href="/admin/contacts"
+                  className="block"
+                >
+                  <div className="border border-border rounded-lg p-4 hover:bg-muted/50 transition-colors cursor-pointer flex flex-col justify-between h-full">
+                    <div>
+                      <div className="flex items-start justify-between gap-2 mb-1.5">
+                        <p className="font-semibold text-foreground text-sm truncate">
+                          {contact.firstName} {contact.lastName}
+                        </p>
+                        <span
+                          className={`px-2 py-0.5 rounded text-[11px] font-medium capitalize ${
+                            contact.status === 'unread'
+                              ? 'bg-amber-500/10 text-amber-600'
+                              : 'bg-muted text-muted-foreground'
+                          }`}
+                        >
+                          {contact.status}
+                        </span>
+                      </div>
+                      <p className="text-xs text-muted-foreground truncate mb-2">
+                        {contact.email}
+                      </p>
+                      <p className="text-xs text-slate-700 dark:text-slate-300 line-clamp-2 leading-relaxed">
+                        {contact.message}
+                      </p>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -494,9 +570,10 @@ function QuickStat({
     blue: { bg: "bg-gradient-variant-2", text: "text-primary-foreground" },
     red: { bg: "bg-gradient-variant-2", text: "text-primary-foreground" },
     green: { bg: "bg-gradient-variant-2", text: "text-primary-foreground" },
+    amber: { bg: "bg-amber-600", text: "text-white" },
   };
 
-  const colors = colorClasses[color as keyof typeof colorClasses];
+  const colors = colorClasses[color as keyof typeof colorClasses] || colorClasses.blue;
 
   return (
     <div className="bg-card border border-border rounded-lg p-4 sm:p-5">

@@ -8,6 +8,8 @@ import ScrollSection, {
 } from "@/components/common/ScrollSection";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import { Mail, MapPin, Phone } from "lucide-react";
+import api from "@/lib/api";
+import { toast } from "sonner";
 
 const ContactPage: React.FC = () => {
   const [formData, setFormData] = React.useState({
@@ -27,18 +29,24 @@ const ContactPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim() || !formData.message.trim()) {
+      toast.error("Please fill in all required fields.");
+      return;
+    }
+
+    if (formData.message.trim().length < 10) {
+      toast.error("Message must be at least 10 characters long.");
+      return;
+    }
+
     setLoading(true);
 
     try {
-      // Dynamically import api to avoid SSR issues if any, or just use standard import
-      const api = (await import("@/lib/api")).default;
-      await api.post("/contact", formData);
-
-      // Import toast dynamically or use if available in scope. Assuming sonner is available globally or imported.
-      // Actually, I should add import { toast } from 'sonner' at the top.
-      // But I can't easily add top-level imports in this specific tool call without replacing the whole file or using replace block wisely.
-      // I will use a window alert fallback if toast is missing, but I should add the import in a separate step or assume it's there.
-      // Wait, I can try to use the toast from sonner if I import it.
+      const response = await api.post("/contact", formData);
+      toast.success(
+        response.data?.message || "Your message has been sent successfully! Our team will get back to you soon."
+      );
 
       // Reset form
       setFormData({
@@ -48,9 +56,9 @@ const ContactPage: React.FC = () => {
         phone: "",
         message: "",
       });
-      alert("Message sent successfully!"); // Fallback
     } catch (error: any) {
-      alert(error.response?.data?.message || "Failed to send message.");
+      console.error("Contact submission error:", error);
+      toast.error(error.response?.data?.message || "Failed to send message. Please try again.");
     } finally {
       setLoading(false);
     }

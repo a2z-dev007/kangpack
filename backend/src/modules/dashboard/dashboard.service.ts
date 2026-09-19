@@ -1,6 +1,7 @@
 import { Order } from '../../database/models/Order';
 import { Product } from '../../database/models/Product';
 import { User } from '../../database/models/User';
+import { Contact, ContactStatus } from '../../database/models/Contact';
 import { OrderStatus } from '../../common/types';
 
 export class DashboardService {
@@ -57,7 +58,11 @@ export class DashboardService {
           createdAt: { $gte: startOfMonth } 
         }),
         activeUsers: await User.countDocuments({ isActive: true, role: 'user' }),
-      }
+      },
+      contacts: {
+        total: await Contact.countDocuments(),
+        unread: await Contact.countDocuments({ status: ContactStatus.UNREAD }),
+      },
     };
 
     // Mapping order counts
@@ -72,7 +77,7 @@ export class DashboardService {
   }
 
   /**
-   * Get recent activity (Recent Orders and New Customers)
+   * Get recent activity (Recent Orders, New Customers, Recent Inquiries)
    */
   async getActivity() {
     const recentOrders = await Order.find()
@@ -85,6 +90,11 @@ export class DashboardService {
       .limit(5)
       .select('firstName lastName email role createdAt avatar');
 
+    const recentContacts = await Contact.find()
+      .sort({ createdAt: -1 })
+      .limit(5)
+      .select('firstName lastName email phone message status createdAt');
+
     // Format customers to match frontend interface
     const formattedCustomers = newCustomers.map(user => ({
       _id: user._id,
@@ -96,7 +106,8 @@ export class DashboardService {
 
     return {
       orders: recentOrders,
-      users: formattedCustomers
+      users: formattedCustomers,
+      contacts: recentContacts,
     };
   }
 }

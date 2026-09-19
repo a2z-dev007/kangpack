@@ -75,6 +75,7 @@ const navigationGroups = [
       { name: "Coupons", href: ROUTES.ADMIN_COUPONS, icon: Tag },
       { name: "Reviews", href: ROUTES.ADMIN_REVIEWS, icon: Star },
       { name: "Payments", href: ROUTES.ADMIN_PAYMENTS, icon: CreditCard },
+      { name: "Contact Messages", href: ROUTES.ADMIN_CONTACTS, icon: MessageSquare },
     ],
   },
   {

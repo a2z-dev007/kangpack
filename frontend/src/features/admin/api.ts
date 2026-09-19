@@ -368,3 +368,32 @@ export const paymentsAdminApi = {
     return data.data;
   },
 };
+
+// Contacts Admin APIs
+export const contactsAdminApi = {
+  getAll: async (params?: PaginationParams & { status?: string; search?: string }) => {
+    const { data } = await api.get('/contact', { params });
+    return data;
+  },
+
+  getStats: async () => {
+    const { data } = await api.get('/contact/stats');
+    return data.data;
+  },
+
+  getById: async (id: string) => {
+    const { data } = await api.get(`/contact/${id}`);
+    return data.data;
+  },
+
+  updateStatus: async (id: string, updateData: { status?: string; adminNotes?: string }) => {
+    const { data } = await api.patch(`/contact/${id}`, updateData);
+    return data.data;
+  },
+
+  delete: async (id: string) => {
+    const { data } = await api.delete(`/contact/${id}`);
+    return data;
+  },
+};
+
