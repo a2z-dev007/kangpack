@@ -397,3 +397,119 @@ export const contactsAdminApi = {
   },
 };
 
+// FAQs Admin APIs
+export interface AdminFaq {
+  id: string;
+  _id?: string;
+  question: string;
+  answer: string;
+  category?: string;
+  order: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const faqsAdminApi = {
+  getAll: async (params?: PaginationParams & { category?: string; isActive?: boolean; search?: string }) => {
+    const { data } = await api.get('/faqs/admin/all', { params });
+    return data;
+  },
+
+  getStats: async () => {
+    const { data } = await api.get('/faqs/admin/stats');
+    return data.data;
+  },
+
+  getById: async (id: string) => {
+    const { data } = await api.get(`/faqs/${id}`);
+    return data.data;
+  },
+
+  create: async (faqData: Partial<AdminFaq>) => {
+    const { data } = await api.post('/faqs', faqData);
+    return data.data;
+  },
+
+  update: async (id: string, faqData: Partial<AdminFaq>) => {
+    const { data } = await api.put(`/faqs/${id}`, faqData);
+    return data.data;
+  },
+
+  toggleStatus: async (id: string) => {
+    const { data } = await api.patch(`/faqs/${id}/status`);
+    return data.data;
+  },
+
+  reorder: async (items: { id: string; order: number }[]) => {
+    const { data } = await api.post('/faqs/reorder', { items });
+    return data;
+  },
+
+  delete: async (id: string) => {
+    const { data } = await api.delete(`/faqs/${id}`);
+    return data;
+  },
+};
+
+// Testimonials Admin APIs
+export interface AdminTestimonial {
+  id: string;
+  _id?: string;
+  name: string;
+  role: string;
+  company?: string;
+  content: string;
+  text?: string;
+  image?: string;
+  avatar?: string;
+  rating: number;
+  order: number;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const testimonialsAdminApi = {
+  getAll: async (params?: PaginationParams & { rating?: number; isActive?: boolean; search?: string }) => {
+    const { data } = await api.get('/testimonials/admin/all', { params });
+    return data;
+  },
+
+  getStats: async () => {
+    const { data } = await api.get('/testimonials/admin/stats');
+    return data.data;
+  },
+
+  getById: async (id: string) => {
+    const { data } = await api.get(`/testimonials/${id}`);
+    return data.data;
+  },
+
+  create: async (testimonialData: Partial<AdminTestimonial>) => {
+    const { data } = await api.post('/testimonials', testimonialData);
+    return data.data;
+  },
+
+  update: async (id: string, testimonialData: Partial<AdminTestimonial>) => {
+    const { data } = await api.put(`/testimonials/${id}`, testimonialData);
+    return data.data;
+  },
+
+  toggleStatus: async (id: string) => {
+    const { data } = await api.patch(`/testimonials/${id}/status`);
+    return data.data;
+  },
+
+  reorder: async (items: { id: string; order: number }[]) => {
+    const { data } = await api.post('/testimonials/reorder', { items });
+    return data;
+  },
+
+  delete: async (id: string) => {
+    const { data } = await api.delete(`/testimonials/${id}`);
+    return data;
+  },
+};
+
+

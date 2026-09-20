@@ -8,7 +8,10 @@ const localStorageMiddleware = (store: any) => (next: any) => (action: any) => {
     if (action.type?.startsWith('cart/')) {
         const cartState = store.getState().cart;
         if (typeof window !== 'undefined') {
-            localStorage.setItem('cart', JSON.stringify(cartState.items));
+            const validItems = (cartState?.items || []).filter(
+                (item: any) => item && item.product && typeof item.product === 'object' && item.product.price != null
+            );
+            localStorage.setItem('cart', JSON.stringify(validItems));
         }
     }
     return result;
@@ -24,9 +27,16 @@ const loadState = () => {
         if (serializedState === null) {
             return undefined;
         }
+        const parsed = JSON.parse(serializedState);
+        const validItems = Array.isArray(parsed)
+            ? parsed.filter(
+                (item: any) => item && item.product && typeof item.product === 'object' && item.product.price != null
+            )
+            : [];
+
         return {
             cart: {
-                items: JSON.parse(serializedState),
+                items: validItems,
                 isOpen: false,
                 isLoading: false,
                 error: null

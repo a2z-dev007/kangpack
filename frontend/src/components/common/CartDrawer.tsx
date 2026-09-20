@@ -23,8 +23,12 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
   const dispatch = useAppDispatch();
   const items = useAppSelector((state) => state.cart.items);
 
-  const total = items.reduce(
-    (sum: number, item: any) => sum + item.product.price * item.quantity,
+  const validItems = (items || []).filter(
+    (item: any) => item && item.product && typeof item.product === "object"
+  );
+
+  const total = validItems.reduce(
+    (sum: number, item: any) => sum + (item.product?.price || 0) * (item.quantity || 1),
     0,
   );
 
@@ -54,7 +58,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
               <h2 className="text-2xl font-black uppercase text-[#6B4A2D] flex items-center gap-2">
                 Your Cart
                 <span className="text-sm font-normal normal-case text-[#6B4A2D]/60 bg-[#6B4A2D]/5 px-3 py-1 rounded-full">
-                  {items.length} items
+                  {validItems.length} items
                 </span>
               </h2>
               <button
@@ -67,7 +71,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
 
             {/* Cart Items */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
-              {items.length === 0 ? (
+              {validItems.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center space-y-4">
                   <div className="w-20 h-20 bg-[#6B4A2D]/5 rounded-full flex items-center justify-center text-[#6B4A2D]/30">
                     <ShoppingBag size={40} />
@@ -91,7 +95,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                   </div>
                 </div>
               ) : (
-                items.map((item: any) => (
+                validItems.map((item: any) => (
                   <motion.div
                     layout
                     key={`${item.productId}-${item.variantId || ""}`}
@@ -100,8 +104,8 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     {/* Product Image */}
                     <div className="h-20 w-20 md:h-24 md:w-24 bg-[#F5F5F0] rounded-xl overflow-hidden flex-shrink-0 relative group">
                       <img
-                        src={item.product.images?.[0] || "/placeholder.png"}
-                        alt={item.product.name}
+                        src={item.product?.images?.[0] || "/placeholder.png"}
+                        alt={item.product?.name || "Product"}
                         className="h-full w-full object-cover transition-transform group-hover:scale-105"
                       />
                     </div>
@@ -111,7 +115,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                       <div>
                         <div className="flex justify-between items-start gap-2">
                           <h3 className="font-bold text-[#6B4A2D] line-clamp-1">
-                            {item.product.name}
+                            {item.product?.name || "Product"}
                           </h3>
                           <button
                             onClick={() =>
@@ -128,7 +132,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                           </button>
                         </div>
                         <p className="text-sm text-[#6B4A2D]/60">
-                          {item.product.category?.name}
+                          {item.product?.category?.name || ""}
                         </p>
                       </div>
 
@@ -170,7 +174,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                         <span className="font-bold text-[#6B4A2D] text-sm whitespace-nowrap">
                           ₹
                           {(
-                            item.product.price * item.quantity
+                            (item.product?.price || 0) * item.quantity
                           ).toLocaleString()}
                         </span>
                       </div>
@@ -181,7 +185,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
             </div>
 
             {/* Footer */}
-            {items.length > 0 && (
+            {validItems.length > 0 && (
               <div className="p-6 bg-white border-t border-[#6B4A2D]/10 space-y-4">
                 <div className="space-y-2">
                   <div className="flex justify-between text-[#6B4A2D]/60 text-sm">

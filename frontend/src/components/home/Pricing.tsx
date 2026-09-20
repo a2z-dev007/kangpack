@@ -62,24 +62,19 @@ const Pricing: React.FC = () => {
       (p) => p.slug === plan.slug || p.name.toLowerCase().includes(plan.id)
     );
 
-    const productToOrder: any = foundProduct || {
-      id: plan.slug,
-      _id: plan.slug,
-      name: plan.name,
-      slug: plan.slug,
-      price: plan.numericPrice,
-      images: [plan.id === "shield" ? ASSETS.TICKERS.MAIN : ASSETS.TICKERS.FIRST],
-      stock: 50,
-    };
+    if (!foundProduct) {
+      toast.error(`${plan.name} is currently not available in our catalog.`);
+      return;
+    }
 
     try {
       await dispatch(
         addToCart({
-          product: productToOrder,
+          product: foundProduct,
           quantity: 1,
         })
       ).unwrap();
-      toast.success(`Added ${plan.name} to cart`);
+      toast.success(`Added ${foundProduct.name} to cart`);
       dispatch(setCartOpen(true));
     } catch {
       // Handled in thunk
@@ -134,7 +129,12 @@ const Pricing: React.FC = () => {
 
               <div className="mb-4 sm:mb-6">
                 <span className="text-3xl sm:text-4xl md:text-5xl font-bold text-[#6B4A2D]">
-                  ₹{plan.price.toLocaleString()}
+                  {(() => {
+                    const prod = data?.data?.find(
+                      (p) => p.slug === plan.slug || p.name.toLowerCase().includes(plan.id)
+                    );
+                    return prod?.price ? `₹${prod.price.toLocaleString()}` : `₹${plan.price}`;
+                  })()}
                 </span>
               </div>
 

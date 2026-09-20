@@ -10,6 +10,8 @@ export { Settings, ISettings } from './models/Settings';
 export { InventoryTransaction, IInventoryTransaction } from './models/Inventory';
 export { Payment, IPayment } from './models/Payment';
 export { CmsPage, ICmsPage } from './models/CmsPage';
+export { Faq, IFaq } from './models/Faq';
+export { Testimonial, ITestimonial } from './models/Testimonial';
 
 // Export database connection
 export { database } from '../config/db';

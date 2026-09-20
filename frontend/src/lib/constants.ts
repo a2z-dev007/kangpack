@@ -26,6 +26,8 @@ export const ROUTES = {
   ADMIN_REVIEWS: '/admin/reviews',
   ADMIN_PAYMENTS: '/admin/payments',
   ADMIN_CONTACTS: '/admin/contacts',
+  ADMIN_FAQS: '/admin/faqs',
+  ADMIN_TESTIMONIALS: '/admin/testimonials',
 } as const;
 
 export const QUERY_KEYS = {
@@ -40,6 +42,8 @@ export const QUERY_KEYS = {
   COUPONS: 'coupons',
   CONTACTS: 'contacts',
   WISHLIST: 'wishlist',
+  FAQS: 'faqs',
+  TESTIMONIALS: 'testimonials',
 } as const;
 
 export const STORAGE_KEYS = {

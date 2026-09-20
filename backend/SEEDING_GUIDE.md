@@ -66,7 +66,12 @@ The seeder creates realistic dummy data for all major entities:
 
 ## 🚀 How to Seed
 
-### **Method 1: NPM Script (Recommended)**
+### **Method 1: Seed Only Explore Our Products (Kangpack Catalog)**
+```bash
+npm run seed:products
+```
+
+### **Method 2: Full Database Seed (Users, Settings, Orders, Kangpack Products, etc.)**
 ```bash
 npm run seed
 ```

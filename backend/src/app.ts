@@ -17,6 +17,7 @@ app.set('trust proxy', true);
 
 // --- 1. CORS HANDLING ---
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 
 

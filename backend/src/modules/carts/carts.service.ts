@@ -9,6 +9,17 @@ export interface AddToCartData {
 }
 
 export class CartsService {
+  private static async sanitizeCart(cart: ICart): Promise<ICart> {
+    if (cart.items && cart.items.length > 0) {
+      const initialCount = cart.items.length;
+      cart.items = cart.items.filter(item => item && item.product != null) as any;
+      if (cart.items.length !== initialCount) {
+        await cart.save();
+      }
+    }
+    return cart;
+  }
+
   public static async getCart(userId?: string, sessionId?: string): Promise<ICart> {
     const query = userId ? { user: userId } : { sessionId };
     
@@ -17,6 +28,8 @@ export class CartsService {
     if (!cart) {
       cart = new Cart(userId ? { user: userId } : { sessionId });
       await cart.save();
+    } else {
+      await CartsService.sanitizeCart(cart);
     }
 
     return cart;
@@ -68,6 +81,7 @@ export class CartsService {
 
     await cart.save();
     await cart.populate('items.product', 'name slug price images stock');
+    await CartsService.sanitizeCart(cart);
 
     return cart;
   }
@@ -107,6 +121,7 @@ export class CartsService {
 
     await cart.save();
     await cart.populate('items.product', 'name slug price images stock');
+    await CartsService.sanitizeCart(cart);
 
     return cart;
   }
@@ -130,6 +145,7 @@ export class CartsService {
 
     await cart.save();
     await cart.populate('items.product', 'name slug price images stock');
+    await CartsService.sanitizeCart(cart);
 
     return cart;
   }

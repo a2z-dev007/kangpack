@@ -114,12 +114,14 @@ const cartSlice = createSlice({
         builder.addCase(fetchCart.fulfilled, (state, action) => {
             state.isLoading = false;
             const items = action.payload || [];
-            state.items = items.map((item: any) => ({
-                productId: item.product?._id || item.product?.id || item.product,
-                product: item.product,
-                quantity: item.quantity,
-                variantId: item.variant
-            }));
+            state.items = items
+                .filter((item: any) => item && item.product && typeof item.product === 'object' && item.product.price != null)
+                .map((item: any) => ({
+                    productId: item.product?._id || item.product?.id || item.product,
+                    product: item.product,
+                    quantity: item.quantity,
+                    variantId: item.variant
+                }));
         });
         builder.addCase(fetchCart.rejected, (state, action) => {
             state.isLoading = false;
@@ -130,12 +132,14 @@ const cartSlice = createSlice({
         builder.addCase(addToCart.fulfilled, (state, action) => {
             const { product, quantity, variantId, cart } = action.payload;
             if (cart?.items && Array.isArray(cart.items)) {
-                state.items = cart.items.map((item: any) => ({
-                    productId: item.product?._id || item.product?.id || item.product,
-                    product: typeof item.product === 'object' ? item.product : product,
-                    quantity: item.quantity,
-                    variantId: item.variant || variantId
-                }));
+                state.items = cart.items
+                    .filter((item: any) => item && item.product && typeof item.product === 'object' && item.product.price != null)
+                    .map((item: any) => ({
+                        productId: item.product?._id || item.product?.id || item.product,
+                        product: typeof item.product === 'object' ? item.product : product,
+                        quantity: item.quantity,
+                        variantId: item.variant || variantId
+                    }));
             } else {
                 const prodId = product.id || (product as any)._id;
                 const existingItem = state.items.find(

@@ -35,8 +35,8 @@ const Hero: React.FC = () => {
   const bgY = useTransform(scrollY, [0, 1000], [0, 150]);
 
   return (
-    <section className="relative h-[100dvh] w-full flex flex-col items-center justify-between overflow-hidden bg-black">
-      {/* Background Video Layer - Clean, Full Quality, No Overlays */}
+    <section className="relative min-h-[100dvh] w-full flex flex-col items-center justify-between overflow-hidden bg-black">
+      {/* Background Video Layer */}
       <motion.div
         style={{ y: bgY }}
         className="absolute inset-0 z-0 overflow-hidden pointer-events-none"
@@ -51,36 +51,73 @@ const Hero: React.FC = () => {
         />
       </motion.div>
 
-      {/* Mobile Only: Bottom CTA */}
-      <div className="flex md:hidden absolute bottom-8 inset-x-0 flex-col items-center gap-2 z-20 pointer-events-auto px-4">
-        <p className="text-white text-xs font-medium tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)]">
-          Work without limits
-        </p>
-        <Link href="/products">
-          <PrimaryButton className="btn-premium py-2.5 px-6 text-xs shadow-xl">
-            Shop Now
-          </PrimaryButton>
-        </Link>
-      </div>
+      {/* Subtle Cinematic Overlay for High Contrast and Text Readability */}
+      <div className="absolute inset-0 z-[1] bg-gradient-to-b from-black/60 via-black/35 to-black/80 pointer-events-none" />
 
-      {/* Bottom Interface Elements (Desktop Only) */}
-      <div className="hidden md:flex absolute bottom-8 md:bottom-12 xl:bottom-8 2xl:bottom-12 left-0 right-0 z-40 px-6 md:px-12 lg:px-16 flex-row items-end justify-between pointer-events-none">
-        {/* Left Side: Shop CTA */}
+      {/* Main Hero Content: Heading, Subheading & CTAs */}
+      <div className="relative z-20 flex-1 flex flex-col items-center justify-center text-center px-4 sm:px-6 md:px-12 max-w-5xl mx-auto pt-28 sm:pt-32 md:pt-36 pb-20 md:pb-28 pointer-events-none">
+        {/* Pill Badge */}
         <motion.div
-          initial={{ x: -20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="flex flex-col gap-3 md:gap-4 pointer-events-auto mb-10 md:mb-0"
+          initial={{ opacity: 0, y: -15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 mb-4 sm:mb-6 shadow-xl pointer-events-auto"
         >
-          <p className="text-white text-sm md:text-base font-medium tracking-normal drop-shadow-[0_2px_8px_rgba(0,0,0,0.8)] hidden md:block">
-            Work without limits
-          </p>
-          <Link href="/products">
-            <PrimaryButton className="btn-premium shadow-xl">Shop Now</PrimaryButton>
-          </Link>
+          <span className="w-2 h-2 rounded-full bg-[#E6AF2E] animate-pulse" />
+          <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.25em] text-white">
+            The Wearable Workstation
+          </span>
         </motion.div>
 
-        {/* Right Side: Video Preview */}
+        {/* Hero Heading */}
+        <motion.h1
+          initial={{ opacity: 0, y: 25 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.35 }}
+          className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black tracking-tight text-white uppercase leading-[1.05] drop-shadow-[0_4px_30px_rgba(0,0,0,0.85)]"
+        >
+          Work Without{" "}
+          <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E6AF2E] via-[#F2D07A] to-white">
+            Limits
+          </span>
+        </motion.h1>
+
+        {/* Hero Subheading */}
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="mt-4 sm:mt-6 text-sm sm:text-base md:text-lg lg:text-xl text-white/90 max-w-2xl mx-auto font-light leading-relaxed drop-shadow-[0_2px_12px_rgba(0,0,0,0.85)]"
+        >
+          Unleash mobile productivity anywhere. Precision engineered with built-in ergonomic support and integrated laptop workstation design.
+        </motion.p>
+
+        {/* Hero CTAs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.65 }}
+          className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-5 w-full sm:w-auto pointer-events-auto"
+        >
+          <Link href="/products" className="w-full sm:w-auto">
+            <PrimaryButton className="w-full sm:w-auto btn-premium py-3.5 px-8 text-xs sm:text-sm font-bold tracking-widest shadow-2xl">
+              Explore Products
+            </PrimaryButton>
+          </Link>
+          <button
+            onClick={() => openVideo(ASSETS.VIDEOS.PRODUCT_MAIN)}
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-md border border-white/25 text-white text-xs sm:text-sm font-bold uppercase tracking-wider transition-all duration-300 shadow-lg hover:shadow-2xl group cursor-pointer"
+          >
+            <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+              <Play className="w-3 h-3 text-white fill-white ml-0.5" />
+            </div>
+            See It in Action
+          </button>
+        </motion.div>
+      </div>
+
+      {/* Bottom Right Interface: Video Preview (Desktop Only) */}
+      <div className="hidden md:flex absolute bottom-8 md:bottom-12 right-6 md:right-12 lg:right-16 z-30 pointer-events-none">
         <AnimatePresence>
           {!isScrolled && (
             <motion.div
@@ -89,7 +126,7 @@ const Hero: React.FC = () => {
               exit={{ opacity: 0, scale: 0.8 }}
               transition={{ delay: 1 }}
               onClick={() => openVideo(ASSETS.VIDEOS.PRODUCT_MAIN)}
-              className="hidden md:flex flex-col items-center gap-3 group cursor-pointer pointer-events-auto"
+              className="flex flex-col items-center gap-3 group cursor-pointer pointer-events-auto"
             >
               <div className="relative w-44 md:w-52 lg:w-60 aspect-video rounded-3xl overflow-hidden border border-white/20 shadow-[0_30px_60px_rgba(0,0,0,0.6)] group-hover:border-white/40 transition-all bg-black">
                 <div className="absolute inset-0 bg-brand-brown/10 z-10 pointer-events-none mix-blend-overlay" />

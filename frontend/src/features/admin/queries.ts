@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminApi, productsAdminApi, ordersAdminApi, usersAdminApi, couponsAdminApi, inventoryAdminApi, cmsAdminApi, settingsAdminApi, categoriesAdminApi, reviewsAdminApi, paymentsAdminApi, contactsAdminApi } from './api';
+import { adminApi, productsAdminApi, ordersAdminApi, usersAdminApi, couponsAdminApi, inventoryAdminApi, cmsAdminApi, settingsAdminApi, categoriesAdminApi, reviewsAdminApi, paymentsAdminApi, contactsAdminApi, faqsAdminApi, testimonialsAdminApi, AdminFaq, AdminTestimonial } from './api';
 import { PaginationParams } from '@/types';
 import { toast } from 'sonner';
 
@@ -627,4 +627,205 @@ export const useDeleteContact = () => {
     },
   });
 };
+
+// ==========================================
+// FAQ Admin Queries & Mutations
+// ==========================================
+export const useAdminFaqs = (params?: PaginationParams & { category?: string; isActive?: boolean; search?: string }) => {
+  return useQuery({
+    queryKey: ['admin', 'faqs', params],
+    queryFn: () => faqsAdminApi.getAll(params),
+  });
+};
+
+export const useAdminFaqStats = () => {
+  return useQuery({
+    queryKey: ['admin', 'faqs', 'stats'],
+    queryFn: faqsAdminApi.getStats,
+  });
+};
+
+export const useAdminFaq = (id: string) => {
+  return useQuery({
+    queryKey: ['admin', 'faqs', id],
+    queryFn: () => faqsAdminApi.getById(id),
+    enabled: !!id,
+  });
+};
+
+export const useCreateFaq = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (faqData: Partial<AdminFaq>) => faqsAdminApi.create(faqData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'faqs'] });
+      queryClient.invalidateQueries({ queryKey: ['faqs'] });
+      toast.success('FAQ created successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to create FAQ');
+    },
+  });
+};
+
+export const useUpdateFaq = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<AdminFaq> }) => faqsAdminApi.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'faqs'] });
+      queryClient.invalidateQueries({ queryKey: ['faqs'] });
+      toast.success('FAQ updated successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update FAQ');
+    },
+  });
+};
+
+export const useToggleFaqStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => faqsAdminApi.toggleStatus(id),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'faqs'] });
+      queryClient.invalidateQueries({ queryKey: ['faqs'] });
+      toast.success(`FAQ ${data?.isActive ? 'activated' : 'deactivated'}`);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to toggle FAQ status');
+    },
+  });
+};
+
+export const useReorderFaqs = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (items: { id: string; order: number }[]) => faqsAdminApi.reorder(items),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'faqs'] });
+      queryClient.invalidateQueries({ queryKey: ['faqs'] });
+      toast.success('FAQs reordered successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to reorder FAQs');
+    },
+  });
+};
+
+export const useDeleteFaq = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => faqsAdminApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'faqs'] });
+      queryClient.invalidateQueries({ queryKey: ['faqs'] });
+      toast.success('FAQ deleted successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to delete FAQ');
+    },
+  });
+};
+
+// ==========================================
+// Testimonial Admin Queries & Mutations
+// ==========================================
+export const useAdminTestimonials = (params?: PaginationParams & { rating?: number; isActive?: boolean; search?: string }) => {
+  return useQuery({
+    queryKey: ['admin', 'testimonials', params],
+    queryFn: () => testimonialsAdminApi.getAll(params),
+  });
+};
+
+export const useAdminTestimonialStats = () => {
+  return useQuery({
+    queryKey: ['admin', 'testimonials', 'stats'],
+    queryFn: testimonialsAdminApi.getStats,
+  });
+};
+
+export const useAdminTestimonial = (id: string) => {
+  return useQuery({
+    queryKey: ['admin', 'testimonials', id],
+    queryFn: () => testimonialsAdminApi.getById(id),
+    enabled: !!id,
+  });
+};
+
+export const useCreateTestimonial = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (testimonialData: Partial<AdminTestimonial>) => testimonialsAdminApi.create(testimonialData),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'testimonials'] });
+      queryClient.invalidateQueries({ queryKey: ['testimonials'] });
+      toast.success('Testimonial created successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to create testimonial');
+    },
+  });
+};
+
+export const useUpdateTestimonial = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, data }: { id: string; data: Partial<AdminTestimonial> }) => testimonialsAdminApi.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'testimonials'] });
+      queryClient.invalidateQueries({ queryKey: ['testimonials'] });
+      toast.success('Testimonial updated successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update testimonial');
+    },
+  });
+};
+
+export const useToggleTestimonialStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => testimonialsAdminApi.toggleStatus(id),
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'testimonials'] });
+      queryClient.invalidateQueries({ queryKey: ['testimonials'] });
+      toast.success(`Testimonial ${data?.isActive ? 'activated' : 'deactivated'}`);
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to toggle testimonial status');
+    },
+  });
+};
+
+export const useReorderTestimonials = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (items: { id: string; order: number }[]) => testimonialsAdminApi.reorder(items),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'testimonials'] });
+      queryClient.invalidateQueries({ queryKey: ['testimonials'] });
+      toast.success('Testimonials reordered successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to reorder testimonials');
+    },
+  });
+};
+
+export const useDeleteTestimonial = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => testimonialsAdminApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'testimonials'] });
+      queryClient.invalidateQueries({ queryKey: ['testimonials'] });
+      toast.success('Testimonial deleted successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to delete testimonial');
+    },
+  });
+};
+
 

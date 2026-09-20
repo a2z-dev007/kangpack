@@ -1,41 +1,71 @@
 "use client";
+
 import React, { useState } from "react";
 import { Plus, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import api from "@/lib/api";
+
+export interface FaqItem {
+  id?: string;
+  _id?: string;
+  question?: string;
+  answer?: string;
+  q?: string;
+  a?: string;
+  category?: string;
+  order?: number;
+  isActive?: boolean;
+}
+
+const fallbackFaqs = [
+  {
+    q: "What makes Kangpack different from regular backpacks?",
+    a: "Kangpack is specifically designed as a wearable mobile workstation that lets you work hands-free anywhere, combining ergonomic balance, laptop protection, and instant access.",
+  },
+  {
+    q: "Can I use Kangpack while walking or standing?",
+    a: "Yes! The harness and support structure keep your laptop stable and secure while standing or moving.",
+  },
+  {
+    q: "What laptops fit inside Kangpack?",
+    a: "Kangpack comfortably accommodates laptops up to 16 inches, including MacBook Pro 16\", Dell XPS 15/16, and ThinkPad models.",
+  },
+  {
+    q: "How does the weight distribution work?",
+    a: "Our dual-point ergonomic harness distributes weight evenly across your shoulders, core, and hips, significantly reducing neck and back strain.",
+  },
+  {
+    q: "Is it water-resistant?",
+    a: "Yes, Kangpack features weather-treated full-grain leather and water-repellent ballistic fabrics with waterproof zippers.",
+  },
+  {
+    q: "Does it protect my laptop?",
+    a: "Yes, it features multi-layer shock-absorbing EVA foam padding and radiation shield technology.",
+  },
+  {
+    q: "Is it suitable for travel and public spaces?",
+    a: "Perfectly! It's TSA-compliant, compact, and ideal for trains, airports, cafes, and outdoor workspaces.",
+  },
+];
 
 const FAQ: React.FC = () => {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
-  const faqs = [
-    {
-      q: "What makes Kangpack different from regular backpacks?",
-      a: "Kangpack is specifically designed as a wearable mobile workstation that lets you work hands-free anywhere, combining ergonomic balance, laptop protection, and instant access.",
+  const { data: apiFaqs } = useQuery<FaqItem[]>({
+    queryKey: ["faqs"],
+    queryFn: async () => {
+      const { data } = await api.get("/faqs");
+      return data?.data || [];
     },
-    {
-      q: "Can I use Kangpack while walking or standing?",
-      a: "Yes! The harness and support structure keep your laptop stable and secure while standing or moving.",
-    },
-    {
-      q: "What laptops fit inside Kangpack?",
-      a: "Kangpack comfortably accommodates laptops up to 16 inches, including MacBook Pro 16\", Dell XPS 15/16, and ThinkPad models.",
-    },
-    {
-      q: "How does the weight distribution work?",
-      a: "Our dual-point ergonomic harness distributes weight evenly across your shoulders, core, and hips, significantly reducing neck and back strain.",
-    },
-    {
-      q: "Is it water-resistant?",
-      a: "Yes, Kangpack features weather-treated full-grain leather and water-repellent ballistic fabrics with waterproof zippers.",
-    },
-    {
-      q: "Does it protect my laptop?",
-      a: "Yes, it features multi-layer shock-absorbing EVA foam padding and radiation shield technology.",
-    },
-    {
-      q: "Is it suitable for travel and public spaces?",
-      a: "Perfectly! It's TSA-compliant, compact, and ideal for trains, airports, cafes, and outdoor workspaces.",
-    },
-  ];
+    staleTime: 60 * 1000, // 1 minute fresh
+  });
+
+  // Normalize FAQ items from either API or fallback
+  const faqs = (apiFaqs && apiFaqs.length > 0 ? apiFaqs : fallbackFaqs).map((item: any) => ({
+    q: item.question || item.q || "",
+    a: item.answer || item.a || "",
+  }));
 
   return (
     <section className="bg-transparent py-12 sm:py-14 md:py-16 lg:py-20 px-4 sm:px-6 md:px-12 lg:px-16">

@@ -19,12 +19,16 @@ export default function CartPage() {
   const dispatch = useAppDispatch();
   const items = useAppSelector((state) => state.cart.items);
 
-  const subtotal = items.reduce(
-    (sum: number, item: any) => sum + item.product.price * item.quantity,
+  const validItems = (items || []).filter(
+    (item: any) => item && item.product && typeof item.product === "object"
+  );
+
+  const subtotal = validItems.reduce(
+    (sum: number, item: any) => sum + (item.product?.price || 0) * (item.quantity || 1),
     0,
   );
 
-  if (items.length === 0) {
+  if (validItems.length === 0) {
     return (
       <div className="min-h-screen bg-brand-beige font-sans flex flex-col">
         <Navbar darkText />
@@ -62,7 +66,7 @@ export default function CartPage() {
 
           <div className="grid lg:grid-cols-3 gap-12">
             <div className="lg:col-span-2 space-y-6">
-              {items.map((item: any) => (
+              {validItems.map((item: any) => (
                 <motion.div
                   layout
                   key={item.productId}
@@ -70,8 +74,8 @@ export default function CartPage() {
                 >
                   <div className="w-full sm:w-32 h-32 bg-[#F5F5F0] rounded-2xl overflow-hidden flex-shrink-0">
                     <img
-                      src={item.product.images?.[0] || "/placeholder.png"}
-                      alt={item.product.name}
+                      src={item.product?.images?.[0] || "/placeholder.png"}
+                      alt={item.product?.name || "Product"}
                       className="object-cover w-full h-full"
                     />
                   </div>
@@ -80,7 +84,7 @@ export default function CartPage() {
                     <div>
                       <div className="flex justify-between items-start">
                         <h3 className="text-xl font-bold text-[#6B4A2D]">
-                          {item.product.name}
+                          {item.product?.name || "Product"}
                         </h3>
                         <button
                           onClick={() =>
@@ -97,7 +101,7 @@ export default function CartPage() {
                         </button>
                       </div>
                       <p className="text-xs font-bold text-[#6B4A2D]/40 uppercase tracking-widest mt-1">
-                        {item.product.category?.name}
+                        {item.product?.category?.name || ""}
                       </p>
                     </div>
 
@@ -137,7 +141,7 @@ export default function CartPage() {
                         </button>
                       </div>
                       <p className="text-2xl font-black text-[#6B4A2D] tracking-tighter">
-                        {formatPrice(item.product.price * item.quantity)}
+                        {formatPrice((item.product?.price || 0) * item.quantity)}
                       </p>
                     </div>
                   </div>

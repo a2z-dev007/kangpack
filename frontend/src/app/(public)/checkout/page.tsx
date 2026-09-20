@@ -18,25 +18,30 @@ import {
   CreditCard,
   Truck,
   User,
-  MapPin,
   CheckCircle,
   ArrowLeft,
   Loader2,
   ShoppingBag,
   Eye,
   EyeOff,
+  Check,
+  Copy,
+  Printer,
+  PackageCheck,
+  ShieldCheck,
+  ArrowRight,
+  Mail,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { formatPrice } from "@/lib/utils";
 import { toast } from "sonner";
 import { usePublicSettings } from "@/features/settings/queries";
-import Lottie from "react-lottie";
 import Confetti from "react-confetti-boom";
-import successLottie from "@/assets/lottie/success-tick.json";
 
 // --- Sub-components ---
 
@@ -97,6 +102,19 @@ export default function CheckoutPage() {
     setIsMounted(true);
   }, []);
 
+  // Scroll to top whenever checkout step changes so the user is always at the top
+  useEffect(() => {
+    const scrollToTop = () => {
+      window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      document.documentElement.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+      document.body.scrollTo({ top: 0, left: 0, behavior: "smooth" });
+    };
+
+    scrollToTop();
+    const timer = setTimeout(scrollToTop, 60);
+    return () => clearTimeout(timer);
+  }, [currentStep]);
+
   const { data: publicSettings } = usePublicSettings();
 
   const isCodEnabled = publicSettings?.payments?.cashOnDelivery?.enabled !== false;
@@ -107,14 +125,19 @@ export default function CheckoutPage() {
   const freeShippingThreshold = publicSettings?.shipping?.freeShippingThreshold ?? publicSettings?.freeShippingThreshold ?? 0;
   const defaultShippingRate = publicSettings?.shipping?.defaultRate ?? publicSettings?.shippingFee ?? 0;
 
+  // Filter out any stale/corrupted items without valid product
+  const validItems = cartItems.filter(
+    (item: any) => item && item.product && typeof item.product === "object"
+  );
+
   // Calculate totals based on dynamic store settings
-  const subtotal = cartItems.reduce(
-    (sum: number, item: any) => sum + item.product.price * item.quantity,
+  const subtotal = validItems.reduce(
+    (sum: number, item: any) => sum + (item.product?.price || 0) * (item.quantity || 1),
     0,
   );
 
   const isFreeShipping = isShippingEnabled && freeShippingThreshold > 0 && subtotal >= freeShippingThreshold;
-  const shipping = cartItems.length > 0 
+  const shipping = validItems.length > 0 
     ? (isShippingEnabled ? (isFreeShipping ? 0 : defaultShippingRate) : 0) 
     : 0;
 
@@ -136,13 +159,27 @@ export default function CheckoutPage() {
   const [createAccount, setCreateAccount] = useState(false);
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [orderSummary, setOrderSummary] = useState({
+    orderNumber: "",
+    orderId: "",
+    date: "",
     subtotal: 0,
     tax: 0,
     shipping: 0,
     total: 0,
+    paymentMethod: "razorpay" as "razorpay" | "cod",
+    shippingAddress: null as any,
     items: [] as any[],
   });
+
+  const handleCopyOrderNumber = (orderNum: string) => {
+    if (!orderNum) return;
+    navigator.clipboard.writeText(orderNum);
+    setCopied(true);
+    toast.success("Order reference copied to clipboard!");
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<
     "razorpay" | "cod"
@@ -263,15 +300,20 @@ export default function CheckoutPage() {
 
       if (selectedPaymentMethod === "cod") {
         setOrderSummary({
+          orderNumber: order?.orderNumber || `KP-${(order?.id || order?._id || Date.now()).toString().slice(-6).toUpperCase()}`,
+          orderId: order?.id || order?._id || "",
+          date: order?.createdAt || new Date().toISOString(),
+          paymentMethod: "cod",
+          shippingAddress: order?.shippingAddress || { ...formData },
           subtotal,
           tax,
           shipping,
           total,
-          items: cartItems.map((item: any) => ({
-            name: item.product.name,
-            price: item.product.price,
+          items: validItems.map((item: any) => ({
+            name: item.product?.name || "Product",
+            price: item.product?.price || 0,
             quantity: item.quantity,
-            image: item.product.images?.[0],
+            image: item.product?.images?.[0],
           })),
         });
         dispatch(clearCart());
@@ -306,16 +348,22 @@ export default function CheckoutPage() {
               );
 
               if (verifyRes.data.success) {
+                const verifiedOrder = verifyRes.data?.data?.order || order;
                 setOrderSummary({
+                  orderNumber: verifiedOrder?.orderNumber || order?.orderNumber || `KP-${(order?.id || order?._id || Date.now()).toString().slice(-6).toUpperCase()}`,
+                  orderId: verifiedOrder?.id || verifiedOrder?._id || order?.id || order?._id || "",
+                  date: verifiedOrder?.createdAt || order?.createdAt || new Date().toISOString(),
+                  paymentMethod: "razorpay",
+                  shippingAddress: verifiedOrder?.shippingAddress || order?.shippingAddress || { ...formData },
                   subtotal,
                   tax,
                   shipping,
                   total,
-                  items: cartItems.map((item: any) => ({
-                    name: item.product.name,
-                    price: item.product.price,
+                  items: validItems.map((item: any) => ({
+                    name: item.product?.name || "Product",
+                    price: item.product?.price || 0,
                     quantity: item.quantity,
-                    image: item.product.images?.[0],
+                    image: item.product?.images?.[0],
                   })),
                 });
                 dispatch(clearCart());
@@ -365,144 +413,217 @@ export default function CheckoutPage() {
   };
 
   if (currentStep === 4) {
-    const lottieOptions = {
-      loop: false,
-      autoplay: true,
-      animationData: successLottie,
-      rendererSettings: {
-        preserveAspectRatio: "xMidYMid slice",
-      },
-    };
+    const address = orderSummary.shippingAddress || formData;
+    const orderNum =
+      orderSummary.orderNumber ||
+      (orderSummary.orderId
+        ? `KP-${orderSummary.orderId.slice(-6).toUpperCase()}`
+        : `KP-${Date.now().toString().slice(-6)}`);
+    const isCod = orderSummary.paymentMethod === "cod";
+    const formattedOrderDate = orderSummary.date
+      ? new Date(orderSummary.date).toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : new Date().toLocaleDateString("en-IN", {
+          day: "numeric",
+          month: "short",
+          year: "numeric",
+          hour: "2-digit",
+          minute: "2-digit",
+        });
 
     return (
-      <div className="min-h-screen bg-brand-beige flex flex-col bg-[url('/assets/grid.svg')] bg-fixed overflow-hidden">
-        <Navbar solid />
-        <Confetti
-          mode="fall"
-          particleCount={120}
-          colors={["#6B4A2D", "#A67C52", "#F5F5F0", "#10B981", "#FFD700"]}
-        />
+      <div className="min-h-screen bg-[#FAF7F2] flex flex-col font-sans selection:bg-[#6B4A2D]/10 selection:text-[#6B4A2D]">
+        <div className="print:hidden">
+          <Navbar solid />
+        </div>
 
-        <div className="flex-grow flex items-center justify-center p-4 md:p-8 pt-32 relative z-10">
-          <motion.div
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            transition={{ type: "spring", duration: 0.8 }}
-            className="max-w-4xl w-full bg-white rounded-[48px] shadow-[0_40px_100px_-20px_rgba(107,74,45,0.2)] border border-[#6B4A2D]/5 flex flex-col relative overflow-hidden"
-          >
-            {/* Top Section: Celebration */}
-            <div className="p-8 md:p-16 text-center border-b border-[#6B4A2D]/5">
-              <div className="w-48 h-48 mx-auto -mt-10 mb-4 flex items-center justify-center">
-                {isMounted && (
-                  <Lottie
-                    options={lottieOptions}
-                    height={200}
-                    width={200}
-                    isClickToPauseDisabled={true}
-                  />
-                )}
+        <div className="print:hidden">
+          <Confetti
+            mode="fall"
+            particleCount={90}
+            colors={["#6B4A2D", "#A67C52", "#E8D8C8", "#059669", "#D97706"]}
+          />
+        </div>
+
+        <main className="flex-grow pt-28 md:pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-5xl mx-auto space-y-8">
+            {/* HERO CELEBRATION HEADER */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              className="bg-white rounded-[32px] md:rounded-[44px] p-6 sm:p-10 md:p-12 text-center border border-[#6B4A2D]/10 shadow-[0_20px_50px_-15px_rgba(107,74,45,0.08)] relative overflow-hidden"
+            >
+              <div className="absolute -top-24 -right-24 w-72 h-72 bg-[#6B4A2D]/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-24 -left-24 w-72 h-72 bg-emerald-500/5 rounded-full blur-3xl pointer-events-none" />
+
+              {/* Animated Success Seal */}
+              <div className="relative inline-flex items-center justify-center mb-5">
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ type: "spring", stiffness: 220, damping: 14 }}
+                  className="w-20 h-20 md:w-24 md:h-24 rounded-full bg-emerald-500/10 border-2 border-emerald-500/30 flex items-center justify-center shadow-lg shadow-emerald-500/15 relative"
+                >
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{
+                      delay: 0.15,
+                      type: "spring",
+                      stiffness: 240,
+                      damping: 12,
+                    }}
+                    className="w-14 h-14 md:w-16 md:h-16 rounded-full bg-emerald-600 flex items-center justify-center text-white shadow-md shadow-emerald-600/30"
+                  >
+                    <Check className="w-8 h-8 md:w-9 md:h-9 stroke-[3]" />
+                  </motion.div>
+                </motion.div>
               </div>
-              <h1 className="text-4xl md:text-5xl font-black text-[#6B4A2D] uppercase tracking-tighter mb-2">
+
+              {/* Payment Status Pill */}
+              <div>
+                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-bold uppercase tracking-wider mb-4">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  {isCod
+                    ? "Order Received • Cash on Delivery"
+                    : "Payment Confirmed • Verified"}
+                </div>
+              </div>
+
+              {/* Title */}
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#6B4A2D] uppercase tracking-tight mb-3">
                 Order Confirmed!
               </h1>
-              <p className="text-[#8B7E6F] mb-8 leading-relaxed text-lg max-w-md mx-auto">
-                Thank you for your purchase. We've sent a confirmation email to{" "}
-                <br />
-                <span className="font-bold text-[#6B4A2D] break-all">
-                  {formData.email}
+
+              {/* Personal Thank You */}
+              <p className="text-[#8B7E6F] text-base sm:text-lg max-w-xl mx-auto leading-relaxed mb-6">
+                Thank you,{" "}
+                <span className="font-bold text-[#6B4A2D]">
+                  {address.firstName
+                    ? `${address.firstName} ${address.lastName || ""}`
+                    : "Traveler"}
                 </span>
+                ! We've received your order and our workshop is already
+                preparing your gear.
               </p>
-              <div className="flex flex-wrap items-center justify-center gap-4">
+
+              {/* Email Receipt Notification Box */}
+              <div className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-[#FAF7F2] border border-[#6B4A2D]/10 text-xs sm:text-sm text-[#8B7E6F]">
+                <Mail className="w-4 h-4 text-[#6B4A2D] shrink-0" />
+                <span>
+                  Confirmation & invoice sent to{" "}
+                  <strong className="text-[#6B4A2D] font-bold break-all">
+                    {address.email || formData.email}
+                  </strong>
+                </span>
+              </div>
+
+              {/* Top Quick Actions */}
+              <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4 print:hidden">
                 <Button
-                  onClick={() => {
-                    dispatch(resetCheckout());
-                    router.push("/");
-                  }}
-                  className="bg-[#6B4A2D] hover:bg-[#5A3E26] text-white px-8 h-12 rounded-xl text-sm font-bold uppercase tracking-widest shadow-lg shadow-[#6B4A2D]/20 transition-all hover:scale-[1.05]"
+                  onClick={() => router.push("/profile/orders")}
+                  className="bg-[#6B4A2D] hover:bg-[#533922] text-white px-7 h-12 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider shadow-md shadow-[#6B4A2D]/20 transition-all hover:scale-[1.02] flex items-center gap-2"
                 >
-                  Home
+                  <PackageCheck className="w-4 h-4" />
+                  View Order History
                 </Button>
                 <Button
                   variant="outline"
-                  onClick={() => router.push("/profile/orders")}
-                  className="border-2 border-[#6B4A2D]/10 hover:border-[#6B4A2D] text-[#6B4A2D] px-8 h-12 rounded-xl text-sm font-bold uppercase tracking-widest transition-all"
+                  onClick={() => {
+                    dispatch(resetCheckout());
+                    router.push("/products");
+                  }}
+                  className="border border-[#6B4A2D]/20 hover:border-[#6B4A2D] text-[#6B4A2D] hover:bg-[#6B4A2D]/5 px-7 h-12 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all flex items-center gap-2"
                 >
-                  View Orders
+                  <ShoppingBag className="w-4 h-4" />
+                  Continue Shopping
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => window.print()}
+                  className="text-[#6B4A2D]/70 hover:text-[#6B4A2D] hover:bg-[#6B4A2D]/5 px-5 h-12 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider transition-all flex items-center gap-2"
+                >
+                  <Printer className="w-4 h-4" />
+                  Print Receipt
                 </Button>
               </div>
-            </div>
+            </motion.div>
 
-            {/* Horizontal Order Summary Area */}
-            <div className="bg-[#FFFBF6]/50 p-6 md:p-10">
-              <div className="flex items-center justify-between mb-6 px-2">
-                <h3 className="font-black text-[#6B4A2D] uppercase tracking-tighter text-sm">
-                  Order Summary
-                </h3>
-                <span className="text-[10px] font-bold text-[#6B4A2D]/40 uppercase tracking-widest">
-                  {orderSummary.items.length}{" "}
-                  {orderSummary.items.length === 1 ? "Item" : "Items"}
+            {/* KEY METRICS RIBBON (4-CARD GRID) */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4"
+            >
+              {/* Order Number */}
+              <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#6B4A2D]/10 shadow-sm flex flex-col justify-between">
+                <span className="text-[10px] sm:text-xs font-bold text-[#8B7E6F] uppercase tracking-wider">
+                  Order Number
                 </span>
-              </div>
-
-              {/* Individual Items - Horizontal Scroll */}
-              <div className="flex gap-4 overflow-x-auto pb-6 px-2 scrollbar-thin">
-                {orderSummary.items.map((item, idx) => (
-                  <div
-                    key={idx}
-                    className="flex-shrink-0 w-64 bg-white p-4 rounded-3xl border border-[#6B4A2D]/5 shadow-sm flex items-center gap-4 group transition-shadow hover:shadow-md"
+                <div className="flex items-center justify-between gap-1 mt-2">
+                  <span className="font-mono font-black text-sm sm:text-base text-[#6B4A2D] truncate">
+                    #{orderNum}
+                  </span>
+                  <button
+                    onClick={() => handleCopyOrderNumber(orderNum)}
+                    className="p-1.5 hover:bg-[#6B4A2D]/5 rounded-lg text-[#6B4A2D]/60 hover:text-[#6B4A2D] transition-colors shrink-0"
+                    title="Copy Order ID"
                   >
-                    <div className="w-16 h-16 bg-brand-beige rounded-xl overflow-hidden border border-[#6B4A2D]/5 flex-shrink-0">
-                      <img
-                        src={item.image || "/placeholder.png"}
-                        alt={item.name}
-                        className="w-full h-full object-cover transition-transform group-hover:scale-110"
-                      />
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold text-[#6B4A2D] text-sm truncate">
-                        {item.name}
-                      </p>
-                      <div className="flex items-center gap-2 mt-1">
-                        <span className="text-[10px] font-bold text-[#6B4A2D]/40 uppercase">
-                          Qty: {item.quantity}
-                        </span>
-                        <span className="w-1 h-1 rounded-full bg-[#6B4A2D]/10" />
-                        <span className="text-xs font-bold text-[#A67C52]">
-                          {formatPrice(item.price)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
+                    {copied ? (
+                      <Check className="w-3.5 h-3.5 text-emerald-600" />
+                    ) : (
+                      <Copy className="w-3.5 h-3.5" />
+                    )}
+                  </button>
+                </div>
               </div>
 
-              {/* Totals Section */}
-              <div className="mt-6 pt-6 border-t border-[#6B4A2D]/5 flex flex-col md:flex-row justify-between items-center gap-8 px-2">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600 shadow-inner">
-                    <CheckCircle size={24} />
-                  </div>
-                  <div>
-                    <p className="text-[10px] font-black text-[#6B4A2D]/40 uppercase tracking-widest">
-                      Payment Status
-                    </p>
-                    <p className="font-bold text-[#6B4A2D]">
-                      Paid via {selectedPaymentMethod.toUpperCase()}
-                    </p>
-                  </div>
-                </div>
-                <div className="text-center md:text-right">
-                  <p className="text-[10px] font-black text-[#6B4A2D]/40 uppercase tracking-widest mb-1">
-                    Total Paid
-                  </p>
-                  <p className="text-4xl font-black text-[#6B4A2D] uppercase tracking-tighter leading-none">
-                    {formatPrice(orderSummary.total)}
-                  </p>
+              {/* Order Date */}
+              <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#6B4A2D]/10 shadow-sm flex flex-col justify-between">
+                <span className="text-[10px] sm:text-xs font-bold text-[#8B7E6F] uppercase tracking-wider">
+                  Date Placed
+                </span>
+                <p className="font-bold text-xs sm:text-sm text-[#6B4A2D] mt-2">
+                  {formattedOrderDate}
+                </p>
+              </div>
+
+              {/* Payment Method */}
+              <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#6B4A2D]/10 shadow-sm flex flex-col justify-between">
+                <span className="text-[10px] sm:text-xs font-bold text-[#8B7E6F] uppercase tracking-wider">
+                  Payment
+                </span>
+                <div className="flex items-center gap-1.5 mt-2">
+                  <CreditCard className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span className="font-bold text-xs sm:text-sm text-[#6B4A2D] truncate">
+                    {isCod ? "Cash on Delivery" : "Paid via Razorpay"}
+                  </span>
                 </div>
               </div>
-            </div>
-          </motion.div>
-        </div>
+
+              {/* Estimated Delivery */}
+              <div className="bg-white p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-[#6B4A2D]/10 shadow-sm flex flex-col justify-between">
+                <span className="text-[10px] sm:text-xs font-bold text-[#8B7E6F] uppercase tracking-wider">
+                  Estimated Arrival
+                </span>
+                <div className="flex items-center gap-1.5 mt-2">
+                  <Truck className="w-4 h-4 text-[#A67C52] shrink-0" />
+                  <span className="font-bold text-xs sm:text-sm text-[#6B4A2D]">
+                    3–5 Business Days
+                  </span>
+                </div>
+              </div>
+            </motion.div>
+
+          </div>
+        </main>
       </div>
     );
   }
@@ -1050,27 +1171,27 @@ export default function CheckoutPage() {
                 </h2>
 
                 <div className="space-y-6 mb-8 max-h-[40vh] overflow-y-auto pr-2 scrollbar-thin">
-                  {cartItems.map((item: any) => (
+                  {validItems.map((item: any) => (
                     <div
                       key={`${item.productId}-${item.variantId || ""}`}
                       className="flex gap-4"
                     >
                       <div className="w-16 h-16 bg-white rounded-xl flex-shrink-0 p-1 border border-[#6B4A2D]/5">
                         <img
-                          src={item.product.images?.[0] || "/placeholder.png"}
-                          alt={item.product.name}
+                          src={item.product?.images?.[0] || "/placeholder.png"}
+                          alt={item.product?.name || "Product"}
                           className="w-full h-full object-cover rounded-lg"
                         />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start gap-4">
                           <h4 className="font-bold text-[#6B4A2D] text-sm md:text-md line-clamp-2 min-w-0">
-                            {item.product.name}
+                            {item.product?.name || "Product"}
                           </h4>
                           <span className="font-bold text-[#6B4A2D] text-sm md:text-md whitespace-nowrap shrink-0">
                             ₹
                             {(
-                              item.product.price * item.quantity
+                              (item.product?.price || 0) * item.quantity
                             ).toLocaleString()}
                           </span>
                         </div>
@@ -1122,17 +1243,5 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
-  );
-}
-
-// Support Next.js routing by exporting as default
-import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
-
-function Header() {
-  return (
-    <header className="p-4 bg-white shadow">
-      <h1>Checkout</h1>
-    </header>
   );
 }

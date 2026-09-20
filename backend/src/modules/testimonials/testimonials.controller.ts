@@ -1,69 +1,96 @@
 import { Request, Response } from 'express';
 import { TestimonialsService } from './testimonials.service';
+import { ResponseUtils } from '../../common/utils';
+import { HTTP_STATUS, MESSAGES } from '../../common/constants';
+import { asyncHandler, AppError } from '../../common/middlewares/error.middleware';
 
 const testimonialsService = new TestimonialsService();
 
 export class TestimonialsController {
-    async createTestimonial(req: Request, res: Response) {
-        try {
-            const testimonial = await testimonialsService.createTestimonial(req.body);
-            res.status(201).json({ success: true, data: testimonial });
-        } catch (error) {
-            res.status(500).json({ success: false, message: 'Error creating testimonial', error });
-        }
+  public static getAllTestimonials = asyncHandler(async (req: Request, res: Response) => {
+    const testimonials = await testimonialsService.getAllTestimonials();
+    res.status(HTTP_STATUS.OK).json(
+      ResponseUtils.success(MESSAGES.FETCHED_SUCCESS, testimonials)
+    );
+  });
+
+  public static getTestimonialById = asyncHandler(async (req: Request, res: Response) => {
+    const testimonial = await testimonialsService.getTestimonialById(req.params.id);
+    if (!testimonial) {
+      throw new AppError('Testimonial not found', HTTP_STATUS.NOT_FOUND);
+    }
+    res.status(HTTP_STATUS.OK).json(
+      ResponseUtils.success(MESSAGES.FETCHED_SUCCESS, testimonial)
+    );
+  });
+
+  public static getAllTestimonialsAdmin = asyncHandler(async (req: Request, res: Response) => {
+    const { page, limit, search, rating, isActive } = req.query;
+    const options: any = {
+      page: page ? Number(page) : 1,
+      limit: limit ? Number(limit) : 20,
+      search: search as string,
+      rating: rating ? Number(rating) : undefined,
+    };
+    if (isActive !== undefined) {
+      options.isActive = isActive === 'true';
     }
 
-    async getAllTestimonials(req: Request, res: Response) {
-        try {
-            const testimonials = await testimonialsService.getAllTestimonials();
-            res.status(200).json({ success: true, data: testimonials });
-        } catch (error) {
-            res.status(500).json({ success: false, message: 'Error fetching testimonials', error });
-        }
-    }
+    const { testimonials, pagination } = await testimonialsService.getAllTestimonialsAdmin(options);
+    res.status(HTTP_STATUS.OK).json(
+      ResponseUtils.success(MESSAGES.FETCHED_SUCCESS, testimonials, pagination)
+    );
+  });
 
-    async getTestimonialById(req: Request, res: Response) {
-        try {
-            const testimonial = await testimonialsService.getTestimonialById(req.params.id);
-            if (!testimonial) {
-                return res.status(404).json({ success: false, message: 'Testimonial not found' });
-            }
-            res.status(200).json({ success: true, data: testimonial });
-        } catch (error) {
-            res.status(500).json({ success: false, message: 'Error fetching testimonial', error });
-        }
-    }
+  public static getTestimonialStats = asyncHandler(async (req: Request, res: Response) => {
+    const stats = await testimonialsService.getTestimonialStats();
+    res.status(HTTP_STATUS.OK).json(
+      ResponseUtils.success('Testimonial statistics retrieved successfully', stats)
+    );
+  });
 
-    async updateTestimonial(req: Request, res: Response) {
-        try {
-            const testimonial = await testimonialsService.updateTestimonial(req.params.id, req.body);
-            if (!testimonial) {
-                return res.status(404).json({ success: false, message: 'Testimonial not found' });
-            }
-            res.status(200).json({ success: true, data: testimonial });
-        } catch (error) {
-            res.status(500).json({ success: false, message: 'Error updating testimonial', error });
-        }
-    }
+  public static createTestimonial = asyncHandler(async (req: Request, res: Response) => {
+    const testimonial = await testimonialsService.createTestimonial(req.body);
+    res.status(HTTP_STATUS.CREATED).json(
+      ResponseUtils.success(MESSAGES.CREATED_SUCCESS, testimonial)
+    );
+  });
 
-    async deleteTestimonial(req: Request, res: Response) {
-        try {
-            const testimonial = await testimonialsService.deleteTestimonial(req.params.id);
-            if (!testimonial) {
-                return res.status(404).json({ success: false, message: 'Testimonial not found' });
-            }
-            res.status(200).json({ success: true, message: 'Testimonial deleted successfully' });
-        } catch (error) {
-            res.status(500).json({ success: false, message: 'Error deleting testimonial', error });
-        }
+  public static updateTestimonial = asyncHandler(async (req: Request, res: Response) => {
+    const testimonial = await testimonialsService.updateTestimonial(req.params.id, req.body);
+    if (!testimonial) {
+      throw new AppError('Testimonial not found', HTTP_STATUS.NOT_FOUND);
     }
+    res.status(HTTP_STATUS.OK).json(
+      ResponseUtils.success(MESSAGES.UPDATED_SUCCESS, testimonial)
+    );
+  });
 
-    async getAllTestimonialsAdmin(req: Request, res: Response) {
-        try {
-            const testimonials = await testimonialsService.getAllTestimonialsAdmin();
-            res.status(200).json({ success: true, data: testimonials });
-        } catch (error) {
-            res.status(500).json({ success: false, message: 'Error fetching testimonials', error });
-        }
+  public static toggleTestimonialStatus = asyncHandler(async (req: Request, res: Response) => {
+    const testimonial = await testimonialsService.toggleStatus(req.params.id);
+    if (!testimonial) {
+      throw new AppError('Testimonial not found', HTTP_STATUS.NOT_FOUND);
     }
+    res.status(HTTP_STATUS.OK).json(
+      ResponseUtils.success(`Testimonial ${testimonial.isActive ? 'activated' : 'deactivated'} successfully`, testimonial)
+    );
+  });
+
+  public static reorderTestimonials = asyncHandler(async (req: Request, res: Response) => {
+    const { items } = req.body;
+    await testimonialsService.reorderTestimonials(items);
+    res.status(HTTP_STATUS.OK).json(
+      ResponseUtils.success('Testimonials reordered successfully')
+    );
+  });
+
+  public static deleteTestimonial = asyncHandler(async (req: Request, res: Response) => {
+    const testimonial = await testimonialsService.deleteTestimonial(req.params.id);
+    if (!testimonial) {
+      throw new AppError('Testimonial not found', HTTP_STATUS.NOT_FOUND);
+    }
+    res.status(HTTP_STATUS.OK).json(
+      ResponseUtils.success(MESSAGES.DELETED_SUCCESS)
+    );
+  });
 }

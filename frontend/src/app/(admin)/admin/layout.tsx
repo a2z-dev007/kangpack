@@ -35,6 +35,7 @@ import {
   FileText,
   Star,
   CreditCard,
+  Quote,
 } from "lucide-react";
 import { useLogout } from "@/features/auth/queries";
 import { useAuth } from "@/hooks/use-auth";
@@ -76,6 +77,8 @@ const navigationGroups = [
       { name: "Reviews", href: ROUTES.ADMIN_REVIEWS, icon: Star },
       { name: "Payments", href: ROUTES.ADMIN_PAYMENTS, icon: CreditCard },
       { name: "Contact Messages", href: ROUTES.ADMIN_CONTACTS, icon: MessageSquare },
+      { name: "FAQs", href: ROUTES.ADMIN_FAQS, icon: HelpCircle },
+      { name: "Testimonials", href: ROUTES.ADMIN_TESTIMONIALS, icon: Quote },
     ],
   },
   {

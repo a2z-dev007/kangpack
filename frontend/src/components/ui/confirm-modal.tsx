@@ -19,6 +19,8 @@ interface ConfirmModalProps {
     description: string;
     variant?: 'default' | 'destructive';
     isLoading?: boolean;
+    loading?: boolean;
+    confirmText?: string;
 }
 
 export function ConfirmModal({
@@ -29,7 +31,11 @@ export function ConfirmModal({
     description,
     variant = 'destructive',
     isLoading = false,
+    loading = false,
+    confirmText = 'Confirm',
 }: ConfirmModalProps) {
+    const isSpinnerLoading = isLoading || loading;
+
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
             <DialogContent className="sm:max-w-[425px]">
@@ -48,17 +54,17 @@ export function ConfirmModal({
                     <Button
                         variant="ghost"
                         onClick={onClose}
-                        disabled={isLoading}
+                        disabled={isSpinnerLoading}
                     >
                         Cancel
                     </Button>
                     <Button
                         variant={variant}
                         onClick={onConfirm}
-                        disabled={isLoading}
+                        disabled={isSpinnerLoading}
                     >
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Confirm
+                        {isSpinnerLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                        {confirmText}
                     </Button>
                 </DialogFooter>
             </DialogContent>

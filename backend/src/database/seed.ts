@@ -9,8 +9,11 @@ import {
   Coupon,
   Review,
   CmsPage,
-  InventoryTransaction
+  InventoryTransaction,
+  Faq,
+  Testimonial
 } from './index';
+import { seedFaqsAndTestimonials } from '../scripts/seedFaqsAndTestimonials';
 import { PasswordUtils, SlugUtils } from '../common/utils';
 import { UserRole, OrderStatus, PaymentStatus, PaymentMethod, CouponType, InventoryAction } from '../common/types';
 
@@ -31,188 +34,93 @@ const sampleUsers = [
 ];
 
 const sampleCategories = [
-  { name: 'Electronics', description: 'Electronic devices and gadgets', parent: null },
-  { name: 'Clothing', description: 'Fashion and apparel', parent: null },
-  { name: 'Home & Garden', description: 'Home improvement and garden supplies', parent: null },
-  { name: 'Sports & Outdoors', description: 'Sports equipment and outdoor gear', parent: null },
-  { name: 'Books', description: 'Books and educational materials', parent: null },
-  { name: 'Smartphones', description: 'Mobile phones and accessories', parent: 'Electronics' },
-  { name: 'Laptops', description: 'Laptops and computers', parent: 'Electronics' },
-  { name: 'Audio', description: 'Headphones, speakers, and audio equipment', parent: 'Electronics' },
-  { name: 'Men\'s Clothing', description: 'Clothing for men', parent: 'Clothing' },
-  { name: 'Women\'s Clothing', description: 'Clothing for women', parent: 'Clothing' },
-  { name: 'Shoes', description: 'Footwear for all occasions', parent: 'Clothing' },
-  { name: 'Furniture', description: 'Home furniture and decor', parent: 'Home & Garden' },
+  { name: 'Flagship', description: 'Flagship wearable workstation collection with integrated radiation shielding', parent: null },
+  { name: 'Original', description: 'Original classic Kangpack series that started the mobile desk revolution', parent: null },
+  { name: 'Travel', description: 'Lightweight, ultra-compact gear designed for seamless travel and daily commute', parent: null },
+  { name: 'Pro Series', description: 'Reinforced ballistic weave gear tailored for high-demand creators and power users', parent: null },
 ];
 
 const sampleProducts = [
   {
-    name: 'iPhone 15 Pro',
-    description: 'The latest iPhone with A17 Pro chip, titanium design, and advanced camera system. Features include 48MP main camera, 5x telephoto zoom, and all-day battery life.',
-    shortDescription: 'Latest iPhone with A17 Pro chip and titanium design',
-    category: 'Smartphones',
-    brand: 'Apple',
-    sku: 'IPHONE15PRO128',
-    price: 999.99,
-    compareAtPrice: 1099.99,
-    cost: 750.00,
-    stock: 50,
-    isFeatured: true,
-    tags: ['smartphone', 'apple', 'iphone', 'premium']
-  },
-  {
-    name: 'Samsung Galaxy S24 Ultra',
-    description: 'Premium Android smartphone with S Pen, 200MP camera, and AI-powered features. Perfect for productivity and creativity.',
-    shortDescription: 'Premium Galaxy with S Pen and 200MP camera',
-    category: 'Smartphones',
-    brand: 'Samsung',
-    sku: 'GALAXYS24ULTRA256',
-    price: 1199.99,
-    compareAtPrice: 1299.99,
-    cost: 900.00,
-    stock: 35,
-    isFeatured: true,
-    tags: ['smartphone', 'samsung', 'galaxy', 'android']
-  },
-  {
-    name: 'MacBook Pro 14-inch',
-    description: 'Powerful laptop with M3 Pro chip, stunning Liquid Retina XDR display, and all-day battery life. Perfect for professionals.',
-    shortDescription: 'Professional laptop with M3 Pro chip',
-    category: 'Laptops',
-    brand: 'Apple',
-    sku: 'MACBOOKPRO14M3',
-    price: 1999.99,
-    compareAtPrice: 2199.99,
-    cost: 1500.00,
+    name: 'Kangpack Flagship Edition',
+    description: 'The ultimate wearable workstation for the modern professional. Built-in radiation shield and ergonomic harness system.',
+    shortDescription: 'The ultimate wearable workstation for the modern professional.',
+    category: 'Flagship',
+    brand: 'Kangpack',
+    sku: 'KP-FLAGSHIP-001',
+    price: 14999,
+    compareAtPrice: 17999,
+    cost: 9500,
     stock: 25,
     isFeatured: true,
-    tags: ['laptop', 'apple', 'macbook', 'professional']
+    isNew: true,
+    isBestseller: true,
+    images: [
+      '/assets/tickers/main.jpeg',
+      '/assets/tickers/side.jpeg',
+      '/assets/tickers/second.jpeg'
+    ],
+    tags: ['New', 'Best Seller', 'Flagship', 'Wearable Workstation']
   },
   {
-    name: 'Dell XPS 13',
-    description: 'Ultra-portable laptop with Intel Core i7, stunning InfinityEdge display, and premium build quality.',
-    shortDescription: 'Ultra-portable laptop with premium design',
-    category: 'Laptops',
-    brand: 'Dell',
-    sku: 'DELLXPS13I7',
-    price: 1299.99,
-    compareAtPrice: 1399.99,
-    cost: 950.00,
+    name: 'Kangpack Classic Edition',
+    description: 'The original design that started the mobile desk revolution. Lightweight, weather-resistant, and precision crafted.',
+    shortDescription: 'The original design that started the mobile desk revolution.',
+    category: 'Original',
+    brand: 'Kangpack',
+    sku: 'KP-CLASSIC-001',
+    price: 12999,
+    compareAtPrice: 14999,
+    cost: 8200,
+    stock: 18,
+    isFeatured: true,
+    isNew: false,
+    isBestseller: true,
+    images: [
+      '/assets/tickers/first.jpeg',
+      '/assets/tickers/side.jpeg'
+    ],
+    tags: ['Classic', 'Best Seller', 'Original', 'Mobile Desk']
+  },
+  {
+    name: 'Kangpack Lite',
+    description: 'Lightweight and ultra-compact for quick commute and effortless all-day mobile productivity.',
+    shortDescription: 'Lightweight and ultra-compact for quick commute and effortless all-day mobile productivity.',
+    category: 'Travel',
+    brand: 'Kangpack',
+    sku: 'KP-LITE-001',
+    price: 9999,
+    compareAtPrice: 11999,
+    cost: 6500,
     stock: 40,
-    isFeatured: false,
-    tags: ['laptop', 'dell', 'ultrabook', 'portable']
-  },
-  {
-    name: 'Sony WH-1000XM5',
-    description: 'Industry-leading noise canceling headphones with exceptional sound quality and 30-hour battery life.',
-    shortDescription: 'Premium noise-canceling headphones',
-    category: 'Audio',
-    brand: 'Sony',
-    sku: 'SONYWH1000XM5',
-    price: 399.99,
-    compareAtPrice: 449.99,
-    cost: 280.00,
-    stock: 60,
     isFeatured: true,
-    tags: ['headphones', 'sony', 'noise-canceling', 'wireless']
+    isNew: true,
+    isBestseller: false,
+    images: [
+      '/assets/tickers/354A7762.jpg',
+      '/assets/tickers/354A7767.jpg'
+    ],
+    tags: ['Lightweight', 'Travel', 'New', 'Commute']
   },
   {
-    name: 'AirPods Pro (3rd Gen)',
-    description: 'Apple\'s premium wireless earbuds with adaptive transparency, spatial audio, and personalized volume.',
-    shortDescription: 'Premium wireless earbuds with spatial audio',
-    category: 'Audio',
-    brand: 'Apple',
-    sku: 'AIRPODSPRO3GEN',
-    price: 249.99,
-    compareAtPrice: 279.99,
-    cost: 180.00,
-    stock: 80,
+    name: 'Kangpack Pro Stealth',
+    description: 'Reinforced ballistic weave and magnetic dock compartments tailored for high-demand creators.',
+    shortDescription: 'Reinforced ballistic weave and magnetic dock compartments tailored for high-demand creators.',
+    category: 'Pro Series',
+    brand: 'Kangpack',
+    sku: 'KP-PRO-STEALTH-001',
+    price: 16999,
+    compareAtPrice: 19999,
+    cost: 11000,
+    stock: 12,
     isFeatured: true,
-    tags: ['earbuds', 'apple', 'airpods', 'wireless']
-  },
-  {
-    name: 'Men\'s Classic T-Shirt',
-    description: 'Comfortable cotton t-shirt perfect for everyday wear. Available in multiple colors and sizes.',
-    shortDescription: 'Comfortable cotton t-shirt for everyday wear',
-    category: 'Men\'s Clothing',
-    brand: 'BasicWear',
-    sku: 'MENSCLASSICTEE',
-    price: 24.99,
-    compareAtPrice: 29.99,
-    cost: 12.00,
-    stock: 200,
-    isFeatured: false,
-    tags: ['t-shirt', 'men', 'cotton', 'casual']
-  },
-  {
-    name: 'Women\'s Yoga Leggings',
-    description: 'High-performance leggings with moisture-wicking fabric and four-way stretch for ultimate comfort.',
-    shortDescription: 'High-performance yoga leggings',
-    category: 'Women\'s Clothing',
-    brand: 'ActiveFit',
-    sku: 'WOMENYOGALEGGINGS',
-    price: 79.99,
-    compareAtPrice: 89.99,
-    cost: 40.00,
-    stock: 150,
-    isFeatured: false,
-    tags: ['leggings', 'women', 'yoga', 'activewear']
-  },
-  {
-    name: 'Running Shoes',
-    description: 'Lightweight running shoes with responsive cushioning and breathable mesh upper for optimal performance.',
-    shortDescription: 'Lightweight running shoes with responsive cushioning',
-    category: 'Shoes',
-    brand: 'RunFast',
-    sku: 'RUNNINGSHOES42',
-    price: 129.99,
-    compareAtPrice: 149.99,
-    cost: 75.00,
-    stock: 100,
-    isFeatured: true,
-    tags: ['shoes', 'running', 'athletic', 'lightweight']
-  },
-  {
-    name: 'Office Chair',
-    description: 'Ergonomic office chair with lumbar support, adjustable height, and breathable mesh back for all-day comfort.',
-    shortDescription: 'Ergonomic office chair with lumbar support',
-    category: 'Furniture',
-    brand: 'ComfortSeating',
-    sku: 'OFFICECHAIR001',
-    price: 299.99,
-    compareAtPrice: 349.99,
-    cost: 180.00,
-    stock: 30,
-    isFeatured: false,
-    tags: ['chair', 'office', 'ergonomic', 'furniture']
-  },
-  {
-    name: 'Programming Book Bundle',
-    description: 'Complete collection of programming books covering JavaScript, Python, and web development fundamentals.',
-    shortDescription: 'Complete programming book collection',
-    category: 'Books',
-    brand: 'TechBooks',
-    sku: 'PROGBOOKBUNDLE',
-    price: 89.99,
-    compareAtPrice: 119.99,
-    cost: 45.00,
-    stock: 75,
-    isFeatured: false,
-    tags: ['books', 'programming', 'education', 'technology']
-  },
-  {
-    name: 'Fitness Tracker',
-    description: 'Advanced fitness tracker with heart rate monitoring, GPS, and 7-day battery life.',
-    shortDescription: 'Advanced fitness tracker with GPS',
-    category: 'Electronics',
-    brand: 'FitTech',
-    sku: 'FITNESSTRACKER01',
-    price: 199.99,
-    compareAtPrice: 229.99,
-    cost: 120.00,
-    stock: 65,
-    isFeatured: true,
-    tags: ['fitness', 'tracker', 'health', 'wearable']
+    isNew: false,
+    isBestseller: false,
+    images: [
+      '/assets/tickers/main2.jpeg',
+      '/assets/tickers/354A7751.jpg'
+    ],
+    tags: ['Pro', 'Pro Series', 'Creator', 'Ballistic']
   }
 ];
 
@@ -535,53 +443,26 @@ const seedProducts = async (categoryMap: Map<string, any>) => {
           width: Math.random() * 20 + 5,
           height: Math.random() * 10 + 1
         },
-        images: [
-          `https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`,
-          `https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`,
+        images: productData.images || [
           `https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`
         ],
-        variants: productData.category === 'Smartphones' || productData.category === 'Clothing' ? [
-          {
-            name: `${productData.name} - Variant 1`,
-            sku: `${productData.sku}V1`,
-            price: productData.price,
-            stock: Math.floor(productData.stock / 2),
-            lowStockThreshold: 3,
-            attributes: {
-              color: ['Black', 'White', 'Blue', 'Red'][Math.floor(Math.random() * 4)],
-              size: ['S', 'M', 'L', 'XL'][Math.floor(Math.random() * 4)]
-            },
-            images: [`https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`],
-            isActive: true
-          },
-          {
-            name: `${productData.name} - Variant 2`,
-            sku: `${productData.sku}V2`,
-            price: productData.price + 50,
-            stock: Math.floor(productData.stock / 2),
-            lowStockThreshold: 3,
-            attributes: {
-              color: ['Silver', 'Gold', 'Rose Gold'][Math.floor(Math.random() * 3)],
-              size: ['M', 'L', 'XL', 'XXL'][Math.floor(Math.random() * 4)]
-            },
-            images: [`https://picsum.photos/800/600?random=${Math.floor(Math.random() * 1000)}`],
-            isActive: true
-          }
-        ] : [],
+        variants: [],
         attributes: [
           {
             name: 'Color',
-            values: ['Black', 'White', 'Blue', 'Red', 'Silver', 'Gold']
+            values: ['Classic Brown', 'Stealth Black']
           },
           {
-            name: 'Size',
-            values: ['S', 'M', 'L', 'XL', 'XXL']
+            name: 'Laptop Compatibility',
+            values: ['Up to 16-inch']
           }
         ],
         isActive: true,
         isFeatured: productData.isFeatured,
-        isDigital: productData.category === 'Books',
-        requiresShipping: productData.category !== 'Books',
+        isNew: productData.isNew ?? false,
+        isBestseller: productData.isBestseller ?? false,
+        isDigital: false,
+        requiresShipping: true,
         taxable: true,
         tags: productData.tags,
         seo: {
@@ -1093,6 +974,9 @@ const seedDatabase = async () => {
       }
     }
 
+    console.log('❓ Seeding FAQs & Testimonials...');
+    await seedFaqsAndTestimonials();
+
     console.log('\n🎉 Database seeding completed successfully!');
     console.log('\n📋 Seeded Data Summary:');
     console.log(`👥 Users: ${await User.countDocuments()} (including admin)`);
@@ -1104,6 +988,8 @@ const seedDatabase = async () => {
     console.log(`🛍️ Carts: ${await Cart.countDocuments()}`);
     console.log(`📄 CMS Pages: ${await CmsPage.countDocuments()}`);
     console.log(`📊 Inventory Transactions: ${await InventoryTransaction.countDocuments()}`);
+    console.log(`❓ FAQs: ${await Faq.countDocuments()}`);
+    console.log(`💬 Testimonials: ${await Testimonial.countDocuments()}`);
 
     console.log('\n🔐 Login Credentials:');
     console.log('📧 Admin Email: admin@example.com');

@@ -16,68 +16,6 @@ import { addToCart, setCartOpen } from "@/lib/store/features/cart/cartSlice";
 import { Product } from "@/types";
 import { WishlistButton } from "@/components/common/WishlistButton";
 
-const FALLBACK_PRODUCTS: Product[] = [
-  {
-    id: "kangpack-flagship-edition",
-    _id: "kangpack-flagship-edition",
-    name: "Kangpack Flagship Edition",
-    slug: "kangpack-flagship-edition",
-    category: { name: "Flagship", slug: "flagship", id: "1" } as any,
-    price: 14999,
-    description:
-      "The ultimate wearable workstation for the modern professional. Built-in radiation shield and ergonomic harness system.",
-    images: [ASSETS.TICKERS.MAIN],
-    isNew: true,
-    isBestseller: true,
-    stock: 25,
-    tags: ["New", "Best Seller"],
-  } as any,
-  {
-    id: "kangpack-classic",
-    _id: "kangpack-classic",
-    name: "Kangpack Classic Edition",
-    slug: "kangpack-classic",
-    category: { name: "Original", slug: "original", id: "2" } as any,
-    price: 12999,
-    description:
-      "The original design that started the mobile desk revolution. Lightweight, weather-resistant, and precision crafted.",
-    images: [ASSETS.TICKERS.FIRST],
-    isNew: false,
-    isBestseller: true,
-    stock: 18,
-    tags: ["Classic"],
-  } as any,
-  {
-    id: "kangpack-lite",
-    _id: "kangpack-lite",
-    name: "Kangpack Lite",
-    slug: "kangpack-lite",
-    category: { name: "Travel", slug: "travel", id: "3" } as any,
-    price: 9999,
-    description:
-      "Lightweight and ultra-compact for quick commute and effortless all-day mobile productivity.",
-    images: [ASSETS.TICKERS.IMG_354A7762],
-    isNew: true,
-    isBestseller: false,
-    stock: 40,
-    tags: ["Lightweight"],
-  } as any,
-  {
-    id: "kangpack-pro-stealth",
-    _id: "kangpack-pro-stealth",
-    name: "Kangpack Pro Stealth",
-    slug: "kangpack-pro-stealth",
-    category: { name: "Pro Series", slug: "pro-series", id: "4" } as any,
-    price: 16999,
-    description:
-      "Reinforced ballistic weave and magnetic dock compartments tailored for high-demand creators.",
-    images: [ASSETS.TICKERS.MAIN2],
-    isNew: false,
-    isBestseller: false,
-    stock: 12,
-    tags: ["Pro"],
-  } as any,
-];
 
 const ProductCard: React.FC<{
   product: Product;
@@ -211,8 +149,7 @@ const OurProducts: React.FC = () => {
     queryFn: () => productsApi.getProducts({ page: 1, limit: 8 }),
   });
 
-  const apiProducts = data?.data || [];
-  const products = apiProducts.length > 0 ? apiProducts : FALLBACK_PRODUCTS;
+  const products = data?.data || [];
 
   return (
     <section
@@ -284,7 +221,7 @@ const OurProducts: React.FC = () => {
               </div>
             ))}
           </div>
-        ) : (
+        ) : products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
             {products.map((product, index) => (
               <ProductCard
@@ -293,6 +230,16 @@ const OurProducts: React.FC = () => {
                 index={index}
               />
             ))}
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-white/60 backdrop-blur-sm rounded-3xl border border-brand-brown/10 p-8">
+            <div className="w-16 h-16 bg-[#6B4A2D]/5 rounded-full flex items-center justify-center mx-auto mb-4 text-[#6B4A2D]/30">
+              <ShoppingBag className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-bold text-brand-brown mb-2">No Products Available</h3>
+            <p className="text-sm text-brand-brown/60 max-w-md mx-auto">
+              Our products are currently being updated in the system. Please check back shortly.
+            </p>
           </div>
         )}
 
