@@ -9,7 +9,7 @@ import { ParallaxImage } from "@/components/common/ScrollSection";
 import { useQuery } from "@tanstack/react-query";
 import { productsApi } from "@/features/products/api";
 import { QUERY_KEYS, ROUTES } from "@/lib/constants";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import { useAppDispatch } from "@/lib/store/hooks";
 import { addToCart, setCartOpen } from "@/lib/store/features/cart/cartSlice";
@@ -86,7 +86,7 @@ const ProductCard: React.FC<{
 
           <div className="w-full h-full transform group-hover:scale-105 transition-transform duration-500 ease-out">
             <img
-              src={product.images?.[0] || ASSETS.TICKERS.MAIN}
+              src={getImageUrl(product.images?.[0] || ASSETS.TICKERS.MAIN)}
               alt={product.name}
               loading="lazy"
               className="w-full h-full object-cover"

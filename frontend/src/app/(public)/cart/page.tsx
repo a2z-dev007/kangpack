@@ -8,7 +8,7 @@ import {
 } from "@/lib/store/features/cart/cartSlice";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { ROUTES } from "@/lib/constants";
@@ -74,7 +74,7 @@ export default function CartPage() {
                 >
                   <div className="w-full sm:w-32 h-32 bg-[#F5F5F0] rounded-2xl overflow-hidden flex-shrink-0">
                     <img
-                      src={item.product?.images?.[0] || "/placeholder.png"}
+                      src={getImageUrl(item.product?.images?.[0])}
                       alt={item.product?.name || "Product"}
                       className="object-cover w-full h-full"
                     />

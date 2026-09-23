@@ -38,7 +38,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 import { toast } from "sonner";
 import { usePublicSettings } from "@/features/settings/queries";
 import Confetti from "react-confetti-boom";
@@ -313,7 +313,7 @@ export default function CheckoutPage() {
             name: item.product?.name || "Product",
             price: item.product?.price || 0,
             quantity: item.quantity,
-            image: item.product?.images?.[0],
+            image: getImageUrl(item.product?.images?.[0]),
           })),
         });
         dispatch(clearCart());
@@ -327,7 +327,10 @@ export default function CheckoutPage() {
           return;
         }
 
-        const razorpayKey = process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_SDt3Oq2hqQz8jt";
+        const razorpayKey =
+          order.razorpayKeyId ||
+          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
+          "rzp_test_SDt3Oq2hqQz8jt";
 
         const options: any = {
           key: razorpayKey,
@@ -363,7 +366,7 @@ export default function CheckoutPage() {
                     name: item.product?.name || "Product",
                     price: item.product?.price || 0,
                     quantity: item.quantity,
-                    image: item.product?.images?.[0],
+                    image: getImageUrl(item.product?.images?.[0]),
                   })),
                 });
                 dispatch(clearCart());
@@ -1178,7 +1181,7 @@ export default function CheckoutPage() {
                     >
                       <div className="w-16 h-16 bg-white rounded-xl flex-shrink-0 p-1 border border-[#6B4A2D]/5">
                         <img
-                          src={item.product?.images?.[0] || "/placeholder.png"}
+                          src={getImageUrl(item.product?.images?.[0])}
                           alt={item.product?.name || "Product"}
                           className="w-full h-full object-cover rounded-lg"
                         />

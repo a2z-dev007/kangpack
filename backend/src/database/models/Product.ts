@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
+import { toFullImageUrl } from '../../common/utils';
 
 export interface IProductVariant {
   _id?: string;
@@ -438,8 +439,36 @@ const productSchema = new Schema({
   }],
 }, {
   timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true },
+  toJSON: {
+    virtuals: true,
+    transform: (_doc, ret: any) => {
+      if (Array.isArray(ret.images)) {
+        ret.images = ret.images.map((img: string) => toFullImageUrl(img));
+      }
+      if (Array.isArray(ret.variants)) {
+        ret.variants = ret.variants.map((v: any) => ({
+          ...v,
+          images: Array.isArray(v.images) ? v.images.map((img: string) => toFullImageUrl(img)) : v.images,
+        }));
+      }
+      return ret;
+    },
+  },
+  toObject: {
+    virtuals: true,
+    transform: (_doc, ret: any) => {
+      if (Array.isArray(ret.images)) {
+        ret.images = ret.images.map((img: string) => toFullImageUrl(img));
+      }
+      if (Array.isArray(ret.variants)) {
+        ret.variants = ret.variants.map((v: any) => ({
+          ...v,
+          images: Array.isArray(v.images) ? v.images.map((img: string) => toFullImageUrl(img)) : v.images,
+        }));
+      }
+      return ret;
+    },
+  },
 });
 
 // Virtual: Calculate final price with discount

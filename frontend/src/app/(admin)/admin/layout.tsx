@@ -174,11 +174,11 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="flex h-screen w-full overflow-hidden bg-[#F0F5FA] dark:bg-slate-950 font-sans">
+    <div className="fixed inset-0 flex h-full w-full overflow-hidden bg-[#F0F5FA] dark:bg-slate-950 font-sans">
       {/* Sidebar - Hidden on mobile */}
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 w-[260px] border-r bg-white dark:bg-slate-900 transition-transform lg:static lg:translate-x-0 shadow-sm flex flex-col",
+          "fixed inset-y-0 left-0 z-50 w-[260px] h-full min-h-0 border-r bg-white dark:bg-slate-900 transition-transform lg:static lg:translate-x-0 shadow-sm flex flex-col",
           "hidden lg:flex"
         )}
       >
@@ -193,7 +193,7 @@ export default function AdminLayout({
           </Link>
         </div>
 
-        <nav className="flex-1 overflow-y-auto no-scrollbar flex flex-col gap-6 p-4">
+        <nav className="flex-1 min-h-0 overflow-y-auto no-scrollbar flex flex-col gap-6 p-4">
           {navigationGroups.map((group) => (
             <div key={group.title} className="space-y-1">
               <p className="px-4 text-[11px] font-bold tracking-wider text-slate-400 dark:text-slate-500 uppercase">
@@ -328,9 +328,9 @@ export default function AdminLayout({
       </aside>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden pb-16 lg:pb-0">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 h-full overflow-hidden pb-16 lg:pb-0">
         {/* Header */}
-        <header className="flex h-[72px] items-center justify-between bg-white dark:bg-slate-900 px-3 sm:px-6 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-30 shadow-sm shadow-slate-100/50 dark:shadow-none">
+        <header className="flex h-[72px] flex-shrink-0 items-center justify-between bg-white dark:bg-slate-900 px-3 sm:px-6 border-b border-slate-100 dark:border-slate-800 sticky top-0 z-30 shadow-sm shadow-slate-100/50 dark:shadow-none">
           <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
             <Link href={ROUTES.HOME} className="lg:hidden">
               <img
@@ -412,8 +412,8 @@ export default function AdminLayout({
           </div>
         </header>
 
-        <main className="flex-1 overflow-y-auto no-scrollbar bg-[#F0F5FA] dark:bg-slate-950">
-          <div className="container max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8 min-h-full flex flex-col">
+        <main className="flex-1 min-h-0 overflow-y-auto no-scrollbar bg-[#F0F5FA] dark:bg-slate-950">
+          <div className="container max-w-[1600px] mx-auto p-4 md:p-6 lg:p-8 min-h-full flex flex-col pb-16">
             {children}
           </div>
         </main>

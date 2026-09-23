@@ -5,7 +5,7 @@ import { env } from '../../config/env';
 export class RazorpayService {
   private static instance: Razorpay;
 
-  private static getKeyId(): string {
+  public static getKeyId(): string {
     return env.RAZORPAY_KEY_ID || process.env.RAZORPAY_KEY_ID || '';
   }
 

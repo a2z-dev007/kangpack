@@ -84,8 +84,8 @@ export interface ISettings extends Document {
       username?: string;
       password?: string;
     };
-    fromEmail: string;
-    fromName: string;
+    fromEmail?: string;
+    fromName?: string;
     templates: {
       orderConfirmation: boolean;
       orderShipped: boolean;
@@ -240,12 +240,14 @@ const settingsSchema = new Schema<ISettings>({
     },
     fromEmail: {
       type: String,
-      required: true,
+      default: 'support@kangpack.in',
       lowercase: true,
+      trim: true,
     },
     fromName: {
       type: String,
-      required: true,
+      default: 'Kangpack',
+      trim: true,
     },
     templates: {
       orderConfirmation: { type: Boolean, default: true },

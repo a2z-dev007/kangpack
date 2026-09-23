@@ -226,6 +226,8 @@ export interface Settings {
   shippingFee: number;
   freeShippingThreshold?: number;
   email: string;
+  fromEmail?: string;
+  fromName?: string;
   phone: string;
   address: string;
   socialLinks: {

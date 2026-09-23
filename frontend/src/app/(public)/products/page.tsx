@@ -7,7 +7,7 @@ import Navbar from "@/components/home/Navbar";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { QUERY_KEYS, ROUTES } from "@/lib/constants";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 import { ShoppingBag, ArrowRight, Star } from "lucide-react";
 import { ASSETS } from "@/constants/assets";
 import ScrollSection, {
@@ -62,7 +62,7 @@ const ProductCard = ({ product, index }: { product: any; index: number }) => {
           <div className="w-full h-full transform group-hover:scale-105 transition-transform duration-700 ease-out">
             {product.images && product.images[0] ? (
               <img
-                src={product.images[0]}
+                src={getImageUrl(product.images[0])}
                 alt={product.name}
                 className="w-full h-full object-cover"
               />

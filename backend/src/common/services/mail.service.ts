@@ -3,6 +3,7 @@ import nodemailer from 'nodemailer';
 import { env } from '../../config/env';
 import { AppError } from '../middlewares/error.middleware';
 import { HTTP_STATUS } from '../constants';
+import { toFullImageUrl } from '../utils';
 
 export class MailService {
 
@@ -123,7 +124,7 @@ export class MailService {
           <table cellpadding="0" cellspacing="0" border="0" width="100%">
             <tr>
               <td style="width: 80px; vertical-align: top;">
-                <img src="${item.image || 'https://via.placeholder.com/80'}" alt="${item.name}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px solid #e0e0e0;" />
+                <img src="${toFullImageUrl(item.image) || 'https://via.placeholder.com/80'}" alt="${item.name}" style="width: 70px; height: 70px; object-fit: cover; border-radius: 8px; border: 1px solid #e0e0e0;" />
               </td>
               <td style="vertical-align: top; padding-left: 15px;">
                 <strong style="color: #3E2A1D; font-size: 14px;">${item.name}</strong><br>

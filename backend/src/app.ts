@@ -1,4 +1,5 @@
 import express from 'express';
+import path from 'path';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -73,6 +74,9 @@ if (isDevelopment) {
 } else {
   app.use(morgan('combined'));
 }
+
+// Static uploads route
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
 // API routes
 app.use('/api/v1', v1Routes);

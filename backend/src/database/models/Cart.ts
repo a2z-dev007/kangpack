@@ -1,4 +1,5 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
+import { toFullImageUrl } from '../../common/utils';
 
 export interface ICartItem {
   product: string;
@@ -71,6 +72,34 @@ const cartSchema = new Schema<ICart>({
   },
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (_doc, ret: any) => {
+      if (Array.isArray(ret.items)) {
+        ret.items = ret.items.map((item: any) => {
+          if (item?.product && typeof item.product === 'object' && Array.isArray(item.product.images)) {
+            item.product.images = item.product.images.map((img: string) => toFullImageUrl(img));
+          }
+          return item;
+        });
+      }
+      return ret;
+    },
+  },
+  toObject: {
+    virtuals: true,
+    transform: (_doc, ret: any) => {
+      if (Array.isArray(ret.items)) {
+        ret.items = ret.items.map((item: any) => {
+          if (item?.product && typeof item.product === 'object' && Array.isArray(item.product.images)) {
+            item.product.images = item.product.images.map((img: string) => toFullImageUrl(img));
+          }
+          return item;
+        });
+      }
+      return ret;
+    },
+  },
 });
 
 // Indexes

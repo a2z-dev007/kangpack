@@ -1,5 +1,6 @@
 import mongoose, { Document, Schema, Types } from 'mongoose';
 import { OrderStatus, PaymentStatus, PaymentMethod } from '../../common/types';
+import { toFullImageUrl } from '../../common/utils';
 
 export interface IOrderItem {
   product: string;
@@ -240,6 +241,30 @@ const orderSchema = new Schema<IOrder>({
   deliveredAt: Date,
 }, {
   timestamps: true,
+  toJSON: {
+    virtuals: true,
+    transform: (_doc, ret: any) => {
+      if (Array.isArray(ret.items)) {
+        ret.items = ret.items.map((item: any) => ({
+          ...item,
+          image: toFullImageUrl(item.image),
+        }));
+      }
+      return ret;
+    },
+  },
+  toObject: {
+    virtuals: true,
+    transform: (_doc, ret: any) => {
+      if (Array.isArray(ret.items)) {
+        ret.items = ret.items.map((item: any) => ({
+          ...item,
+          image: toFullImageUrl(item.image),
+        }));
+      }
+      return ret;
+    },
+  },
 });
 
 // Ensure either customer or sessionId is provided

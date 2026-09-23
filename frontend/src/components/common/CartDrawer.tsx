@@ -11,6 +11,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
+import { getImageUrl } from "@/lib/utils";
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -104,7 +105,7 @@ export default function CartDrawer({ isOpen, onClose }: CartDrawerProps) {
                     {/* Product Image */}
                     <div className="h-20 w-20 md:h-24 md:w-24 bg-[#F5F5F0] rounded-xl overflow-hidden flex-shrink-0 relative group">
                       <img
-                        src={item.product?.images?.[0] || "/placeholder.png"}
+                        src={getImageUrl(item.product?.images?.[0])}
                         alt={item.product?.name || "Product"}
                         className="h-full w-full object-cover transition-transform group-hover:scale-105"
                       />

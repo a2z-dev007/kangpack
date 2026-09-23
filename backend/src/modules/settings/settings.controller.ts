@@ -17,6 +17,8 @@ export class SettingsController {
     settingsObj.storeDescription = settings.businessDescription || '';
     settingsObj.email = settings.contactInfo?.email || '';
     settingsObj.phone = settings.contactInfo?.phone || '';
+    settingsObj.fromEmail = settings.email?.fromEmail || 'support@kangpack.in';
+    settingsObj.fromName = settings.email?.fromName || 'Kangpack';
 
     res.status(HTTP_STATUS.OK).json(
       ResponseUtils.success(MESSAGES.FETCHED_SUCCESS, settingsObj)
@@ -34,6 +36,8 @@ export class SettingsController {
     settingsObj.storeDescription = settings.businessDescription || '';
     settingsObj.email = settings.contactInfo?.email || '';
     settingsObj.phone = settings.contactInfo?.phone || '';
+    settingsObj.fromEmail = settings.email?.fromEmail || 'support@kangpack.in';
+    settingsObj.fromName = settings.email?.fromName || 'Kangpack';
 
     res.status(HTTP_STATUS.OK).json(
       ResponseUtils.success(MESSAGES.UPDATED_SUCCESS, settingsObj)

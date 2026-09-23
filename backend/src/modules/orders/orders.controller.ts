@@ -3,7 +3,8 @@ import { OrdersService } from './orders.service';
 import { ResponseUtils } from '../../common/utils';
 import { HTTP_STATUS, MESSAGES } from '../../common/constants';
 import { asyncHandler } from '../../common/middlewares/error.middleware';
-import { AuthenticatedRequest } from '../../common/types';
+import { AuthenticatedRequest, PaymentMethod } from '../../common/types';
+import { RazorpayService } from '../../common/services/razorpay.service';
 
 export class OrdersController {
   public static getOrders = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
@@ -56,9 +57,13 @@ export class OrdersController {
     const sessionId = req.headers['x-session-id'] as string;
 
     const order = await OrdersService.createOrder(req.body, userId, sessionId);
+    const orderData = (order as any)?.toObject ? (order as any).toObject() : { ...order };
+    if (order.paymentMethod === PaymentMethod.RAZORPAY) {
+      orderData.razorpayKeyId = RazorpayService.getKeyId();
+    }
     
     res.status(HTTP_STATUS.CREATED).json(
-      ResponseUtils.success('Order created successfully', order)
+      ResponseUtils.success('Order created successfully', orderData)
     );
   });
 

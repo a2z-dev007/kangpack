@@ -7,7 +7,7 @@ import Navbar from "@/components/home/Navbar";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { QUERY_KEYS, ROUTES } from "@/lib/constants";
-import { formatPrice } from "@/lib/utils";
+import { formatPrice, getImageUrl } from "@/lib/utils";
 import {
   ShoppingBag,
   Star,
@@ -302,7 +302,7 @@ export default function ProductDetailPage({
           <ScrollSection className="h-full">
             <div className="absolute inset-0 opacity-30 grayscale hover:grayscale-0 transition-all duration-1000">
               <img
-                src={product.images[0]}
+                src={getImageUrl(product.images[0])}
                 alt="Hero Background"
                 className="w-full h-full object-cover scale-110"
               />
@@ -366,7 +366,7 @@ export default function ProductDetailPage({
                   </nav>
 
                   <ImageGallery
-                    images={product.images || []}
+                    images={(product.images || []).map((img: string) => getImageUrl(img))}
                     title={product.name}
                   />
                 </div>

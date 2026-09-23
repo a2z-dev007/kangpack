@@ -1,7 +1,7 @@
 import { Order, IOrder, Cart, Product, User } from '../../database';
 import { AppError } from '../../common/middlewares/error.middleware';
 import { HTTP_STATUS, MESSAGES } from '../../common/constants';
-import { PaginationUtils, PasswordUtils } from '../../common/utils';
+import { PaginationUtils, PasswordUtils, toFullImageUrl } from '../../common/utils';
 import { PaginationQuery, FilterQuery, OrderStatus, PaymentStatus, PaymentMethod } from '../../common/types';
 import { MailService } from '../../common/services/mail.service';
 import { RazorpayService } from '../../common/services/razorpay.service';
@@ -159,7 +159,7 @@ export class OrdersService {
         price: item.price,
         quantity: item.quantity,
         total: item.price * item.quantity,
-        image: product.images?.[0],
+        image: toFullImageUrl(product.images?.[0]),
       });
 
       // Reduce stock

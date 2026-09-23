@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { formatPrice, formatDateTime } from "@/lib/utils";
+import { formatPrice, formatDateTime, getImageUrl } from "@/lib/utils";
 import { useAddTracking, useUpdateOrderStatus } from "../queries";
 import {
   Loader2,
@@ -219,11 +219,7 @@ export function OrderDetailsModal({
                   <div className="flex gap-4 sm:gap-5">
                     <div className="h-16 w-16 sm:h-20 sm:w-20 rounded-xl border border-slate-100 bg-slate-50 flex-shrink-0 overflow-hidden shadow-inner">
                       <img
-                        src={
-                          item.image ||
-                          item.product?.images?.[0] ||
-                          "https://via.placeholder.com/150"
-                        }
+                        src={getImageUrl(item.image || item.product?.images?.[0])}
                         alt={item.name}
                         className="w-full h-full object-cover"
                       />
