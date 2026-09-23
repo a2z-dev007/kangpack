@@ -1,8 +1,7 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import { motion } from "framer-motion";
 import { 
   Instagram, 
   Twitter, 
@@ -10,266 +9,273 @@ import {
   Youtube, 
   Mail, 
   ArrowRight, 
-  Globe,
   MapPin,
-  Phone
+  ShieldCheck,
+  Truck,
+  RotateCcw,
+  Lock,
+  Check
 } from "lucide-react";
+import { toast } from "sonner";
 import { ASSETS } from "@/constants/assets";
 
 const socialLinks = [
-  { icon: Instagram, href: "#", label: "Instagram" },
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Facebook, href: "#", label: "Facebook" },
-  { icon: Youtube, href: "#", label: "Youtube" },
+  { icon: Instagram, href: "https://instagram.com", label: "Instagram" },
+  { icon: Twitter, href: "https://twitter.com", label: "Twitter" },
+  { icon: Facebook, href: "https://facebook.com", label: "Facebook" },
+  { icon: Youtube, href: "https://youtube.com", label: "Youtube" },
 ];
 
-const footerNav = {
-  company: [
-    { label: "About Us", href: "/about" },
-    { label: "Shop All", href: "/products" },
-    { label: "Contact", href: "/contact" },
-    { label: "Journal", href: "/blog" },
-  ],
-  legal: [
-    { label: "Terms & Conditions", href: "/terms-and-conditions" },
-    { label: "Privacy Policy", href: "/privacy-policy" },
-    { label: "Shipping Policy", href: "/shipping-policy" },
-    { label: "Warranty Policy", href: "/warranty-policy" },
-    { label: "Refund Cancellation", href: "/refund-cancellation" },
-  ],
-};
+const shopLinks = [
+  { label: "Smart Workstations", href: "/products" },
+  { label: "Mobile Desks", href: "/products" },
+  { label: "Ergonomic Gear", href: "/products" },
+  { label: "All Products", href: "/products" },
+];
 
-const footerBrandingContainer = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.08,
-    },
-  },
-};
+const companyLinks = [
+  { label: "About Us", href: "/about" },
+  { label: "Contact Us", href: "/contact" },
+  { label: "FAQs", href: "/faqs" },
+  { label: "Journal", href: "/blog" },
+];
 
-const footerBrandingChar = {
-  hidden: { 
-    opacity: 0, 
-    y: 80,
-  },
-  visible: {
-    opacity: 0.06,
-    y: 0,
-    transition: {
-      type: "spring",
-      damping: 15,
-      stiffness: 100,
-    },
-  },
-};
+const legalLinks = [
+  { label: "Shipping Policy", href: "/shipping-policy" },
+  { label: "Warranty Policy", href: "/warranty-policy" },
+  { label: "Refund & Cancellation", href: "/refund-cancellation" },
+  { label: "Terms & Conditions", href: "/terms-and-conditions" },
+  { label: "Privacy Policy", href: "/privacy-policy" },
+];
 
 export const Footer: React.FC = () => {
+  const [email, setEmail] = useState("");
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !email.includes("@")) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+    setSubscribed(true);
+    toast.success("Thank you for subscribing to Kangpack updates!");
+    setEmail("");
+  };
+
   return (
-    <footer className="relative bg-[#F9F7F4] pt-20 overflow-hidden border-t border-[#6B4A2D]/10">
-      {/* Decorative background elements */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-[#6B4A2D]/5 rounded-full blur-[120px] -translate-y-1/2 pointer-events-none" />
-      <div className="absolute top-1/2 right-0 w-[400px] h-[400px] bg-[#EAE5DC]/40 rounded-full blur-[100px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-6 md:px-16 relative z-10">
-        {/* Top Row: Newsletter Focus */}
-        <div className="flex flex-col lg:flex-row justify-between items-start gap-12 mb-20 md:mb-32">
-          <div className="max-w-xl">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-            >
-              <img
-                src={ASSETS.LOGO}
-                alt="Kangpack Logo"
-                className="h-8 md:h-10 mb-8"
-              />
-              <p className="text-[#6B4A2D]/80 text-[18px] md:text-[22px] leading-relaxed font-medium tracking-tight mb-8">
-                Redefining mobile productivity with thoughtful design and premium craftsmanship.
-              </p>
-              
-              <div className="flex flex-wrap gap-4 items-center">
-                <div className="flex -space-x-2">
-                   {[1,2,3,4].map((i) => (
-                     <div key={i} className="w-10 h-10 rounded-full border-2 border-[#F9F7F4] bg-[#EAE5DC] overflow-hidden shadow-sm">
-                       <img src={`https://i.pravatar.cc/100?img=${i+10}`} alt="User" />
-                     </div>
-                   ))}
-                </div>
-                <p className="text-[#8B7E6F] text-sm font-medium">
-                  Joined by <span className="text-[#6B4A2D] font-bold">2,500+</span> professionals worldwide
-                </p>
-              </div>
-            </motion.div>
-          </div>
-
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="w-full lg:max-w-md bg-white/40 backdrop-blur-md p-8 rounded-[30px] border border-white/60 shadow-sm"
-          >
-            <h5 className="text-[#6B4A2D] font-bold text-sm uppercase tracking-[0.2em] mb-4">
-              Stay Informed
-            </h5>
-            <p className="text-[#8B7E6F] text-sm mb-6 leading-relaxed">
-              Join our community for early access to new drops and exclusive editorial content.
-            </p>
-            <div className="relative group">
-              <input
-                type="email"
-                placeholder="Email Address"
-                className="w-full bg-white/60 focus:bg-white px-6 py-4 rounded-2xl outline-none text-[#6B4A2D] placeholder-[#A39B8B] transition-all border border-transparent focus:border-[#6B4A2D]/20 pr-14 shadow-inner"
-              />
-              <button className="absolute right-2 top-2 bottom-2 aspect-square bg-[#6B4A2D] text-white rounded-xl flex items-center justify-center hover:bg-[#5A3E26] transition-colors shadow-md active:scale-95">
-                <ArrowRight size={20} />
-              </button>
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-12 gap-y-16 gap-x-8 mb-24 md:mb-32">
-          {/* Navigation Columns */}
-          <div className="lg:col-span-3">
-            <h5 className="text-[#6B4A2D]/40 font-bold text-[11px] uppercase tracking-[0.3em] mb-10">
-              Discovery
-            </h5>
-            <ul className="space-y-5">
-              {footerNav.company.map((link) => (
-                <li key={link.label}>
-                  <Link 
-                    href={link.href}
-                    className="group flex items-center text-[#6B4A2D] text-[15px] font-semibold transition-all"
-                  >
-                    <span className="w-0 group-hover:w-4 h-[2px] bg-[#6B4A2D] mr-0 group-hover:mr-3 transition-all duration-300 opacity-0 group-hover:opacity-100" />
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="lg:col-span-3">
-            <h5 className="text-[#6B4A2D]/40 font-bold text-[11px] uppercase tracking-[0.3em] mb-10">
-              Legal Care
-            </h5>
-            <ul className="space-y-5">
-              {footerNav.legal.map((link) => (
-                <li key={link.label}>
-                  <Link 
-                    href={link.href}
-                    className="group flex items-center text-[#6B4A2D] text-[15px] font-semibold transition-all"
-                  >
-                    <span className="w-0 group-hover:w-4 h-[2px] bg-[#6B4A2D] mr-0 group-hover:mr-3 transition-all duration-300 opacity-0 group-hover:opacity-100" />
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          {/* Contact/Support Column */}
-          <div className="col-span-2 lg:col-span-4 lg:pl-12 border-l border-[#6B4A2D]/5">
-            <h5 className="text-[#6B4A2D]/40 font-bold text-[11px] uppercase tracking-[0.3em] mb-10">
-              Connect With Us
-            </h5>
-            <div className="space-y-8">
-              <div className="flex items-center gap-5 group">
-                <div className="w-12 h-12 rounded-2xl bg-white/80 backdrop-blur-sm flex items-center justify-center text-[#6B4A2D] shadow-sm group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500">
-                  <Mail size={20} />
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase font-bold text-[#8B7E6F] tracking-widest mb-1">Email Support</p>
-                  <a href="mailto:support@kangpack.in" className="text-[#6B4A2D] font-bold text-sm hover:underline">support@kangpack.in</a>
-                </div>
-              </div>
-              
-              <div className="flex items-center gap-5 group">
-                <div className="w-12 h-12 rounded-2xl bg-white/80 backdrop-blur-sm flex items-center justify-center text-[#6B4A2D] shadow-sm group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500">
-                  <MapPin size={20} />
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase font-bold text-[#8B7E6F] tracking-widest mb-1">HQ Location</p>
-                  <p className="text-[#6B4A2D] font-bold text-sm">New Delhi, India</p>
-                </div>
+    <footer className="relative bg-[#F9F7F4] text-[#6B4A2D] border-t border-[#6B4A2D]/10 overflow-hidden font-sans">
+      {/* 1. Value Props Strip (Compact E-commerce Trust Row) */}
+      <div className="border-b border-[#6B4A2D]/10 bg-white/40">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-center md:text-left">
+            <div className="flex items-center justify-center md:justify-start gap-2.5">
+              <Truck className="w-4 h-4 text-[#6B4A2D] shrink-0" />
+              <div>
+                <p className="text-xs font-bold leading-tight">Free Delivery</p>
+                <p className="text-[11px] text-[#8B7E6F] leading-tight hidden sm:block">On qualifying orders across India</p>
               </div>
             </div>
-          </div>
 
-          {/* Social Column */}
-          <div className="col-span-2 lg:col-span-2 flex flex-row lg:flex-col justify-between lg:justify-start gap-6 lg:items-end">
-            <h5 className="hidden lg:block text-[#6B4A2D]/40 font-bold text-[11px] uppercase tracking-[0.3em] mb-10">
-              Follow
-            </h5>
-            <div className="flex lg:flex-col gap-3">
-              {socialLinks.map((social) => (
-                <motion.a
-                  key={social.label}
-                  href={social.href}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-[#6B4A2D] shadow-sm border border-white hover:border-[#6B4A2D]/10 hover:shadow-md transition-all"
-                >
-                  <social.icon size={20} />
-                </motion.a>
-              ))}
+            <div className="flex items-center justify-center md:justify-start gap-2.5">
+              <ShieldCheck className="w-4 h-4 text-[#6B4A2D] shrink-0" />
+              <div>
+                <p className="text-xs font-bold leading-tight">1-Year Warranty</p>
+                <p className="text-[11px] text-[#8B7E6F] leading-tight hidden sm:block">Guaranteed premium craftsmanship</p>
+              </div>
             </div>
-          </div>
-        </div>
 
-        {/* Bottom Utility Row */}
-        <div className="flex flex-col-reverse md:flex-row justify-between items-center gap-12 py-12 border-t border-[#6B4A2D]/10">
-          <div className="flex flex-col md:flex-row items-center gap-6 md:gap-12">
-            <p className="text-[#A39B8B] text-[12px] font-bold tracking-[0.1em] uppercase">
-              © 2026 KANGPACK
-            </p>
-            <div className="flex items-center gap-3 bg-white/50 px-4 py-2 rounded-full border border-white shadow-sm">
-              <Globe size={14} className="text-[#6B4A2D]" />
-              <span className="text-[#6B4A2D] text-[11px] font-bold uppercase tracking-wider">English (Global)</span>
+            <div className="flex items-center justify-center md:justify-start gap-2.5">
+              <Lock className="w-4 h-4 text-[#6B4A2D] shrink-0" />
+              <div>
+                <p className="text-xs font-bold leading-tight">100% Secure Checkout</p>
+                <p className="text-[11px] text-[#8B7E6F] leading-tight hidden sm:block">Razorpay, UPI & Cards</p>
+              </div>
             </div>
-          </div>
 
-          <div className="flex items-center gap-3">
-            <div className="relative">
-              <span className="w-3 h-3 block rounded-full bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]"></span>
-              <span className="absolute inset-0 w-3 h-3 rounded-full bg-green-500 animate-ping"></span>
+            <div className="flex items-center justify-center md:justify-start gap-2.5">
+              <RotateCcw className="w-4 h-4 text-[#6B4A2D] shrink-0" />
+              <div>
+                <p className="text-xs font-bold leading-tight">Hassle-Free Support</p>
+                <p className="text-[11px] text-[#8B7E6F] leading-tight hidden sm:block">Dedicated assistance</p>
+              </div>
             </div>
-            <p className="text-[#6B4A2D] text-[12px] font-bold uppercase tracking-[0.2em] italic">
-              Systems Operational Worldwide
-            </p>
           </div>
         </div>
       </div>
 
-      {/* Massive Branding Background Text - Edge to Edge */}
-      <div className="relative w-full h-[18vw] mt-[-5vw] pointer-events-none select-none flex justify-center overflow-hidden">
-        <motion.h1 
-          variants={footerBrandingContainer}
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
-          className="w-full text-[20vw] sm:text-[22vw] lg:text-[17vw] font-black text-center leading-none tracking-tighter uppercase whitespace-nowrap translate-y-[4vw] flex justify-center"
-        >
-          {"KANGPACK".split("").map((char, index) => (
-            <motion.span
-              key={index}
-              variants={footerBrandingChar}
-              whileHover={{ 
-                scale: 1.15, 
-                opacity: 0.22,
-                y: -15,
-                transition: { duration: 0.2, type: "spring", stiffness: 300 }
-              }}
-              className="inline-block cursor-default select-none pointer-events-auto heading-gradient"
-            >
-              {char}
-            </motion.span>
-          ))}
-        </motion.h1>
+      {/* 2. Main Footer Navigation Grid (Clean, Balanced, Compact) */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-10">
+          
+          {/* Brand & Newsletter (5 Columns on Desktop) */}
+          <div className="md:col-span-4 lg:col-span-4 space-y-4">
+            <Link href="/" className="inline-block">
+              <img
+                src={ASSETS.LOGO}
+                alt="Kangpack Logo"
+                className="h-7 md:h-8 w-auto object-contain"
+              />
+            </Link>
+
+            <p className="text-xs md:text-sm text-[#8B7E6F] leading-relaxed max-w-sm">
+              Redefining mobile productivity with thoughtful design, ergonomic comfort, and premium craftsmanship.
+            </p>
+
+            {/* Compact Newsletter */}
+            <div className="pt-1 max-w-sm">
+              <p className="text-xs font-bold uppercase tracking-wider text-[#6B4A2D] mb-2">
+                Stay in the loop
+              </p>
+              {subscribed ? (
+                <div className="flex items-center gap-2 p-2.5 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-medium border border-emerald-200">
+                  <Check className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>You're subscribed for updates & exclusive drops!</span>
+                </div>
+              ) : (
+                <form onSubmit={handleSubscribe} className="flex items-center gap-1.5">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="Enter your email"
+                    className="flex-1 min-w-0 bg-white px-3.5 py-2.5 rounded-xl border border-[#6B4A2D]/15 text-xs text-[#6B4A2D] placeholder-[#A39B8B] focus:outline-none focus:border-[#6B4A2D]/40 transition-colors shadow-sm"
+                  />
+                  <button
+                    type="submit"
+                    className="h-[38px] px-3.5 bg-[#6B4A2D] hover:bg-[#5A3E26] text-white rounded-xl text-xs font-semibold flex items-center justify-center transition-colors shadow-sm shrink-0"
+                    aria-label="Subscribe"
+                  >
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </form>
+              )}
+            </div>
+
+            {/* Horizontal Social Icons */}
+            <div className="flex items-center gap-2 pt-2">
+              {socialLinks.map((social) => (
+                <a
+                  key={social.label}
+                  href={social.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={social.label}
+                  className="w-8 h-8 rounded-lg bg-white border border-[#6B4A2D]/10 flex items-center justify-center text-[#6B4A2D] hover:bg-[#6B4A2D] hover:text-white transition-all shadow-sm"
+                >
+                  <social.icon size={15} />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          {/* Shop Column (2 Columns) */}
+          <div className="md:col-span-2 lg:col-span-2">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#6B4A2D] mb-3">
+              Shop
+            </p>
+            <ul className="space-y-2 text-xs md:text-[13px]">
+              {shopLinks.map((link) => (
+                <li key={link.label}>
+                  <Link 
+                    href={link.href}
+                    className="text-[#8B7E6F] hover:text-[#6B4A2D] font-medium transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Company Column (2 Columns) */}
+          <div className="md:col-span-2 lg:col-span-2">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#6B4A2D] mb-3">
+              Company
+            </p>
+            <ul className="space-y-2 text-xs md:text-[13px]">
+              {companyLinks.map((link) => (
+                <li key={link.label}>
+                  <Link 
+                    href={link.href}
+                    className="text-[#8B7E6F] hover:text-[#6B4A2D] font-medium transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Customer Care / Legal Column (2 Columns) */}
+          <div className="md:col-span-2 lg:col-span-2">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#6B4A2D] mb-3">
+              Customer Care
+            </p>
+            <ul className="space-y-2 text-xs md:text-[13px]">
+              {legalLinks.map((link) => (
+                <li key={link.label}>
+                  <Link 
+                    href={link.href}
+                    className="text-[#8B7E6F] hover:text-[#6B4A2D] font-medium transition-colors"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Direct Contact Column (2 Columns) */}
+          <div className="md:col-span-2 lg:col-span-2 space-y-3">
+            <p className="text-xs font-bold uppercase tracking-wider text-[#6B4A2D] mb-3">
+              Connect
+            </p>
+            <div className="space-y-2.5 text-xs">
+              <div className="flex items-start gap-2">
+                <Mail className="w-3.5 h-3.5 text-[#6B4A2D] mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-[#A39B8B] tracking-wider leading-none mb-0.5">Email</p>
+                  <a href="mailto:support@kangpack.in" className="text-[#6B4A2D] hover:underline font-semibold text-xs break-all">
+                    support@kangpack.in
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2">
+                <MapPin className="w-3.5 h-3.5 text-[#6B4A2D] mt-0.5 shrink-0" />
+                <div>
+                  <p className="text-[10px] uppercase font-bold text-[#A39B8B] tracking-wider leading-none mb-0.5">Location</p>
+                  <p className="text-[#8B7E6F] font-medium text-xs">New Delhi, India</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      {/* 3. Compact Bottom Utility Bar */}
+      <div className="border-t border-[#6B4A2D]/10 bg-black/[0.02]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 text-center sm:text-left">
+            <p className="text-[11px] text-[#A39B8B] font-medium">
+              © {new Date().getFullYear()} Kangpack Workstations. All rights reserved.
+            </p>
+
+            <div className="flex items-center gap-3 text-[11px] text-[#8B7E6F]">
+              <span className="inline-flex items-center gap-1.5 font-medium">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
+                Secure Razorpay Checkout
+              </span>
+              <span>•</span>
+              <span className="font-medium">Made with pride in India 🇮🇳</span>
+            </div>
+          </div>
+        </div>
       </div>
     </footer>
   );
 };
+
+export default Footer;
