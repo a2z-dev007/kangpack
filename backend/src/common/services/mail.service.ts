@@ -8,44 +8,78 @@ import { toFullImageUrl } from '../utils';
 export class MailService {
 
   public static async sendEmail(to: string, subject: string, html: string): Promise<void> {
-    console.log(`[MailService] Attempting to send email to: ${to}`);
+    console.log(`[MailService] Attempting to send email to: ${to} (Subject: "${subject}")`);
 
-    if (!env.SMTP_PASS) {
-      console.warn(`\n=============================================================`);
-      console.warn(`⚠️  [MailService] EMAIL NOT SENT: SMTP_PASS is missing in backend/.env`);
-      console.warn(`📧  To: ${to}`);
-      console.warn(`📝  Subject: ${subject}`);
-      console.warn(`💡  To receive live emails in your inbox, set your SMTP password in backend/.env`);
-      console.warn(`=============================================================\n`);
-      return;
+    const defaultPass = 'K@ngPack#2025!';
+    const smtpPass = env.SMTP_PASS || defaultPass;
+
+    // Define transport attempts in priority order
+    const transports = [
+      // 1. Primary configured transport from environment
+      {
+        name: `Primary (${env.SMTP_HOST}:${env.SMTP_PORT})`,
+        host: env.SMTP_HOST || 'smtpout.secureserver.net',
+        port: env.SMTP_PORT || 587,
+        secure: env.SMTP_SECURE,
+        user: env.SMTP_USER || 'support@kangpack.in',
+        pass: smtpPass,
+      },
+      // 2. Fallback: GoDaddy port 587 (STARTTLS)
+      {
+        name: 'GoDaddy Backup (smtpout.secureserver.net:587)',
+        host: 'smtpout.secureserver.net',
+        port: 587,
+        secure: false,
+        user: 'support@kangpack.in',
+        pass: defaultPass,
+      },
+      // 3. Fallback: GoDaddy port 465 (Direct SSL)
+      {
+        name: 'GoDaddy SSL Backup (smtpout.secureserver.net:465)',
+        host: 'smtpout.secureserver.net',
+        port: 465,
+        secure: true,
+        user: 'support@kangpack.in',
+        pass: defaultPass,
+      },
+    ];
+
+    let lastError: any = null;
+
+    for (const t of transports) {
+      try {
+        console.log(`[MailService] Trying transport: ${t.name}`);
+        const transporter = nodemailer.createTransport({
+          host: t.host,
+          port: t.port,
+          secure: t.secure,
+          auth: {
+            user: t.user,
+            pass: t.pass,
+          },
+          tls: { rejectUnauthorized: false },
+          connectionTimeout: 15000,
+          greetingTimeout: 15000,
+        });
+
+        const info = await transporter.sendMail({
+          from: `"${env.FROM_NAME || 'Kangpack Support'}" <${env.FROM_EMAIL || 'support@kangpack.in'}>`,
+          to,
+          subject,
+          html,
+        });
+
+        console.log(`[MailService] SUCCESS! Email sent to ${to} via ${t.name}. ID: ${info.messageId}`);
+        return;
+      } catch (err: any) {
+        console.warn(`[MailService] Transport ${t.name} failed:`, err.message || err);
+        lastError = err;
+      }
     }
 
-    console.log(`[MailService] Transport: ${env.SMTP_HOST}:${env.SMTP_PORT} (secure: ${env.SMTP_SECURE}, user: ${env.SMTP_USER})`);
-
-    const transporter = nodemailer.createTransport({
-      host: env.SMTP_HOST,
-      port: env.SMTP_PORT,
-      secure: env.SMTP_SECURE,
-      auth: { 
-        user: env.SMTP_USER, 
-        pass: env.SMTP_PASS 
-      },
-      tls: { rejectUnauthorized: false },
-      connectionTimeout: 15000,
-      greetingTimeout: 15000,
-    });
-
-    try {
-      const info = await transporter.sendMail({
-        from: `"${env.FROM_NAME}" <${env.FROM_EMAIL}>`,
-        to,
-        subject,
-        html,
-      });
-      console.log(`[MailService] SUCCESS! Email sent to ${to}. ID: ${info.messageId}`);
-    } catch (error: any) {
-      console.error('[MailService] FAILED to send email to:', to);
-      console.error('[MailService] Error Details:', error.message || error);
+    console.error(`[MailService] ALL email transports failed for recipient: ${to}`);
+    if (lastError) {
+      console.error('[MailService] Final error:', lastError.message || lastError);
     }
   }
 
@@ -58,11 +92,15 @@ export class MailService {
         </div>
         <div style="padding: 40px; background-color: #F9F7F4;">
           <p>Hi,</p>
-          <p>Click the button below to reset your Kangpack password. This link is valid for 10 minutes.</p>
+          <p>We received a request to reset your Kangpack password. Click the button below to set a new password. This link is valid for <strong>60 minutes</strong>.</p>
           <div style="text-align: center; margin: 30px 0;">
             <a href="${resetUrl}" style="background-color: #6B4A2D; color: white; padding: 14px 28px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Reset Password</a>
           </div>
-          <p style="font-size: 14px; color: #888;">If you didn't request this, please ignore this email.</p>
+          <p style="font-size: 13px; color: #666; word-break: break-all; margin-top: 25px;">
+            Or copy and paste this link into your browser:<br/>
+            <a href="${resetUrl}" style="color: #6B4A2D; text-decoration: underline;">${resetUrl}</a>
+          </p>
+          <p style="font-size: 14px; color: #888; margin-top: 25px;">If you didn't request a password reset, you can safely ignore this email. Your account remains completely secure.</p>
         </div>
       </div>
     `;

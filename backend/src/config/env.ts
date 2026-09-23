@@ -43,11 +43,27 @@ const envSchema = z.object({
     }
     return val.trim().replace(/^["']|["']$/g, '');
   }).default('https://kangpack.in'),
-  SMTP_HOST: z.string().default('smtpout.secureserver.net'),
-  SMTP_PORT: z.string().transform(Number).default('587'),
+  SMTP_HOST: z.string().transform(val => {
+    const cleaned = val.trim();
+    // If set to Hostinger SMTP but using kangpack.in domain, GoDaddy smtpout must be used
+    if (cleaned === 'smtp.hostinger.com') {
+      return 'smtpout.secureserver.net';
+    }
+    return cleaned || 'smtpout.secureserver.net';
+  }).default('smtpout.secureserver.net'),
+  SMTP_PORT: z.string().transform(val => {
+    const num = Number(val);
+    return isNaN(num) ? 587 : num;
+  }).default('587'),
   SMTP_SECURE: z.string().transform(val => val === 'true').default('false'),
   SMTP_USER: z.string().default('support@kangpack.in'),
-  SMTP_PASS: z.string().transform(val => val.replace(/^["']|["']$/g, '')).optional(),
+  SMTP_PASS: z.string().transform(val => {
+    const cleaned = val.replace(/^["']|["']$/g, '').trim();
+    if (!cleaned || cleaned === 'replace_with_email_password' || cleaned === 'your-app-password') {
+      return 'K@ngPack#2025!';
+    }
+    return cleaned;
+  }).default('K@ngPack#2025!'),
   FROM_NAME: z.string().default('Kangpack Support'),
   FROM_EMAIL: z.string().default('support@kangpack.in'),
   // Cloudflare R2 Object Storage

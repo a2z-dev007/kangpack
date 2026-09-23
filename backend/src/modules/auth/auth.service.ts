@@ -239,13 +239,16 @@ export class AuthService {
     await user.save();
   }
 
-  public static async forgotPassword(email: string): Promise<string> {
-    const user = await User.findOne({ email });
+  public static async forgotPassword(email: string, clientOrigin?: string): Promise<string> {
+    const normalizedEmail = (email || '').toLowerCase().trim();
+    console.log(`[AuthService] Processing forgot password for: "${normalizedEmail}"`);
+    const user = await User.findOne({ email: normalizedEmail });
     
     // Always return the same message to prevent email enumeration
     const message = 'If an account with that email exists, a password reset link has been sent.';
 
     if (!user) {
+      console.warn(`[AuthService] Password reset requested for non-existent email: "${normalizedEmail}"`);
       return message;
     }
 
@@ -254,22 +257,26 @@ export class AuthService {
     const hashedResetToken = crypto.createHash('sha256').update(resetToken).digest('hex');
 
     user.passwordResetToken = hashedResetToken;
-    user.passwordResetExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+    user.passwordResetExpires = new Date(Date.now() + 60 * 60 * 1000); // 60 minutes
     
     await user.save();
 
-    const resetUrl = `${env.FRONTEND_URL}/auth/reset-password?token=${resetToken}`;
+    // Use client origin (e.g. http://localhost:3000, http://localhost:3001, https://kangpack.in) or fallback to env.FRONTEND_URL
+    const baseUrl = (clientOrigin || env.FRONTEND_URL || 'https://kangpack.in').replace(/\/+$/, '');
+    const resetUrl = `${baseUrl}/auth/reset-password?token=${resetToken}`;
     
+    console.log(`[AuthService] Sending password reset email to: ${user.email} (Link: ${resetUrl})`);
+
     // Send reset email
-    // The sendResetPasswordEmail method handles errors internally (logging them) so we don't crash here.
-    await MailService.sendResetPasswordEmail(email, resetUrl);
+    await MailService.sendResetPasswordEmail(user.email, resetUrl);
 
     return message;
   }
 
   public static async resetPassword(token: string, newPassword: string): Promise<void> {
+    const cleanToken = (token || '').trim();
     // Hash the token to compare with stored hash
-    const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+    const hashedToken = crypto.createHash('sha256').update(cleanToken).digest('hex');
 
     const user = await User.findOne({
       passwordResetToken: hashedToken,
@@ -277,7 +284,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new AppError('Invalid or expired reset token', HTTP_STATUS.BAD_REQUEST);
+      throw new AppError('Invalid or expired reset token. Please request a new password reset link.', HTTP_STATUS.BAD_REQUEST);
     }
 
     // Hash new password

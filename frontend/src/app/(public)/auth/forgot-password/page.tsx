@@ -17,19 +17,27 @@ export default function ForgotPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!email) {
+    const cleanEmail = email.trim().toLowerCase();
+
+    if (!cleanEmail) {
       toast.error("Please enter your email address");
+      return;
+    }
+
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) {
+      toast.error("Please enter a valid email address");
       return;
     }
 
     setLoading(true);
 
     try {
-      await api.post("/auth/forgot-password", { email });
+      await api.post("/auth/forgot-password", { email: cleanEmail });
       setSubmitted(true);
-      toast.success("Reset link sent to your email");
+      toast.success("Password reset instructions sent to your email!");
     } catch (error: any) {
       const message =
+        error.response?.data?.errors?.[0]?.message ||
         error.response?.data?.message ||
         "Something went wrong. Please try again.";
       toast.error(message);
@@ -127,9 +135,12 @@ export default function ForgotPasswordPage() {
                   <h3 className="text-xl font-bold text-[#6B4A2D] mb-2">
                     Check your inbox
                   </h3>
-                  <p className="text-[#8B7E6F] mb-6">
+                  <p className="text-[#8B7E6F] mb-4 text-sm leading-relaxed">
                     If an account exists for <strong>{email}</strong>, we've
-                    sent instructions to reset your password.
+                    sent a link to reset your password.
+                  </p>
+                  <p className="text-xs text-[#8B7E6F]/80 mb-6 bg-[#6B4A2D]/5 p-3 rounded-lg">
+                    💡 If you don't see it in a few minutes, please check your <strong>Spam / Junk</strong> folder.
                   </p>
                   <button
                     onClick={() => setSubmitted(false)}

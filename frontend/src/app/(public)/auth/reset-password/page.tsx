@@ -35,6 +35,12 @@ function ResetPasswordContent() {
       return;
     }
 
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9])/;
+    if (!passwordRegex.test(password)) {
+      toast.error("Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 number, and 1 special symbol.");
+      return;
+    }
+
     if (password !== confirmPassword) {
       toast.error("Passwords do not match.");
       return;
@@ -43,17 +49,18 @@ function ResetPasswordContent() {
     setLoading(true);
 
     try {
-      await api.post("/auth/reset-password", { token, password });
-      toast.success("Password reset successfully!");
+      await api.post("/auth/reset-password", { token: token.trim(), password });
+      toast.success("Password reset successfully! Redirecting to login...");
 
       // Redirect to login after short delay
       setTimeout(() => {
         router.push("/auth/login");
-      }, 2000);
+      }, 1500);
     } catch (error: any) {
       const message =
+        error.response?.data?.errors?.[0]?.message ||
         error.response?.data?.message ||
-        "Failed to reset password. Link might be expired.";
+        "Failed to reset password. The link might be expired or invalid.";
       toast.error(message);
     } finally {
       setLoading(false);
@@ -114,6 +121,9 @@ function ResetPasswordContent() {
               )}
             </button>
           </div>
+          <p className="text-[11px] text-[#8B7E6F]/80 pl-1">
+            Min. 8 characters with uppercase, lowercase, number & special symbol.
+          </p>
         </div>
 
         <div className="space-y-2">
