@@ -21,12 +21,24 @@ fi
 
 echo "📂 Current Directory: $(pwd)"
 
+# Ensure log and upload directories exist immediately
+mkdir -p logs /var/www/kangpack/logs backend/logs backend/uploads
+
 # 1. Pull latest code from main
 echo "📥 [1/5] Pulling latest code from origin/main..."
 git fetch origin main
 git reset --hard origin/main
-# Preserve production env files and uploads
-git clean -fd -e backend/.env.production -e frontend/.env.production -e backend/uploads/
+
+# Preserve production env files, logs, and uploads
+git clean -fd \
+    -e backend/.env.production \
+    -e frontend/.env.production \
+    -e backend/uploads/ \
+    -e backend/logs/ \
+    -e logs/
+
+# Re-ensure logs and uploads directories exist after git clean
+mkdir -p logs /var/www/kangpack/logs backend/logs backend/uploads
 
 # 2. Build Backend
 echo "📦 [2/5] Building Backend..."
@@ -57,12 +69,29 @@ cd ..
 
 # 5. Reload PM2
 echo "♻️ [5/5] Reloading PM2 services with updated environment..."
-pm2 reload ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+mkdir -p logs /var/www/kangpack/logs backend/logs backend/uploads
+
+# Reload with fail-safe restart so processes never remain stopped
+if pm2 describe kangpack-backend >/dev/null 2>&1; then
+    pm2 reload ecosystem.config.js --update-env || pm2 restart ecosystem.config.js --update-env || pm2 start ecosystem.config.js
+else
+    pm2 start ecosystem.config.js
+fi
 pm2 save
 
 echo ""
 echo "🏥 Running health checks..."
 sleep 3
+pm2 status
+
+# Verify processes are running and recover if any are stopped
+if pm2 list | grep -q "stopped\|errored"; then
+    echo "⚠️ Warning: Detected stopped or errored process, recovering with pm2 restart all..."
+    pm2 restart all
+    sleep 3
+    pm2 status
+fi
+
 curl -s -I http://127.0.0.1:8000/api/v1/health | head -n 1 || true
 curl -s -I http://127.0.0.1:3000 | head -n 1 || true
 
