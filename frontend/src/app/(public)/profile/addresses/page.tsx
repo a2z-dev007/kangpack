@@ -9,7 +9,7 @@ import { AddressDialog } from "@/components/profile/AddressDialog";
 import { Address } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ConfirmModal } from "@/components/ui/confirm-modal";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 export default function AddressesPage() {
   const { user, loading, fetchProfile, addAddress, updateAddress, deleteAddress } = useProfile();

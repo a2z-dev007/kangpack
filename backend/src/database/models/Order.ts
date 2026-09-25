@@ -51,6 +51,7 @@ export interface IOrder extends Document {
   billingAddress?: IShippingAddress;
   shippingMethod?: string;
   trackingNumber?: string;
+  carrier?: string;
   notes?: string;
   couponCode?: string;
   refundAmount?: number;
@@ -228,6 +229,10 @@ const orderSchema = new Schema<IOrder>({
   billingAddress: shippingAddressSchema,
   shippingMethod: String,
   trackingNumber: String,
+  carrier: {
+    type: String,
+    trim: true,
+  },
   notes: String,
   couponCode: String,
   refundAmount: {

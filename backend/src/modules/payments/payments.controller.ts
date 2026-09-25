@@ -3,6 +3,7 @@ import { PaymentsService } from './payments.service';
 import { ResponseUtils } from '../../common/utils';
 import { HTTP_STATUS, MESSAGES } from '../../common/constants';
 import { asyncHandler } from '../../common/middlewares/error.middleware';
+import { RazorpayService } from '../../common/services/razorpay.service';
 
 export class PaymentsController {
   public static getPayments = asyncHandler(async (req: Request, res: Response) => {
@@ -91,5 +92,25 @@ export class PaymentsController {
     res.status(HTTP_STATUS.OK).json(
       ResponseUtils.success('Payment statistics fetched successfully', stats)
     );
+  });
+
+  public static handleWebhook = asyncHandler(async (req: Request, res: Response) => {
+    const signature = req.headers['x-razorpay-signature'] as string;
+    const rawBody = (req as any).rawBody || JSON.stringify(req.body);
+
+    if (signature) {
+      const isValid = RazorpayService.verifyWebhookSignature(rawBody, signature);
+      if (!isValid) {
+        res.status(HTTP_STATUS.BAD_REQUEST).json({ success: false, message: 'Invalid webhook signature' });
+        return;
+      }
+    }
+
+    const { event, payload } = req.body;
+    if (event && payload) {
+      await PaymentsService.handleWebhookEvent(event, payload);
+    }
+
+    res.status(HTTP_STATUS.OK).json({ status: 'ok' });
   });
 }

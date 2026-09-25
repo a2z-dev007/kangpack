@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { settingsApi } from './api';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { Settings } from '@/types';
 
 export const usePublicSettings = () => {

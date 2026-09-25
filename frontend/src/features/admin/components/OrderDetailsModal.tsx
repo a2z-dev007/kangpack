@@ -26,6 +26,29 @@ import {
 import { SideDrawer } from "@/components/ui/SideDrawer";
 import { CopyToClipboard } from "@/components/ui/CopyToClipboard";
 import { cn } from "@/lib/utils";
+import api from "@/lib/api";
+import { toast } from "sonner";
+
+function getTrackingUrl(carrier?: string, trackingNumber?: string): string | null {
+  if (!trackingNumber) return null;
+  const c = (carrier || "").toLowerCase().trim();
+  if (c.includes("bluedart") || c.includes("blue dart")) {
+    return `https://www.bluedart.com/tracking?numbers=${encodeURIComponent(trackingNumber)}`;
+  }
+  if (c.includes("delhivery")) {
+    return `https://www.delhivery.com/track/package/${encodeURIComponent(trackingNumber)}`;
+  }
+  if (c.includes("dtdc")) {
+    return `https://www.dtdc.in/tracking/shipment-tracking.asp?awb=${encodeURIComponent(trackingNumber)}`;
+  }
+  if (c.includes("post") || c.includes("indiapost") || c.includes("speed post")) {
+    return `https://www.indiapost.gov.in/_layouts/15/dptc/trackconsignment.aspx`;
+  }
+  if (c.includes("shiprocket")) {
+    return `https://shiprocket.co/tracking/${encodeURIComponent(trackingNumber)}`;
+  }
+  return `https://www.google.com/search?q=${encodeURIComponent(`${carrier || "courier"} tracking ${trackingNumber}`)}`;
+}
 
 interface OrderDetailsModalProps {
   isOpen: boolean;
@@ -43,11 +66,14 @@ export function OrderDetailsModal({
   const [trackingNumber, setTrackingNumber] = useState("");
   const [carrier, setCarrier] = useState("");
   const [isTimelineOpen, setIsTimelineOpen] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   useEffect(() => {
     if (order && isOpen) {
       setTrackingNumber(order.trackingNumber || "");
       setCarrier(order.carrier || "");
+      setShowCancelConfirm(false);
     }
   }, [order, isOpen]);
 
@@ -58,6 +84,21 @@ export function OrderDetailsModal({
   const handleUpdateTracking = () => {
     if (!trackingNumber) return;
     addTracking({ id: order.id || order._id, trackingNumber, carrier });
+  };
+
+  const handleCancelOrder = async () => {
+    try {
+      setIsCancelling(true);
+      await api.post(`/orders/${order.id || order._id}/cancel`);
+      toast.success("Order cancelled successfully");
+      setShowCancelConfirm(false);
+      onClose();
+      window.location.reload();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to cancel order");
+    } finally {
+      setIsCancelling(false);
+    }
   };
 
   if (!order) return null;
@@ -430,17 +471,17 @@ export function OrderDetailsModal({
           )}
 
           {!isAdmin && order.trackingNumber && (
-            <div className="bg-indigo-50/50 border border-indigo-100 rounded-[2rem] p-8 space-y-4 shadow-sm">
+            <div className="bg-indigo-50/50 border border-indigo-100 rounded-[2rem] p-6 sm:p-8 space-y-4 shadow-sm">
               <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-indigo-800 flex items-center gap-2">
                 <Truck className="h-4 w-4" /> Logistics Real-time Data
               </h3>
-              <div className="grid grid-cols-2 gap-8 pt-2">
+              <div className="grid grid-cols-2 gap-6 pt-2">
                 <div>
                   <p className="text-[9px] font-black uppercase text-indigo-400 tracking-widest mb-1.5">
                     Carrier info
                   </p>
-                  <p className="font-black text-indigo-900 text-lg">
-                    {order.carrier || "Standard Shipping"}
+                  <p className="font-black text-indigo-900 text-base sm:text-lg">
+                    {order.carrier || "Standard Courier"}
                   </p>
                 </div>
                 <div className="text-right">
@@ -448,7 +489,7 @@ export function OrderDetailsModal({
                     Reference #
                   </p>
                   <div className="flex items-center justify-end gap-2">
-                    <p className="font-mono font-black text-indigo-900 text-lg bg-white/50 px-3 py-1 rounded-xl">
+                    <p className="font-mono font-black text-indigo-900 text-sm sm:text-base bg-white/70 px-3 py-1 rounded-xl">
                       {order.trackingNumber}
                     </p>
                     <CopyToClipboard
@@ -458,6 +499,64 @@ export function OrderDetailsModal({
                   </div>
                 </div>
               </div>
+              {getTrackingUrl(order.carrier, order.trackingNumber) && (
+                <div className="pt-2">
+                  <a
+                    href={getTrackingUrl(order.carrier, order.trackingNumber)!}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 w-full py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold transition-all shadow-sm shadow-indigo-600/20"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" /> Track on Courier Website
+                  </a>
+                </div>
+              )}
+            </div>
+          )}
+
+          {!isAdmin && (order.status === "pending" || order.status === "confirmed") && (
+            <div className="bg-rose-50/60 border border-rose-200 rounded-2xl p-5 space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h4 className="text-xs font-black text-rose-900 uppercase tracking-wider">Cancel Order</h4>
+                  <p className="text-[11px] text-rose-700 mt-0.5">Need to cancel? You can cancel your order before it gets dispatched.</p>
+                </div>
+                {!showCancelConfirm ? (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowCancelConfirm(true)}
+                    className="border-rose-300 text-rose-700 hover:bg-rose-100 rounded-xl text-xs font-bold shrink-0 self-start sm:self-auto"
+                  >
+                    Cancel Order
+                  </Button>
+                ) : null}
+              </div>
+              {showCancelConfirm && (
+                <div className="bg-white p-4 rounded-xl border border-rose-200 space-y-3">
+                  <p className="text-xs text-rose-800 font-medium">Are you sure you want to cancel this order? This action cannot be undone.</p>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      size="sm"
+                      onClick={handleCancelOrder}
+                      disabled={isCancelling}
+                      className="bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl"
+                    >
+                      {isCancelling ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : null}
+                      Yes, Cancel Order
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowCancelConfirm(false)}
+                      disabled={isCancelling}
+                      className="text-slate-600 text-xs rounded-xl"
+                    >
+                      Keep Order
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>

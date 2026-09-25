@@ -2,7 +2,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { usersApi } from './api';
 import { useAuth } from '@/hooks/use-auth';
 import { QUERY_KEYS } from '@/lib/constants';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { User } from '@/types';
 
 export function useUpdateProfile() {

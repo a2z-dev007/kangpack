@@ -21,6 +21,9 @@ dist/
 build/
 .DS_Store
 
+.agent
+.agents
+
 # Logs
 logs
 *.log
@@ -85,6 +88,8 @@ public
 # Temporary folders
 tmp/
 temp/
+graphify-out/
+.graphify*
 
 # Editor directories and files
 .vscode/

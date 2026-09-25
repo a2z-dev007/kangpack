@@ -81,14 +81,23 @@ export class RazorpayService {
     razorpayOrderId: string,
     razorpayPaymentId: string,
     signature: string
-  ) {
-    if (!signature || signature === 'signature_ok' || razorpayOrderId?.startsWith('order_mock_')) {
+  ): boolean {
+    const isDev = env.NODE_ENV === 'development';
+
+    if (isDev && (!signature || signature === 'signature_ok' || razorpayOrderId?.startsWith('order_mock_'))) {
+      console.warn('[RazorpayService] Development mock signature bypass active');
       return true;
+    }
+
+    if (!signature || signature === 'signature_ok') {
+      return false;
     }
 
     const key_secret = this.getKeySecret();
     if (!key_secret) {
-      return true;
+      if (isDev) return true;
+      console.error('[RazorpayService] Cannot verify signature: RAZORPAY_KEY_SECRET is missing');
+      return false;
     }
 
     try {
@@ -101,6 +110,41 @@ export class RazorpayService {
       return expectedSignature === signature;
     } catch (e) {
       console.error('[RazorpayService] Signature verification error:', e);
+      return false;
+    }
+  }
+
+  public static async refundPayment(paymentId: string, amount: number, notes?: any) {
+    const key_id = this.getKeyId();
+    const key_secret = this.getKeySecret();
+    if (!key_id || !key_secret) {
+      if (env.NODE_ENV !== 'production') {
+        console.warn('[RazorpayService] Missing keys in dev; simulating refund');
+        return { id: `rfnd_mock_${Date.now()}`, amount: Math.round(amount * 100), status: 'processed' } as any;
+      }
+      throw new Error('Razorpay keys not configured');
+    }
+    const razorpay = this.getInstance();
+    return razorpay.payments.refund(paymentId, {
+      amount: Math.round(amount * 100),
+      notes,
+    });
+  }
+
+  public static verifyWebhookSignature(payload: string, signature: string, secret?: string): boolean {
+    const webhookSecret = secret || process.env.RAZORPAY_WEBHOOK_SECRET || this.getKeySecret();
+    if (!webhookSecret) {
+      if (env.NODE_ENV !== 'production') return true;
+      return false;
+    }
+    try {
+      const expectedSignature = crypto
+        .createHmac('sha256', webhookSecret)
+        .update(payload)
+        .digest('hex');
+      return expectedSignature === signature;
+    } catch (e) {
+      console.error('[RazorpayService] Webhook signature verification error:', e);
       return false;
     }
   }

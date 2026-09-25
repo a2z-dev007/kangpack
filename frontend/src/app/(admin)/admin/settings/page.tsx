@@ -90,7 +90,8 @@ export default function AdminSettings() {
     e.preventDefault();
     const payload = {
       ...formData,
-      currency: 'INR',
+      currency: formData.currency || 'INR',
+      currencySymbol: (formData.currency === 'INR' || !formData.currency) ? '₹' : '₹',
       taxRate: Math.max(0, Math.min(100, parseFloat(formData.taxRate) || 0)),
       shippingFee: Math.max(0, parseFloat(formData.shippingFee) || 0),
       freeShippingThreshold: Math.max(0, parseFloat(formData.freeShippingThreshold) || 0),

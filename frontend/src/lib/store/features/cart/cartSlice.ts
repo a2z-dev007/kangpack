@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { CartItem, Product } from '@/types';
 import api from '@/lib/api';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 interface CartState {
     items: CartItem[];

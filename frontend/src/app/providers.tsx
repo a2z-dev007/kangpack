@@ -2,7 +2,7 @@
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
-import { Toaster } from "sonner";
+import { Toaster } from "@/components/ui/toaster";
 import { useState } from "react";
 import StoreProvider from "@/providers/StoreProvider";
 
@@ -28,19 +28,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
           <Toaster
             position="top-center"
             richColors
-            expand={false}
             closeButton
-            toastOptions={{
-              className: "font-sans",
-              classNames: {
-                toast: "rounded-[24px] border-none shadow-2xl px-6 py-4",
-                title: "font-bold text-[14px]",
-                description: "text-[12px] opacity-90",
-                success: "bg-white !text-emerald-600 border border-emerald-50",
-                error: "bg-white !text-red-500 border border-red-50",
-                info: "bg-[#FFFBF6] !text-[#6B4A2D] border border-[#6B4A2D]/10",
-              },
-            }}
+            preset="bouncy"
+            bounce={0.5}
+            duration={3500}
           />
         </ThemeProvider>
       </QueryClientProvider>

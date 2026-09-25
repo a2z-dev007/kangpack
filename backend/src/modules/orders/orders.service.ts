@@ -1,8 +1,8 @@
-import { Order, IOrder, Cart, Product, User } from '../../database';
+import { Order, IOrder, Cart, Product, User, Coupon } from '../../database';
 import { AppError } from '../../common/middlewares/error.middleware';
 import { HTTP_STATUS, MESSAGES } from '../../common/constants';
 import { PaginationUtils, PasswordUtils, toFullImageUrl } from '../../common/utils';
-import { PaginationQuery, FilterQuery, OrderStatus, PaymentStatus, PaymentMethod } from '../../common/types';
+import { PaginationQuery, FilterQuery, OrderStatus, PaymentStatus, PaymentMethod, CouponType } from '../../common/types';
 import { MailService } from '../../common/services/mail.service';
 import { RazorpayService } from '../../common/services/razorpay.service';
 import { env } from '../../config/env';
@@ -197,44 +197,71 @@ export class OrdersService {
       }
     }
 
-    const discountAmount = 0; // TODO: Apply coupon
-    const totalAmount = Number((subtotal + taxAmount + shippingAmount - discountAmount).toFixed(2));
+    // Validate and apply coupon if provided
+    let discountAmount = 0;
+    let appliedCoupon: any = null;
+    if (data.couponCode) {
+      const coupon = await Coupon.findOne({ code: data.couponCode.toUpperCase().trim() });
+      if (coupon && coupon.isActive) {
+        const now = new Date();
+        const isNotExpired = !coupon.expiresAt || now <= coupon.expiresAt;
+        const isStarted = !coupon.startsAt || now >= coupon.startsAt;
+        const withinUsageLimit = !coupon.usageLimit || coupon.usageCount < coupon.usageLimit;
+        const meetsMinOrder = !coupon.minimumOrderValue || subtotal >= coupon.minimumOrderValue;
 
-    // Create account if requested
+        if (isNotExpired && isStarted && withinUsageLimit && meetsMinOrder) {
+          if (coupon.type === CouponType.PERCENTAGE) {
+            discountAmount = (subtotal * coupon.value) / 100;
+            if (coupon.maximumDiscountAmount && discountAmount > coupon.maximumDiscountAmount) {
+              discountAmount = coupon.maximumDiscountAmount;
+            }
+          } else {
+            discountAmount = Math.min(coupon.value, subtotal);
+          }
+          discountAmount = Number(discountAmount.toFixed(2));
+          appliedCoupon = coupon;
+        }
+      }
+    }
+
+    const totalAmount = Number(Math.max(0, subtotal + taxAmount + shippingAmount - discountAmount).toFixed(2));
+
+    // Handle User Account Creation & Linking
     let finalUserId = userId;
-    if (!userId && data.createAccount && data.password) {
-      const existingUser = await User.findOne({ email: data.email });
+    if (!userId) {
+      const normalizedEmail = data.email.toLowerCase().trim();
+      const existingUser = await User.findOne({ email: normalizedEmail });
       if (existingUser) {
-        // Silently link if it matches, or handle conflict. 
-        // Requirements say "no duplicate form", implying we should use existing if possible, 
-        // but typically security-wise we shouldn't just link without password.
-        // For now, let's just abort account creation if email exists or tell user to login.
-        // Actually, the prompt says "If a guest later creates an account with the same email: Orders should be attachable"
-        // Let's just create the account if it doesn't exist.
+        // Automatically link order to existing account
+        finalUserId = existingUser._id.toString();
       } else {
-        // Hash password before saving
-        const hashedPassword = await PasswordUtils.hash(data.password);
+        // Auto-provision user account with a strong password if not explicitly supplied
+        const plainPassword = data.password && data.password.trim().length >= 6
+          ? data.password.trim()
+          : PasswordUtils.generateStrongPassword(14);
 
-        const newUser = new User({
-          email: data.email,
-          password: hashedPassword,
-          firstName: data.shippingAddress.firstName,
-          lastName: data.shippingAddress.lastName,
-          role: 'user',
-        });
-        
-        // Generate verification token for the new account
+        const hashedPassword = await PasswordUtils.hash(plainPassword);
         const verificationToken = crypto.randomBytes(32).toString('hex');
         const hashedVerificationToken = crypto.createHash('sha256').update(verificationToken).digest('hex');
-        newUser.emailVerificationToken = hashedVerificationToken;
-        newUser.isEmailVerified = false;
+
+        const newUser = new User({
+          email: normalizedEmail,
+          password: hashedPassword,
+          firstName: data.shippingAddress.firstName,
+          lastName: data.shippingAddress.lastName || '',
+          phone: data.phone || data.shippingAddress.phone,
+          role: 'user',
+          isEmailVerified: false,
+          emailVerificationToken: hashedVerificationToken,
+        });
 
         await newUser.save();
         finalUserId = newUser._id.toString();
 
-        // Send welcome email with credentials and verification link
+        // Send welcome email with login credentials and account verification link
         const verificationUrl = `${env.FRONTEND_URL}/auth/verify-email?token=${verificationToken}`;
-        MailService.sendAccountCreatedEmail(data.email, data.password!, verificationUrl).catch(err => console.error('Failed to send welcome email:', err));
+        MailService.sendAccountCreatedEmail(normalizedEmail, plainPassword, verificationUrl)
+          .catch((err) => console.error('[OrdersService] Failed to send account creation email:', err));
       }
     }
 
@@ -266,10 +293,15 @@ export class OrdersService {
       paymentMethod: data.paymentMethod,
       status: data.paymentMethod === PaymentMethod.COD ? OrderStatus.CONFIRMED : OrderStatus.PENDING,
       notes: data.notes,
-      couponCode: data.couponCode,
+      couponCode: appliedCoupon ? appliedCoupon.code : data.couponCode,
     });
 
     await order.save();
+
+    // Increment coupon usage count if applied
+    if (appliedCoupon) {
+      await Coupon.findByIdAndUpdate(appliedCoupon._id, { $inc: { usageCount: 1 } });
+    }
 
     // Clear cart if not Razorpay (Razorpay cart clear happens after payment verification)
     // Actually, usually we clear it now or on verification. 
@@ -454,7 +486,8 @@ export class OrdersService {
   public static async addTrackingNumber(
     orderId: string,
     trackingNumber: string,
-    shippingMethod?: string
+    shippingMethod?: string,
+    carrier?: string
   ): Promise<IOrder> {
     const order = await Order.findById(orderId);
     
@@ -466,6 +499,9 @@ export class OrdersService {
     if (shippingMethod) {
       order.shippingMethod = shippingMethod;
     }
+    if (carrier) {
+      order.carrier = carrier;
+    }
 
     // Auto-update status to shipped if not already
     if (order.status !== OrderStatus.SHIPPED && order.status !== OrderStatus.DELIVERED) {
@@ -474,6 +510,11 @@ export class OrdersService {
     }
 
     await order.save();
+
+    // Send order status update email
+    MailService.sendOrderStatusUpdateEmail(order, OrderStatus.SHIPPED)
+      .catch((err) => console.error('[OrdersService] Failed to send shipped update email:', err));
+
     return order;
   }
 
@@ -484,7 +525,7 @@ export class OrdersService {
     }
 
     const order = await Order.findOne(query).select(
-      'orderNumber status trackingNumber shippingMethod shippingAddress createdAt shippedAt deliveredAt'
+      'orderNumber status trackingNumber carrier shippingMethod shippingAddress createdAt shippedAt deliveredAt'
     );
     
     if (!order) {
@@ -495,6 +536,7 @@ export class OrdersService {
       orderNumber: order.orderNumber,
       status: order.status,
       trackingNumber: order.trackingNumber,
+      carrier: order.carrier,
       shippingMethod: order.shippingMethod,
       shippingAddress: order.shippingAddress,
       timeline: {
@@ -502,6 +544,67 @@ export class OrdersService {
         shipped: order.shippedAt,
         delivered: order.deliveredAt,
       },
+    };
+  }
+
+  public static async getOrderInvoice(orderId: string, userId?: string) {
+    const order = await this.getOrderById(orderId, userId);
+    const settings = await SettingsService.getSettings();
+
+    const taxRate = settings?.tax?.rate ?? 18;
+    const taxBreakdown = {
+      cgst: order.taxAmount > 0 ? Number((order.taxAmount / 2).toFixed(2)) : 0,
+      sgst: order.taxAmount > 0 ? Number((order.taxAmount / 2).toFixed(2)) : 0,
+      igst: 0,
+      totalTax: order.taxAmount,
+      taxRate,
+    };
+
+    return {
+      invoiceNumber: `INV-${order.orderNumber}`,
+      orderNumber: order.orderNumber,
+      orderDate: order.createdAt,
+      seller: {
+        companyName: 'Kangpack Packaging Solutions Pvt. Ltd.',
+        gstin: '27AABCK1234F1Z5',
+        pan: 'AABCK1234F',
+        address: '12 Industrial Area, Phase II',
+        city: 'Mumbai',
+        state: 'Maharashtra',
+        postalCode: '400001',
+        country: 'India',
+        email: 'billing@kangpack.in',
+        phone: '+91 98765 43210',
+      },
+      customer: {
+        name: `${order.shippingAddress.firstName} ${order.shippingAddress.lastName || ''}`.trim(),
+        email: order.email,
+        phone: order.phone || order.shippingAddress.phone,
+        shippingAddress: order.shippingAddress,
+        billingAddress: order.billingAddress || order.shippingAddress,
+      },
+      items: order.items.map((item: any) => ({
+        name: item.name,
+        sku: item.sku,
+        hsnCode: '481910',
+        quantity: item.quantity,
+        unitPrice: item.price,
+        total: item.total,
+      })),
+      financials: {
+        subtotal: order.subtotal,
+        taxAmount: order.taxAmount,
+        taxBreakdown,
+        shippingAmount: order.shippingAmount,
+        discountAmount: order.discountAmount,
+        totalAmount: order.totalAmount,
+        currency: order.currency,
+        paymentMethod: order.paymentMethod,
+        paymentStatus: order.paymentStatus,
+      },
+      carrier: order.carrier,
+      trackingNumber: order.trackingNumber,
+      status: order.status,
     };
   }
 

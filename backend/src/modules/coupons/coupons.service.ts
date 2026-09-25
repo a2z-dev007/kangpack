@@ -60,6 +60,40 @@ export class CouponsService {
     return { coupons, pagination: paginationInfo };
   }
 
+  public static async getPublicCoupons() {
+    const now = new Date();
+    const coupons = await Coupon.find({
+      isActive: true,
+      $or: [
+        { expiresAt: { $exists: false } },
+        { expiresAt: null },
+        { expiresAt: { $gt: now } },
+      ],
+      $and: [
+        {
+          $or: [
+            { startsAt: { $exists: false } },
+            { startsAt: null },
+            { startsAt: { $lte: now } },
+          ],
+        },
+        {
+          $or: [
+            { usageLimit: { $exists: false } },
+            { usageLimit: null },
+            { $expr: { $lt: ['$usageCount', '$usageLimit'] } },
+          ],
+        },
+      ],
+    })
+      .select('code name description type value minimumOrderValue maximumDiscountAmount expiresAt')
+      .sort({ createdAt: -1 })
+      .limit(50)
+      .lean();
+
+    return coupons;
+  }
+
   public static async getCouponById(couponId: string): Promise<ICoupon> {
     const coupon = await Coupon.findById(couponId)
       .populate('applicableCategories', 'name')
@@ -166,6 +200,11 @@ export class CouponsService {
       (coupon.type as string) === 'fixed_amount'
     ) {
       discount = coupon.value;
+    } else if (
+      coupon.type === CouponType.FREE_SHIPPING ||
+      (coupon.type as string) === 'free_shipping'
+    ) {
+      discount = coupon.value || 0;
     }
 
     return { valid: true, discount, message: 'Coupon applied successfully' };

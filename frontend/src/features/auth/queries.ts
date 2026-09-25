@@ -3,7 +3,7 @@ import { authApi, LoginCredentials, RegisterData } from '@/lib/auth';
 import { useAuth } from '@/hooks/use-auth';
 import { useRouter } from 'next/navigation';
 import { ROUTES, QUERY_KEYS } from '@/lib/constants';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 export function useLogin() {
   const { setUser } = useAuth();

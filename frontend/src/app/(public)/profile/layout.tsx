@@ -1,14 +1,69 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
 import Navbar from "@/components/home/Navbar";
 import { ProfileSidebar } from "@/components/profile/Sidebar";
 import { BottomNav } from "@/components/profile/BottomNav";
+import { useAuth } from "@/hooks/use-auth";
+import { authApi } from "@/lib/auth";
+import { Loader2 } from "lucide-react";
 
 export default function ProfileLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const { isAuthenticated, setUser } = useAuth();
+  const [isVerifying, setIsVerifying] = useState(true);
+
+  // Verify the session with the backend on mount (not just localStorage)
+  useEffect(() => {
+    const verifySession = async () => {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+      if (!token) {
+        router.replace(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+        return;
+      }
+
+      try {
+        const user = await authApi.getCurrentUser();
+        setUser(user);
+      } catch {
+        // Token is invalid/expired and refresh also failed — force login
+        setUser(null);
+        router.replace(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+        return;
+      }
+
+      setIsVerifying(false);
+    };
+
+    verifySession();
+  }, [pathname, router, setUser]);
+
+  // Show loader while verifying session
+  if (isVerifying) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-brand-beige/30">
+        <Loader2 className="w-8 h-8 animate-spin text-[#6B4A2D]" />
+      </div>
+    );
+  }
+
+  // Double-check after verification (shouldn't reach here if redirect fired, but safety net)
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-brand-beige/30 p-4">
+        <Loader2 className="w-8 h-8 animate-spin text-[#6B4A2D] mb-4" />
+        <p className="text-sm font-medium text-[#6B4A2D]">Redirecting to login...</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex flex-col font-sans bg-brand-beige/30">
       <Navbar solid />

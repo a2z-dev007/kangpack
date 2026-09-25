@@ -37,7 +37,7 @@ import {
   HelpCircle,
   FileText,
 } from 'lucide-react';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 export default function AdminPayments() {
   const [page, setPage] = useState(1);

@@ -514,7 +514,7 @@ const seedCoupons = async () => {
         userUsageLimit: 1,
         isActive: true,
         startsAt: new Date(),
-        expiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+        expiresAt: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 365 days from now
       });
 
       coupons.push(coupon);

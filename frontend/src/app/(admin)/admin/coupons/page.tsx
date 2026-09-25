@@ -9,7 +9,7 @@ import { useAdminCoupons, useDeleteCoupon } from '@/features/admin/queries';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Plus, Search, Tag, Edit, Trash2, Copy } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { CouponModal } from '@/features/admin/components/CouponModal';
 import { ConfirmModal } from '@/components/ui/confirm-modal';
 

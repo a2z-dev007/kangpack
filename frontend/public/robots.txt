@@ -1,4 +1,8 @@
 User-agent: *
 Allow: /
+Disallow: /admin/
+Disallow: /profile/
+Disallow: /checkout/
+Disallow: /auth/
 
-Sitemap: https://yourdomain.com/sitemap.xml
+Sitemap: https://kangpack.com/sitemap.xml

@@ -156,6 +156,8 @@ export interface Order {
   shippingAddress: Address;
   billingAddress: Address;
   notes?: string;
+  trackingNumber?: string;
+  carrier?: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -198,6 +200,8 @@ export interface User {
   phone?: string;
   addresses?: Address[];
   createdAt?: string;
+  isEmailVerified?: boolean;
+  emailVerified?: boolean;
 }
 
 export interface Coupon {
@@ -274,6 +278,7 @@ export interface PaginatedResponse<T> {
     limit: number;
     total: number;
     pages: number;
+    totalPages?: number;
   };
 }
 

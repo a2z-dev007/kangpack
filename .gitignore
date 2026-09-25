@@ -19,10 +19,16 @@ dist/
 .next/
 out/
 build/
+.agent
+.agents
 
 # Uploads and temporary files
 backend/uploads/
 uploads/
+
+# Graphify knowledge graph outputs and cache
+graphify-out/
+.graphify*
 
 # OS files
 .DS_Store

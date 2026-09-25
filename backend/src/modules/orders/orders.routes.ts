@@ -18,6 +18,7 @@ router.get('/number/:orderNumber', OrdersController.getOrderByNumber);
 router.get('/user/:userId/history', OrdersController.getUserOrderHistory);
 router.get('/:id', OrdersController.getOrderById);
 router.get('/:id/tracking', OrdersController.getOrderTracking);
+router.get('/:id/invoice', OrdersController.getOrderInvoice);
 router.put('/:id/status', requireAdminOrStaff, OrdersController.updateOrderStatus);
 router.put('/:id/payment', requireAdminOrStaff, OrdersController.updatePaymentStatus);
 router.put('/:id/tracking', requireAdminOrStaff, OrdersController.addTrackingNumber);

@@ -8,7 +8,7 @@ import { useQuery } from "@tanstack/react-query";
 import { productsApi } from "@/features/products/api";
 import { QUERY_KEYS } from "@/lib/constants";
 import { ASSETS } from "@/constants/assets";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 const Pricing: React.FC = () => {
   const [activePlan, setActivePlan] = useState<"shield" | "standard">("shield");

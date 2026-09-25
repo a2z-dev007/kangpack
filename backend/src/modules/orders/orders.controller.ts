@@ -107,11 +107,12 @@ export class OrdersController {
   });
 
   public static addTrackingNumber = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
-    const { trackingNumber, shippingMethod } = req.body;
+    const { trackingNumber, carrier, shippingMethod } = req.body;
     const order = await OrdersService.addTrackingNumber(
       req.params.id,
       trackingNumber,
-      shippingMethod
+      carrier || shippingMethod,
+      carrier
     );
     
     res.status(HTTP_STATUS.OK).json(
@@ -125,6 +126,15 @@ export class OrdersController {
     
     res.status(HTTP_STATUS.OK).json(
       ResponseUtils.success(MESSAGES.FETCHED_SUCCESS, tracking)
+    );
+  });
+
+  public static getOrderInvoice = asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    const userId = req.user?.role === 'user' ? req.user.userId : undefined;
+    const invoice = await OrdersService.getOrderInvoice(req.params.id, userId);
+    
+    res.status(HTTP_STATUS.OK).json(
+      ResponseUtils.success('Invoice data retrieved successfully', invoice)
     );
   });
 

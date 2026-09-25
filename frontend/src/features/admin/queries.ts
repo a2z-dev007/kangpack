@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { adminApi, productsAdminApi, ordersAdminApi, usersAdminApi, couponsAdminApi, inventoryAdminApi, cmsAdminApi, settingsAdminApi, categoriesAdminApi, reviewsAdminApi, paymentsAdminApi, contactsAdminApi, faqsAdminApi, testimonialsAdminApi, AdminFaq, AdminTestimonial } from './api';
 import { PaginationParams } from '@/types';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 // Dashboard Queries
 export const useDashboardStats = () => {

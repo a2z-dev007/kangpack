@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import { env } from '../../config/env';
 import { ApiResponse, PaginationInfo } from '../types';
 
@@ -9,6 +10,33 @@ export class PasswordUtils {
 
   public static async compare(password: string, hash: string): Promise<boolean> {
     return bcrypt.compare(password, hash);
+  }
+
+  public static generateStrongPassword(length: number = 14): string {
+    const uppers = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+    const lowers = 'abcdefghijkmnopqrstuvwxyz';
+    const numbers = '23456789';
+    const symbols = '!@#$%^&*';
+    const all = uppers + lowers + numbers + symbols;
+
+    const chars = [
+      uppers[crypto.randomInt(0, uppers.length)],
+      lowers[crypto.randomInt(0, lowers.length)],
+      numbers[crypto.randomInt(0, numbers.length)],
+      symbols[crypto.randomInt(0, symbols.length)],
+    ];
+
+    for (let i = 4; i < length; i++) {
+      chars.push(all[crypto.randomInt(0, all.length)]);
+    }
+
+    // Shuffle characters securely using Fisher-Yates with crypto.randomInt
+    for (let i = chars.length - 1; i > 0; i--) {
+      const j = crypto.randomInt(0, i + 1);
+      [chars[i], chars[j]] = [chars[j], chars[i]];
+    }
+
+    return chars.join('');
   }
 }
 
@@ -121,8 +149,8 @@ export class DateUtils {
 }
 
 export class PriceUtils {
-  public static formatPrice(amount: number, currency: string = 'USD'): string {
-    return new Intl.NumberFormat('en-US', {
+  public static formatPrice(amount: number, currency: string = 'INR'): string {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency,
     }).format(amount);

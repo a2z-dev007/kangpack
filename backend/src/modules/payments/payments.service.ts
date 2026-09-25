@@ -2,7 +2,9 @@ import { Payment, IPayment, Order } from '../../database';
 import { AppError } from '../../common/middlewares/error.middleware';
 import { HTTP_STATUS, MESSAGES } from '../../common/constants';
 import { PaginationUtils } from '../../common/utils';
-import { PaginationQuery, FilterQuery, PaymentStatus, PaymentMethod } from '../../common/types';
+import { PaginationQuery, FilterQuery, PaymentStatus, PaymentMethod, OrderStatus } from '../../common/types';
+import { RazorpayService } from '../../common/services/razorpay.service';
+import { env } from '../../config/env';
 
 export interface CreatePaymentData {
   orderId: string;
@@ -91,7 +93,7 @@ export class PaymentsService {
       paymentIntentId: data.paymentIntentId,
       method: data.method,
       amount: data.amount,
-      currency: data.currency || 'USD',
+      currency: data.currency || 'INR',
       metadata: data.metadata,
       status: PaymentStatus.PENDING,
     });
@@ -155,10 +157,28 @@ export class PaymentsService {
       throw new AppError('Refund amount exceeds payment amount', HTTP_STATUS.BAD_REQUEST);
     }
 
+    // If payment was completed through Razorpay and has a paymentIntentId, process gateway refund
+    let finalRefundId = refundId;
+    if (payment.method === PaymentMethod.RAZORPAY && payment.paymentIntentId) {
+      try {
+        const rzpRefund = await RazorpayService.refundPayment(payment.paymentIntentId, amount, {
+          reason: reason || 'Merchant Processed Refund',
+        });
+        if (rzpRefund?.id) {
+          finalRefundId = rzpRefund.id;
+        }
+      } catch (err: any) {
+        console.error('[PaymentsService] Razorpay gateway refund error:', err);
+        if (env.NODE_ENV === 'production') {
+          throw new AppError(err?.message || 'Payment gateway refund failed', HTTP_STATUS.INTERNAL_SERVER_ERROR);
+        }
+      }
+    }
+
     payment.refunds.push({
       amount,
       reason,
-      refundId: refundId || `REF-${Date.now()}`,
+      refundId: finalRefundId || `REF-${Date.now()}`,
       processedAt: new Date(),
     });
 
@@ -181,6 +201,68 @@ export class PaymentsService {
     }
 
     return payment;
+  }
+
+  public static async handleWebhookEvent(event: string, payload: any) {
+    const paymentEntity = payload?.payment?.entity;
+    const orderEntity = payload?.order?.entity;
+
+    const razorpayOrderId = paymentEntity?.order_id || orderEntity?.id;
+    const razorpayPaymentId = paymentEntity?.id;
+
+    if (!razorpayOrderId) {
+      console.warn('[PaymentsService] Webhook event missing razorpay order_id:', event);
+      return;
+    }
+
+    const order = await Order.findOne({ razorpayOrderId });
+    if (!order) {
+      console.warn('[PaymentsService] Order not found for webhook order_id:', razorpayOrderId);
+      return;
+    }
+
+    if (event === 'payment.captured' || event === 'order.paid') {
+      order.paymentStatus = PaymentStatus.COMPLETED;
+      if (razorpayPaymentId) {
+        order.razorpayPaymentId = razorpayPaymentId;
+      }
+      order.status = OrderStatus.CONFIRMED;
+      await order.save();
+
+      // Upsert payment record
+      await Payment.findOneAndUpdate(
+        { order: order._id },
+        {
+          order: order._id,
+          paymentIntentId: razorpayPaymentId || razorpayOrderId,
+          method: PaymentMethod.RAZORPAY,
+          amount: order.totalAmount,
+          currency: order.currency || 'INR',
+          status: PaymentStatus.COMPLETED,
+          processedAt: new Date(),
+          metadata: paymentEntity || orderEntity,
+        },
+        { upsert: true, new: true }
+      );
+    } else if (event === 'payment.failed') {
+      order.paymentStatus = PaymentStatus.FAILED;
+      await order.save();
+
+      await Payment.findOneAndUpdate(
+        { order: order._id },
+        {
+          order: order._id,
+          paymentIntentId: razorpayPaymentId || razorpayOrderId,
+          method: PaymentMethod.RAZORPAY,
+          amount: order.totalAmount,
+          currency: order.currency || 'INR',
+          status: PaymentStatus.FAILED,
+          failureReason: paymentEntity?.error_description || 'Payment Failed',
+          metadata: paymentEntity,
+        },
+        { upsert: true, new: true }
+      );
+    }
   }
 
   public static async getPaymentStats() {

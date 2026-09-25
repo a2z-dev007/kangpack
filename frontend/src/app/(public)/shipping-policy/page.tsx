@@ -1,7 +1,7 @@
 "use client";
 import React from "react";
 import { motion } from "framer-motion";
-import { Truck, Package, MapPin, Clock, AlertTriangle, DollarSign } from "lucide-react";
+import { Truck, Package, MapPin, Clock, AlertTriangle, IndianRupee } from "lucide-react";
 import Navbar from "@/components/home/Navbar";
 import { ASSETS } from "@/constants/assets";
 import { ParallaxImage } from "@/components/common/ScrollSection";
@@ -224,7 +224,7 @@ const ShippingPolicy: React.FC = () => {
                 <div className="flex flex-col lg:flex-row items-start gap-10 md:gap-14">
                   <div className="flex-shrink-0">
                     <div className="w-14 h-14 rounded-full flex items-center justify-center bg-[#F9F7F4] text-[#6B4A2D] border border-[#6B4A2D]/10 group-hover:bg-[#6B4A2D] group-hover:text-white transition-all duration-500">
-                      <DollarSign className="w-6 h-6" />
+                      <IndianRupee className="w-6 h-6" />
                     </div>
                   </div>
 

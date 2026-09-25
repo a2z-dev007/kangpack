@@ -1,5 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { API_URL, ROUTES } from './constants';
+import { setAuthCookie, clearAuthCookie } from './auth-cookie';
 
 // Helper function to transform MongoDB _id to id
 function transformMongoResponse(data: any): any {
@@ -100,6 +101,7 @@ api.interceptors.response.use(
         const authData = data.data;
         if (authData.accessToken) {
           localStorage.setItem('token', authData.accessToken);
+          setAuthCookie(authData.accessToken);
           if (authData.refreshToken) {
             localStorage.setItem('refreshToken', authData.refreshToken);
           }
@@ -111,6 +113,7 @@ api.interceptors.response.use(
       } catch (refreshError) {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
+        clearAuthCookie();
         // Don't automatically redirect to login
         // Let the component handle unauthorized state
         console.error('Token refresh failed:', refreshError);

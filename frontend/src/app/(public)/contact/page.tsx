@@ -9,7 +9,7 @@ import ScrollSection, {
 import PrimaryButton from "@/components/common/PrimaryButton";
 import { Mail, MapPin, Phone } from "lucide-react";
 import api from "@/lib/api";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 
 const ContactPage: React.FC = () => {
   const [formData, setFormData] = React.useState({

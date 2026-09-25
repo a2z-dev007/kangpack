@@ -1,147 +1,15 @@
 "use client";
 import React from "react";
-import { motion } from "framer-motion";
-import { ArrowRight, Star, ShoppingBag } from "lucide-react";
-import Link from "next/link";
-import { ASSETS } from "@/constants/assets";
+import { ShoppingBag } from "lucide-react";
 import PrimaryButton from "@/components/common/PrimaryButton";
 import { ParallaxImage } from "@/components/common/ScrollSection";
 import { useQuery } from "@tanstack/react-query";
 import { productsApi } from "@/features/products/api";
 import { QUERY_KEYS, ROUTES } from "@/lib/constants";
-import { formatPrice, getImageUrl } from "@/lib/utils";
-import { toast } from "sonner";
-import { useAppDispatch } from "@/lib/store/hooks";
-import { addToCart, setCartOpen } from "@/lib/store/features/cart/cartSlice";
-import { Product } from "@/types";
-import { WishlistButton } from "@/components/common/WishlistButton";
+import { ProductCard } from "@/components/common/ProductCard";
+import { motion } from "framer-motion";
+import Link from "next/link";
 
-
-const ProductCard: React.FC<{
-  product: Product;
-  index: number;
-}> = ({ product, index }) => {
-  const dispatch = useAppDispatch();
-
-  const handleAddToCart = async (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const prodId = product.id || (product as any)._id;
-    try {
-      await dispatch(
-        addToCart({
-          product: { ...product, id: prodId },
-          quantity: 1,
-        })
-      ).unwrap();
-      toast.success(`Added ${product.name} to cart`);
-      dispatch(setCartOpen(true));
-    } catch {
-      // Toast error is handled in thunk
-    }
-  };
-
-  const tags: string[] = [];
-  if (product.isNew) tags.push("New");
-  if (product.isBestseller) tags.push("Best Seller");
-  if (product.tags) tags.push(...product.tags.slice(0, 2));
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.35, delay: index * 0.05 }}
-      className="group relative bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full"
-    >
-      <Link
-        href={ROUTES.PRODUCT_DETAIL(product.slug || product.id)}
-        className="flex-grow flex flex-col"
-      >
-        {/* Image Container with 4/5 aspect ratio matching old UI */}
-        <div className="aspect-[4/5] relative overflow-hidden bg-brand-beige/20">
-          <div className="absolute top-4 left-4 z-10 flex gap-2 flex-wrap">
-            {tags.map((tag, i) => (
-              <span
-                key={i}
-                className="px-3 py-1 bg-white/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-brand-brown rounded-full shadow-sm"
-              >
-                {tag}
-              </span>
-            ))}
-            {product.stock <= 5 && product.stock > 0 && (
-              <span className="px-3 py-1 bg-red-500/90 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white rounded-full shadow-sm">
-                Low Stock
-              </span>
-            )}
-          </div>
-
-          {/* Wishlist Button Overlay */}
-          <div className="absolute top-4 right-4 z-20">
-            <WishlistButton
-              productId={product.id || (product as any)._id}
-              className="bg-white/80 backdrop-blur-sm p-2 rounded-full hover:bg-white transition-all shadow-sm"
-            />
-          </div>
-
-          <div className="w-full h-full transform group-hover:scale-105 transition-transform duration-500 ease-out">
-            <img
-              src={getImageUrl(product.images?.[0] || ASSETS.TICKERS.MAIN)}
-              alt={product.name}
-              loading="lazy"
-              className="w-full h-full object-cover"
-            />
-          </div>
-
-          {/* Overlay Action */}
-          <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="bg-white text-brand-brown px-6 py-3 rounded-full font-bold uppercase text-xs tracking-widest flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 shadow-lg"
-            >
-              View Details <ArrowRight className="w-4 h-4" />
-            </motion.div>
-          </div>
-        </div>
-
-        <div className="p-5 md:p-6 flex flex-col flex-grow">
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-[10px] md:text-xs font-bold text-brand-brown/40 uppercase tracking-widest line-clamp-1">
-              {product.category?.name || "Collection"}
-            </span>
-            <span className="text-brand-brown font-bold text-lg md:text-xl whitespace-nowrap ml-4">
-              {formatPrice(product.price)}
-            </span>
-          </div>
-          <h3 className="text-xl md:text-2xl font-bold text-brand-brown mb-2 group-hover:text-brand-accent transition-colors line-clamp-2">
-            {product.name}
-          </h3>
-          <p className="text-brand-brown/60 text-sm md:text-base leading-relaxed mb-4 line-clamp-2 flex-grow">
-            {product.description
-              ? product.description.slice(0, 100) + "..."
-              : "Experience effortless mobile productivity designed for creators on the move."}
-          </p>
-          <div className="pt-4 border-t border-brand-brown/5 flex items-center justify-between mt-auto">
-            <div className="flex gap-1 text-[#D4CEC4]">
-              {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-3.5 h-3.5 fill-current" />
-              ))}
-            </div>
-            <button
-              onClick={handleAddToCart}
-              className="p-2 rounded-full hover:bg-brand-beige transition-colors text-brand-brown z-20 relative"
-              disabled={product.stock === 0}
-              aria-label="Add to cart"
-            >
-              <ShoppingBag className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </Link>
-    </motion.div>
-  );
-};
 
 const OurProducts: React.FC = () => {
   const { data, isLoading } = useQuery({

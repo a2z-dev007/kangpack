@@ -2,13 +2,13 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { 
-  Instagram, 
-  Twitter, 
-  Facebook, 
-  Youtube, 
-  Mail, 
-  ArrowRight, 
+import {
+  Instagram,
+  Twitter,
+  Facebook,
+  Youtube,
+  Mail,
+  ArrowRight,
   MapPin,
   ShieldCheck,
   Truck,
@@ -16,7 +16,7 @@ import {
   Lock,
   Check
 } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { ASSETS } from "@/constants/assets";
 
 const socialLinks = [
@@ -107,7 +107,7 @@ export const Footer: React.FC = () => {
       {/* 2. Main Footer Navigation Grid (Clean, Balanced, Compact) */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-12">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-10">
-          
+
           {/* Brand & Newsletter (5 Columns on Desktop) */}
           <div className="md:col-span-4 lg:col-span-4 space-y-4">
             <Link href="/" className="inline-block">
@@ -177,7 +177,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-xs md:text-[13px]">
               {shopLinks.map((link) => (
                 <li key={link.label}>
-                  <Link 
+                  <Link
                     href={link.href}
                     className="text-[#8B7E6F] hover:text-[#6B4A2D] font-medium transition-colors"
                   >
@@ -196,7 +196,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-xs md:text-[13px]">
               {companyLinks.map((link) => (
                 <li key={link.label}>
-                  <Link 
+                  <Link
                     href={link.href}
                     className="text-[#8B7E6F] hover:text-[#6B4A2D] font-medium transition-colors"
                   >
@@ -215,7 +215,7 @@ export const Footer: React.FC = () => {
             <ul className="space-y-2 text-xs md:text-[13px]">
               {legalLinks.map((link) => (
                 <li key={link.label}>
-                  <Link 
+                  <Link
                     href={link.href}
                     className="text-[#8B7E6F] hover:text-[#6B4A2D] font-medium transition-colors"
                   >
@@ -264,11 +264,6 @@ export const Footer: React.FC = () => {
             </p>
 
             <div className="flex items-center gap-3 text-[11px] text-[#8B7E6F]">
-              <span className="inline-flex items-center gap-1.5 font-medium">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 shrink-0"></span>
-                Secure Razorpay Checkout
-              </span>
-              <span>•</span>
               <span className="font-medium">Made with pride in India 🇮🇳</span>
             </div>
           </div>

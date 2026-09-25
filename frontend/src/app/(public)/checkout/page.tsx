@@ -31,16 +31,20 @@ import {
   ShieldCheck,
   ArrowRight,
   Mail,
+  UserCheck,
+  Tag,
+  LogIn,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/use-auth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { formatPrice, getImageUrl } from "@/lib/utils";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { usePublicSettings } from "@/features/settings/queries";
+import CouponPicker from "@/components/common/CouponPicker";
 import Confetti from "react-confetti-boom";
 
 // --- Sub-components ---
@@ -141,8 +145,72 @@ export default function CheckoutPage() {
     ? (isShippingEnabled ? (isFreeShipping ? 0 : defaultShippingRate) : 0) 
     : 0;
 
+  const searchParams = useSearchParams();
+  const urlCoupon = searchParams.get("coupon");
+
+  const [couponCode, setCouponCode] = useState("");
+  const [appliedCoupon, setAppliedCoupon] = useState<any>(null);
+  const [couponDiscount, setCouponDiscount] = useState(0);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
+
   const tax = Number(((subtotal * taxRate) / 100).toFixed(2));
-  const total = Number((subtotal + tax + shipping).toFixed(2));
+  const total = Number(Math.max(0, subtotal + tax + shipping - couponDiscount).toFixed(2));
+
+  const handleApplyCouponWithCode = async (codeToApply?: string) => {
+    const code = (codeToApply ?? couponCode).trim().toUpperCase();
+    if (!code) {
+      toast.error("Please enter a coupon code");
+      return false;
+    }
+    try {
+      setIsApplyingCoupon(true);
+      const res = await api.post("/coupons/validate", {
+        code,
+        orderValue: subtotal,
+      });
+      if (res.data.success && res.data.data?.valid) {
+        const discountVal = res.data.data.discount || 0;
+        setAppliedCoupon({
+          code,
+          discount: discountVal,
+          ...res.data.data,
+        });
+        setCouponDiscount(discountVal);
+        setCouponCode(code);
+        toast.success(`Coupon "${code}" applied! You saved ${formatPrice(discountVal)}`);
+        return true;
+      } else {
+        toast.error(res.data.data?.message || "Invalid coupon code");
+        return false;
+      }
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to apply coupon");
+      return false;
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const handleApplyCoupon = () => handleApplyCouponWithCode(couponCode);
+
+  const handleApplyPublicCoupon = async (coupon: any) => {
+    setCouponCode(coupon.code);
+    return handleApplyCouponWithCode(coupon.code);
+  };
+
+  // Auto-apply coupon passed via URL parameter (e.g. from Cart/CartDrawer redirect)
+  useEffect(() => {
+    if (urlCoupon && subtotal > 0 && !appliedCoupon) {
+      handleApplyCouponWithCode(urlCoupon);
+    }
+  }, [urlCoupon, subtotal]);
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setCouponDiscount(0);
+    setCouponCode("");
+    toast.info("Coupon removed");
+  };
 
   const [formData, setFormData] = useState({
     email: user?.email || "",
@@ -167,6 +235,7 @@ export default function CheckoutPage() {
     subtotal: 0,
     tax: 0,
     shipping: 0,
+    discountAmount: 0,
     total: 0,
     paymentMethod: "razorpay" as "razorpay" | "cod",
     shippingAddress: null as any,
@@ -293,6 +362,7 @@ export default function CheckoutPage() {
         phone: formData.phone,
         createAccount,
         password: createAccount ? password : undefined,
+        couponCode: appliedCoupon?.code || (couponCode.trim() ? couponCode.trim() : undefined),
       };
 
       const response = await api.post("/orders", orderData);
@@ -308,6 +378,7 @@ export default function CheckoutPage() {
           subtotal,
           tax,
           shipping,
+          discountAmount: couponDiscount,
           total,
           items: validItems.map((item: any) => ({
             name: item.product?.name || "Product",
@@ -329,8 +400,12 @@ export default function CheckoutPage() {
 
         const razorpayKey =
           order.razorpayKeyId ||
-          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID ||
-          "rzp_test_SDt3Oq2hqQz8jt";
+          process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+
+        if (!razorpayKey) {
+          toast.error("Payment configuration missing. Please contact support.");
+          return;
+        }
 
         const options: any = {
           key: razorpayKey,
@@ -341,12 +416,17 @@ export default function CheckoutPage() {
           image: "/assets/favicon.png",
           handler: async function (response: any) {
             try {
+              if (!response.razorpay_payment_id || !response.razorpay_signature) {
+                toast.error("Payment verification data missing from gateway.");
+                return;
+              }
+
               const verifyRes = await api.post(
-                `/orders/${order.id}/verify-razorpay`,
+                `/orders/${order.id || order._id}/verify-razorpay`,
                 {
-                  razorpayOrderId: response.razorpay_order_id || order.razorpayOrderId || `order_${order.id}`,
-                  razorpayPaymentId: response.razorpay_payment_id || `pay_${Date.now()}`,
-                  razorpaySignature: response.razorpay_signature || "signature_ok",
+                  razorpayOrderId: response.razorpay_order_id || order.razorpayOrderId,
+                  razorpayPaymentId: response.razorpay_payment_id,
+                  razorpaySignature: response.razorpay_signature,
                 },
               );
 
@@ -361,6 +441,7 @@ export default function CheckoutPage() {
                   subtotal,
                   tax,
                   shipping,
+                  discountAmount: couponDiscount,
                   total,
                   items: validItems.map((item: any) => ({
                     name: item.product?.name || "Product",
@@ -527,14 +608,38 @@ export default function CheckoutPage() {
                 </span>
               </div>
 
+              {/* Guest auto-account banner if not logged in */}
+              {!isAuthenticated && (
+                <div className="mt-4 p-4 rounded-2xl bg-amber-50 border border-amber-200 text-left max-w-xl mx-auto flex items-start gap-3">
+                  <UserCheck className="w-5 h-5 text-amber-700 shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="text-sm font-bold text-amber-900">
+                      Your Account Has Been Created!
+                    </h4>
+                    <p className="text-xs text-amber-800 mt-1 leading-relaxed">
+                      We&apos;ve automatically created a secure Kangpack account for <strong className="font-semibold">{address.email || formData.email}</strong> so you can view orders and track delivery. Your temporary login password has been sent to your email.
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Top Quick Actions */}
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4 print:hidden">
                 <Button
-                  onClick={() => router.push("/profile/orders")}
+                  onClick={() => router.push(isAuthenticated ? "/profile/orders" : "/auth/login?redirect=/profile/orders")}
                   className="bg-[#6B4A2D] hover:bg-[#533922] text-white px-7 h-12 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider shadow-md shadow-[#6B4A2D]/20 transition-all hover:scale-[1.02] flex items-center gap-2"
                 >
-                  <PackageCheck className="w-4 h-4" />
-                  View Order History
+                  {isAuthenticated ? (
+                    <>
+                      <PackageCheck className="w-4 h-4" />
+                      View Order History
+                    </>
+                  ) : (
+                    <>
+                      <LogIn className="w-4 h-4" />
+                      Log In to Track Order
+                    </>
+                  )}
                 </Button>
                 <Button
                   variant="outline"
@@ -962,7 +1067,7 @@ export default function CheckoutPage() {
                           </div>
                         </div>
                         <span className="font-bold text-[#6B4A2D]/60 uppercase text-xs">
-                          +$15.00
+                          +₹499.00
                         </span>
                       </div>
                     </div>
@@ -1206,6 +1311,21 @@ export default function CheckoutPage() {
                   ))}
                 </div>
 
+                {/* Coupon Code Section */}
+                <div className="border-t border-[#6B4A2D]/10 pt-4 pb-1">
+                  <CouponPicker
+                    subtotal={subtotal}
+                    appliedCoupon={appliedCoupon ? { code: appliedCoupon.code, discount: couponDiscount } : null}
+                    couponInput={couponCode}
+                    isApplyingCoupon={isApplyingCoupon}
+                    onCouponInputChange={(val) => setCouponCode(val)}
+                    onApplyCoupon={handleApplyCoupon}
+                    onApplyPublicCoupon={handleApplyPublicCoupon}
+                    onRemoveCoupon={handleRemoveCoupon}
+                    compact
+                  />
+                </div>
+
                 <div className="space-y-4 border-t border-[#6B4A2D]/10 pt-6">
                   <div className="flex justify-between text-sm text-[#8B7E6F]">
                     <span>Subtotal</span>
@@ -1213,6 +1333,12 @@ export default function CheckoutPage() {
                       {formatPrice(subtotal)}
                     </span>
                   </div>
+                  {couponDiscount > 0 && (
+                    <div className="flex justify-between text-sm text-emerald-600 font-bold">
+                      <span>Coupon Discount</span>
+                      <span>-{formatPrice(couponDiscount)}</span>
+                    </div>
+                  )}
                   <div className="flex justify-between text-sm text-[#8B7E6F]">
                     <span>Shipping</span>
                     <span className="font-bold text-[#6B4A2D]">

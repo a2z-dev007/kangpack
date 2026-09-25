@@ -174,8 +174,8 @@ export function CouponModal({ isOpen, onClose, coupon }: CouponModalProps) {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent className="z-[99999] bg-popover">
-                        <SelectItem value="percentage">Percentage</SelectItem>
-                        <SelectItem value="fixed_amount">Fixed Amount</SelectItem>
+                        <SelectItem value="percentage">Percentage (%)</SelectItem>
+                        <SelectItem value="fixed_amount">Fixed Amount (₹)</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
@@ -187,7 +187,7 @@ export function CouponModal({ isOpen, onClose, coupon }: CouponModalProps) {
                 name="value"
                 render={({ field }: { field: any }) => (
                   <FormItem>
-                    <FormLabel>Value</FormLabel>
+                    <FormLabel>Value {form.watch("type") === "percentage" ? "(%)" : "(₹)"}</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -203,7 +203,7 @@ export function CouponModal({ isOpen, onClose, coupon }: CouponModalProps) {
                 name="minOrderAmount"
                 render={({ field }: { field: any }) => (
                   <FormItem>
-                    <FormLabel>Min Order Amount</FormLabel>
+                    <FormLabel>Min Order Amount (₹)</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>

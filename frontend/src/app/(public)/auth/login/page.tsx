@@ -1,19 +1,22 @@
 "use client";
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { motion } from "framer-motion";
 import { ArrowLeft, Mail, Lock, AlertCircle, Eye, EyeOff } from "lucide-react";
 import api from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
+import { setAuthCookie } from "@/lib/auth-cookie";
 import Navbar from "@/components/home/Navbar";
 import { ASSETS } from "@/constants/assets";
 import { ParallaxImage } from "@/components/common/ScrollSection";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const redirectParam = searchParams.get("redirect");
   const { setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -42,6 +45,7 @@ export default function LoginPage() {
       if (accessToken) {
         localStorage.setItem("token", accessToken);
         localStorage.setItem("refreshToken", refreshToken);
+        setAuthCookie(accessToken);
       } else {
         throw new Error("No access token received");
       }
@@ -71,6 +75,8 @@ export default function LoginPage() {
       setTimeout(() => {
         if (user.role === "admin" || user.role === "staff") {
           window.location.href = "/admin/dashboard";
+        } else if (redirectParam && redirectParam.startsWith("/")) {
+          window.location.href = redirectParam;
         } else {
           window.location.href = "/";
         }
@@ -252,5 +258,13 @@ export default function LoginPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-brand-beige/30 flex items-center justify-center text-[#6B4A2D]">Loading...</div>}>
+      <LoginForm />
+    </Suspense>
   );
 }

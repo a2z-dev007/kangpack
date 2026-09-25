@@ -132,12 +132,12 @@ const settingsSchema = new Schema<ISettings>({
   favicon: String,
   currency: {
     type: String,
-    default: 'USD',
+    default: 'INR',
     uppercase: true,
   },
   currencySymbol: {
     type: String,
-    default: '$',
+    default: '₹',
   },
   timezone: {
     type: String,

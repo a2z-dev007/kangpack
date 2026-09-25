@@ -25,6 +25,13 @@ export class CouponsController {
     );
   });
 
+  public static getPublicCoupons = asyncHandler(async (_req: Request, res: Response) => {
+    const coupons = await CouponsService.getPublicCoupons();
+    res.status(HTTP_STATUS.OK).json(
+      ResponseUtils.success(MESSAGES.FETCHED_SUCCESS, coupons)
+    );
+  });
+
   public static getCouponById = asyncHandler(async (req: Request, res: Response) => {
     const coupon = await CouponsService.getCouponById(req.params.id);
     

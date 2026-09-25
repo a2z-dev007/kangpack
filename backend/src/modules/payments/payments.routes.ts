@@ -5,7 +5,10 @@ import { requireAdminOrStaff } from '../../common/middlewares/role.middleware';
 
 const router = Router();
 
-// All payment routes require admin/staff authentication
+// Webhook endpoint (must be public for Razorpay callbacks)
+router.post('/webhook', PaymentsController.handleWebhook);
+
+// All other payment routes require admin/staff authentication
 router.use(authenticate);
 router.use(requireAdminOrStaff);
 

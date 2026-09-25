@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api, { handleApiError } from '@/lib/api';
 import { Product, ApiResponse } from '@/types';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 import { QUERY_KEYS } from '@/lib/constants';
 import { useAuth } from './use-auth';
 

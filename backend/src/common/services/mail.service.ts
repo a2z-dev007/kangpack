@@ -10,14 +10,13 @@ export class MailService {
   public static async sendEmail(to: string, subject: string, html: string): Promise<void> {
     console.log(`[MailService] Attempting to send email to: ${to} (Subject: "${subject}")`);
 
-    const defaultPass = 'K@ngPack#2025!';
-    const smtpPass = env.SMTP_PASS || defaultPass;
+    const smtpPass = env.SMTP_PASS || '';
 
     // Define transport attempts in priority order
     const transports = [
       // 1. Primary configured transport from environment
       {
-        name: `Primary (${env.SMTP_HOST}:${env.SMTP_PORT})`,
+        name: `Primary (${env.SMTP_HOST || 'smtpout.secureserver.net'}:${env.SMTP_PORT || 587})`,
         host: env.SMTP_HOST || 'smtpout.secureserver.net',
         port: env.SMTP_PORT || 587,
         secure: env.SMTP_SECURE,
@@ -30,8 +29,8 @@ export class MailService {
         host: 'smtpout.secureserver.net',
         port: 587,
         secure: false,
-        user: 'support@kangpack.in',
-        pass: defaultPass,
+        user: env.SMTP_USER || 'support@kangpack.in',
+        pass: smtpPass,
       },
       // 3. Fallback: GoDaddy port 465 (Direct SSL)
       {
@@ -39,8 +38,8 @@ export class MailService {
         host: 'smtpout.secureserver.net',
         port: 465,
         secure: true,
-        user: 'support@kangpack.in',
-        pass: defaultPass,
+        user: env.SMTP_USER || 'support@kangpack.in',
+        pass: smtpPass,
       },
     ];
 
@@ -207,12 +206,17 @@ export class MailService {
               </tr>
               <tr>
                 <td style="padding: 5px 0;">Shipping</td>
-                <td style="padding: 5px 0; text-align: right;">INR ${order.shippingAmount.toLocaleString()}</td>
+                <td style="padding: 5px 0; text-align: right;">INR ${(order.shippingAmount || 0).toLocaleString()}</td>
               </tr>
               <tr>
-                <td style="padding: 5px 0;">Tax (10%)</td>
-                <td style="padding: 5px 0; text-align: right;">INR ${order.taxAmount.toLocaleString()}</td>
+                <td style="padding: 5px 0;">Tax (GST)</td>
+                <td style="padding: 5px 0; text-align: right;">INR ${(order.taxAmount || 0).toLocaleString()}</td>
               </tr>
+              ${order.discountAmount > 0 ? `
+              <tr>
+                <td style="padding: 5px 0; color: #16a34a;">Discount</td>
+                <td style="padding: 5px 0; text-align: right; color: #16a34a;">-INR ${order.discountAmount.toLocaleString()}</td>
+              </tr>` : ''}
               <tr>
                 <td style="padding: 15px 0; border-top: 2px solid #3E2A1D; font-size: 18px; font-weight: bold;">Total</td>
                 <td style="padding: 15px 0; border-top: 2px solid #3E2A1D; font-size: 18px; font-weight: bold; text-align: right; color: #6B4A2D;">INR ${order.totalAmount.toLocaleString()}</td>
@@ -288,9 +292,10 @@ export class MailService {
         </div>
         <div style="padding: 40px; background-color: #F9F7F4;">
           <p>${statusMessage}</p>
-          ${order.trackingNumber ? `<p><strong>Tracking Number:</strong> ${order.trackingNumber}</p>` : ''}
+          ${order.carrier ? `<p><strong>Carrier / Courier:</strong> ${order.carrier}</p>` : ''}
+          ${order.trackingNumber ? `<p><strong>Tracking Number (AWB):</strong> ${order.trackingNumber}</p>` : ''}
           <div style="margin-top: 30px; text-align: center;">
-             <a href="${env.FRONTEND_URL}/order-tracking/${order._id}" style="background-color: #6B4A2D; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Track My Order</a>
+             <a href="${env.FRONTEND_URL}/profile/orders" style="background-color: #6B4A2D; color: white; padding: 12px 24px; text-decoration: none; border-radius: 5px; display: inline-block; font-weight: bold; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Track My Order</a>
           </div>
           <p style="margin-top: 40px; text-align: center; font-size: 12px; color: #888;">
             &copy; ${new Date().getFullYear()} Kangpack. All rights reserved.

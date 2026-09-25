@@ -38,112 +38,124 @@ const GalleryThree: React.FC = () => {
   // Scroll progress for the pinned section
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end start"],
+    offset: ["start start", "end end"],
   });
 
   // Text color animations - progressive color change synchronized with image reveals
   const frontColor = useTransform(
     scrollYProgress,
-    [0, 0.15, 0.3],
-    ["#b7ad9f", "#b7ad9f", "#6B4A2D"],
+    [0, 0.05, 0.2],
+    ["#b7ad9f", "#6B4A2D", "#6B4A2D"],
   );
 
   const backColor = useTransform(
     scrollYProgress,
-    [0, 0.3, 0.45, 0.6],
-    ["#b7ad9f", "#b7ad9f", "#b7ad9f", "#6B4A2D"],
+    [0, 0.2, 0.3, 0.45],
+    ["#b7ad9f", "#b7ad9f", "#6B4A2D", "#6B4A2D"],
   );
 
   const sidewaysColor = useTransform(
     scrollYProgress,
-    [0, 0.6, 0.75, 0.85],
-    ["#b7ad9f", "#b7ad9f", "#b7ad9f", "#6B4A2D"],
+    [0, 0.45, 0.55, 0.7],
+    ["#b7ad9f", "#b7ad9f", "#6B4A2D", "#6B4A2D"],
   );
 
-  // Image 1 (Front) - Starts CENTER, then moves LEFT when Image 2 appears
+  // Image 1 (Front) - Starts CENTER, then moves LEFT when Image 2 & 3 appear
   const image1Opacity = useTransform(
     scrollYProgress,
-    [0, 0.05, 0.25],
+    [0, 0.05, 0.18],
     [0, 0, 1],
   );
   const image1Scale = useTransform(
     scrollYProgress,
-    [0, 0.05, 0.25],
+    [0, 0.05, 0.18],
     [0.75, 0.75, 1],
   );
-  const image1Y = useTransform(scrollYProgress, [0, 0.05, 0.25], [120, 120, 0]);
-  const image1X = useTransform(scrollYProgress, [0.3, 0.5], [-120, -280]); // Desktop: Moves further LEFT
-  const image1XMobile = useTransform(scrollYProgress, [0.3, 0.5], [-60, -180]); // Mobile: Less movement
+  const image1Y = useTransform(scrollYProgress, [0, 0.05, 0.18], [120, 120, 0]);
+  const image1X = useTransform(
+    scrollYProgress,
+    [0.22, 0.45, 0.7],
+    [0, -140, -280],
+  ); // Desktop: Moves further LEFT
+  const image1XMobile = useTransform(
+    scrollYProgress,
+    [0.22, 0.45, 0.7],
+    [0, -70, -150],
+  ); // Mobile: Less movement
   const image1RotateX = useTransform(scrollYProgress, [0.05, 0.25], [0, 0]);
   const image1RotateY = useTransform(
     scrollYProgress,
-    [0.05, 0.25, 0.4],
-    [0, 0, 30],
+    [0.22, 0.45, 0.7],
+    [0, 18, 30],
   ); // Tilts left
   const image1RotateYMobile = useTransform(
     scrollYProgress,
-    [0.05, 0.25, 0.4],
-    [0, 0, 15],
+    [0.22, 0.45, 0.7],
+    [0, 9, 15],
   ); // Mobile: Less tilt
   const image1RotateZ = useTransform(scrollYProgress, [0.25, 0.4], [0, 0]); // Rotates left
 
   // Image 2 (Back) - Appears CENTER-RIGHT, pushes Image 1 to the left
-  const image2Opacity = useTransform(scrollYProgress, [0, 0.3, 0.5], [0, 0, 1]);
+  const image2Opacity = useTransform(
+    scrollYProgress,
+    [0, 0.22, 0.4],
+    [0, 0, 1],
+  );
   const image2Scale = useTransform(
     scrollYProgress,
-    [0, 0.3, 0.5],
+    [0, 0.22, 0.4],
     [0.75, 0.85, 1],
   );
-  const image2Y = useTransform(scrollYProgress, [0, 0.3, 0.5], [120, 120, 0]);
+  const image2Y = useTransform(scrollYProgress, [0, 0.22, 0.4], [120, 120, 0]);
   const image2X = useTransform(
     scrollYProgress,
-    [0.3, 0.5, 0.65],
-    [100, 0, -180],
+    [0.22, 0.45, 0.7],
+    [100, 0, -140],
   ); // Desktop: Moves LEFT for image 3
   const image2XMobile = useTransform(
     scrollYProgress,
-    [0.3, 0.5, 0.65],
-    [50, 0, -100],
+    [0.22, 0.45, 0.7],
+    [50, 0, -70],
   ); // Mobile: Less movement
   const image2RotateX = useTransform(scrollYProgress, [0.3, 0.5], [0, 0]);
   const image2RotateY = useTransform(
     scrollYProgress,
-    [0.3, 0.5, 0.65],
-    [0, 20, 30],
+    [0.22, 0.45, 0.7],
+    [0, 12, 25],
   ); // Tilts left
   const image2RotateYMobile = useTransform(
     scrollYProgress,
-    [0.3, 0.5, 0.65],
-    [0, 10, 15],
+    [0.22, 0.45, 0.7],
+    [0, 6, 12],
   ); // Mobile: Less tilt
   const image2RotateZ = useTransform(scrollYProgress, [0.5, 0.65], [0, 0]); // Rotates left
 
-  // Image 3 (Sideways) - Appears CENTER-RIGHT, pushes others aside
+  // Image 3 (Sideways) - Appears CENTER-RIGHT, completes the composition
   const image3Opacity = useTransform(
     scrollYProgress,
-    [0, 0.55, 0.75],
+    [0, 0.45, 0.65],
     [0, 0, 1],
   );
   const image3Scale = useTransform(
     scrollYProgress,
-    [0, 0.55, 0.75],
+    [0, 0.45, 0.65],
     [0.75, 0.75, 1],
   );
-  const image3Y = useTransform(scrollYProgress, [0, 0.55, 0.75], [120, 120, 0]);
-  const image3X = useTransform(scrollYProgress, [0.55, 0.75], [120, 0]); // Desktop: Stays slightly right of center
-  const image3XMobile = useTransform(scrollYProgress, [0.55, 0.75], [60, 0]); // Mobile: Less movement
+  const image3Y = useTransform(scrollYProgress, [0, 0.45, 0.65], [120, 120, 0]);
+  const image3X = useTransform(scrollYProgress, [0.45, 0.7], [120, 0]); // Desktop
+  const image3XMobile = useTransform(scrollYProgress, [0.45, 0.7], [60, 0]); // Mobile
   const image3RotateX = useTransform(scrollYProgress, [0.55, 0.75], [0, 0]);
-  const image3RotateY = useTransform(scrollYProgress, [0.55, 0.75], [15, 25]); // Slight right tilt
+  const image3RotateY = useTransform(scrollYProgress, [0.45, 0.7], [15, 25]); // Slight right tilt
   const image3RotateYMobile = useTransform(
     scrollYProgress,
-    [0.55, 0.75],
+    [0.45, 0.7],
     [8, 12],
   ); // Mobile: Less tilt
   const image3RotateZ = useTransform(scrollYProgress, [0.55, 0.75], [0, 0]); // Rotates right
 
   return (
-    // Wrapper with responsive height for snappy pinning effect
-    <div ref={containerRef} className="relative h-[180vh] md:h-[220vh]">
+    // Wrapper with responsive height for smooth scroll-driven pinning
+    <div ref={containerRef} className="relative h-[250vh] md:h-[300vh]">
       {/* Sticky container that stays fixed while scrolling */}
       <div className="sticky top-0 h-screen flex items-center justify-center overflow-hidden">
         <section className="w-full py-4 sm:py-6 md:py-8 px-4 sm:px-6 md:px-12">

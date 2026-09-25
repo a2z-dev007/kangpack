@@ -3,7 +3,7 @@
 import React, { useState, Suspense } from "react"; // Added Suspense
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { toast } from "sonner";
+import { toast } from "@/lib/toast";
 import { motion } from "framer-motion";
 import { ArrowLeft, Lock, Eye, EyeOff } from "lucide-react";
 import api from "@/lib/api";

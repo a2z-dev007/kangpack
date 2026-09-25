@@ -6,6 +6,7 @@ import { requireAdminOrStaff } from '../../common/middlewares/role.middleware';
 const router = Router();
 
 // Public routes
+router.get('/public', CouponsController.getPublicCoupons);
 router.post('/validate', optionalAuth, CouponsController.validateCoupon);
 
 // Admin/Staff routes

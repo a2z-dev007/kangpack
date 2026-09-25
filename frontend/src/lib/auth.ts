@@ -1,4 +1,5 @@
 import api from './api';
+import { setAuthCookie, clearAuthCookie } from './auth-cookie';
 
 export interface LoginCredentials {
   email: string;
@@ -44,6 +45,7 @@ export const authApi = {
 
     if (authData.accessToken) {
       localStorage.setItem('token', authData.accessToken);
+      setAuthCookie(authData.accessToken);
       console.log('💾 Token stored');
     }
     if (authData.refreshToken) {
@@ -70,6 +72,7 @@ export const authApi = {
     const authData = data.data;
     if (authData.accessToken) {
       localStorage.setItem('token', authData.accessToken);
+      setAuthCookie(authData.accessToken);
     }
     if (authData.refreshToken) {
       localStorage.setItem('refreshToken', authData.refreshToken);
@@ -94,6 +97,7 @@ export const authApi = {
     } finally {
       localStorage.removeItem('token');
       localStorage.removeItem('refreshToken');
+      clearAuthCookie();
     }
   },
 
@@ -118,6 +122,7 @@ export const authApi = {
     const authData = data.data;
     if (authData.accessToken) {
       localStorage.setItem('token', authData.accessToken);
+      setAuthCookie(authData.accessToken);
     }
     if (authData.refreshToken) {
       localStorage.setItem('refreshToken', authData.refreshToken);

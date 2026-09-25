@@ -1,7 +1,32 @@
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import api from '@/lib/api';
+import { toast } from '@/lib/toast';
+import { useAuth } from '@/hooks/use-auth';
 
 const Footer: React.FC = () => {
+    const [newsletterEmail, setNewsletterEmail] = useState('');
+    const [isSubscribing, setIsSubscribing] = useState(false);
+    const { isAuthenticated } = useAuth();
+
+    const handleSubscribe = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!newsletterEmail.trim() || !newsletterEmail.includes('@')) {
+            toast.error('Please enter a valid email address');
+            return;
+        }
+        try {
+            setIsSubscribing(true);
+            await api.post('/newsletter/subscribe', { email: newsletterEmail });
+            toast.success('Thank you for subscribing to Kangpack updates!');
+            setNewsletterEmail('');
+        } catch (err: any) {
+            toast.error(err.response?.data?.message || 'Subscription failed. Please try again.');
+        } finally {
+            setIsSubscribing(false);
+        }
+    };
+
     return (
         <footer className="bg-brand-beige text-brand-brown">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 md:px-12 lg:px-16 py-12 sm:py-16 md:py-20 flex flex-col md:flex-row justify-between gap-10 md:gap-12 border-t border-brand-brown/10">
@@ -20,18 +45,30 @@ const Footer: React.FC = () => {
                         <ul className="space-y-3 text-brand-brown/70 text-xs sm:text-sm">
                             <li><Link href="/about" className="hover:text-brand-brown transition-colors">About Us</Link></li>
                             <li><Link href="/products" className="hover:text-brand-brown transition-colors">Products</Link></li>
+                            {isAuthenticated && (
+                                <li><Link href="/profile/orders" className="hover:text-brand-brown transition-colors font-medium">Track Order</Link></li>
+                            )}
                             <li><Link href="/contact" className="hover:text-brand-brown transition-colors">Contact us</Link></li>
                             <li><Link href="/faqs" className="hover:text-brand-brown transition-colors">FAQ's</Link></li>
-                            <li><Link href="/auth/login" className="hover:text-brand-brown transition-colors font-medium">Log In</Link></li>
-                            <li><Link href="/auth/register" className="hover:text-brand-brown transition-colors font-medium">Sign Up</Link></li>
+                            {!isAuthenticated && (
+                                <>
+                                    <li><Link href="/auth/login" className="hover:text-brand-brown transition-colors font-medium">Log In</Link></li>
+                                    <li><Link href="/auth/register" className="hover:text-brand-brown transition-colors font-medium">Sign Up</Link></li>
+                                </>
+                            )}
+                            {isAuthenticated && (
+                                <li><Link href="/profile/dashboard" className="hover:text-brand-brown transition-colors font-medium">My Account</Link></li>
+                            )}
                         </ul>
                     </div>
                     <div>
-                        <h5 className="font-bold text-[10px] sm:text-xs uppercase tracking-widest mb-4 sm:mb-6 text-[#6B4A2D]">Legal</h5>
+                        <h5 className="font-bold text-[10px] sm:text-xs uppercase tracking-widest mb-4 sm:mb-6 text-[#6B4A2D]">Legal & Policy</h5>
                         <ul className="space-y-3 text-brand-brown/70 text-xs sm:text-sm">
                             <li><Link href="/terms" className="hover:text-brand-brown transition-colors">Terms & Conditions</Link></li>
-                            <li><Link href="/privacy" className="hover:text-brand-brown transition-colors">Privacy Policy</Link></li>
-                            <li><Link href="/shipping" className="hover:text-brand-brown transition-colors">Shipping Policy</Link></li>
+                            <li><Link href="/privacy-policy" className="hover:text-brand-brown transition-colors">Privacy Policy</Link></li>
+                            <li><Link href="/shipping-policy" className="hover:text-brand-brown transition-colors">Shipping Policy</Link></li>
+                            <li><Link href="/refund-cancellation" className="hover:text-brand-brown transition-colors">Refund & Cancellation</Link></li>
+                            <li><Link href="/warranty-policy" className="hover:text-brand-brown transition-colors">Warranty Policy</Link></li>
                         </ul>
                     </div>
                 </div>
@@ -39,23 +76,27 @@ const Footer: React.FC = () => {
                 <div className="max-w-sm w-full">
                     <h5 className="font-bold text-[10px] sm:text-xs uppercase tracking-widest mb-3 text-[#6B4A2D]">Stay up to date</h5>
                     <p className="text-xs sm:text-sm text-brand-brown/70 mb-3 leading-relaxed">Get the latest updates, drops, and exclusive offers.</p>
-                    <form onSubmit={(e) => e.preventDefault()} className="flex gap-2">
+                    <form onSubmit={handleSubscribe} className="flex gap-2">
                         <input
                             type="email"
                             placeholder="Enter your email"
+                            value={newsletterEmail}
+                            onChange={(e) => setNewsletterEmail(e.target.value)}
+                            required
                             className="flex-grow bg-white px-3.5 py-2.5 rounded-xl border border-brand-brown/15 text-xs sm:text-sm focus:outline-none focus:border-brand-brown min-h-[44px]"
                         />
                         <button
                             type="submit"
-                            className="btn-premium px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider min-h-[44px] hover:shadow-md transition-all shrink-0 cursor-pointer"
+                            disabled={isSubscribing}
+                            className="btn-premium px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider min-h-[44px] hover:shadow-md transition-all shrink-0 cursor-pointer disabled:opacity-70"
                         >
-                            Subscribe
+                            {isSubscribing ? 'Subscribing...' : 'Subscribe'}
                         </button>
                     </form>
                     <div className="flex gap-4 mt-6 text-[10px] sm:text-xs font-bold text-brand-brown/40">
                         <Link href="/terms" className="hover:text-brand-brown transition-colors">Terms</Link>
                         <span>•</span>
-                        <Link href="/privacy" className="hover:text-brand-brown transition-colors">Privacy</Link>
+                        <Link href="/privacy-policy" className="hover:text-brand-brown transition-colors">Privacy</Link>
                         <span>•</span>
                         <Link href="/contact" className="hover:text-brand-brown transition-colors">Support</Link>
                     </div>

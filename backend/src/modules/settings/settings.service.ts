@@ -12,6 +12,14 @@ export class SettingsService {
     }
 
     this.ensureDefaults(settings);
+    if (!settings.currency || settings.currency === 'USD') {
+      settings.currency = 'INR';
+      settings.currencySymbol = '₹';
+      await settings.save();
+    } else if (settings.currency === 'INR' && (!settings.currencySymbol || settings.currencySymbol === '$')) {
+      settings.currencySymbol = '₹';
+      await settings.save();
+    }
     return settings;
   }
 
@@ -50,8 +58,16 @@ export class SettingsService {
       settings.email.fromName = data.fromName;
     }
 
-    if (data.currency !== undefined) settings.currency = data.currency;
+    if (data.currency !== undefined) {
+      settings.currency = data.currency;
+      if (data.currency === 'INR' && (!data.currencySymbol || data.currencySymbol === '$')) {
+        settings.currencySymbol = '₹';
+      }
+    }
     if (data.currencySymbol !== undefined) settings.currencySymbol = data.currencySymbol;
+    if (settings.currency === 'INR' && settings.currencySymbol === '$') {
+      settings.currencySymbol = '₹';
+    }
 
     if (!settings.tax) settings.tax = { enabled: true, rate: 0, inclusive: false, displayPricesWithTax: false };
     if (data.taxRate !== undefined) {
@@ -141,8 +157,16 @@ export class SettingsService {
   }): Promise<ISettings> {
     const settings = await this.getSettings();
 
-    if (data.currency) settings.currency = data.currency;
+    if (data.currency) {
+      settings.currency = data.currency;
+      if (data.currency === 'INR' && (!data.currencySymbol || data.currencySymbol === '$')) {
+        settings.currencySymbol = '₹';
+      }
+    }
     if (data.currencySymbol) settings.currencySymbol = data.currencySymbol;
+    if (settings.currency === 'INR' && settings.currencySymbol === '$') {
+      settings.currencySymbol = '₹';
+    }
 
     await settings.save();
     return settings;
@@ -326,6 +350,13 @@ export class SettingsService {
         data?.businessName ||
         settings.businessName ||
         'Kangpack';
+    }
+
+    if (!settings.currency || settings.currency === 'USD') {
+      settings.currency = 'INR';
+      settings.currencySymbol = '₹';
+    } else if (settings.currency === 'INR' && (!settings.currencySymbol || settings.currencySymbol === '$')) {
+      settings.currencySymbol = '₹';
     }
   }
 

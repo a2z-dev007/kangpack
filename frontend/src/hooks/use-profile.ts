@@ -2,7 +2,7 @@ import { useState, useCallback } from 'react';
 import api, { handleApiError } from '@/lib/api';
 import { Address, ApiResponse, User } from '@/types';
 import { useAuth } from './use-auth';
-import { toast } from 'sonner';
+import { toast } from '@/lib/toast';
 
 export function useProfile() {
   const { user, setUser } = useAuth();

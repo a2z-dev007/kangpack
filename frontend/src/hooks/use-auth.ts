@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { User } from '@/types';
+import { clearAuthCookie } from '@/lib/auth-cookie';
 
 interface AuthStore {
   user: User | null;
@@ -25,6 +26,7 @@ export const useAuth = create<AuthStore>()(
       logout: () => {
         localStorage.removeItem('token');
         localStorage.removeItem('refreshToken');
+        clearAuthCookie();
         set({ user: null, isAuthenticated: false, isAdmin: false });
       },
     }),
