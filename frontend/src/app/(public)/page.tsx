@@ -44,6 +44,8 @@ const HomePage: React.FC = () => {
         <SectionDivider />
         <GalleryThree />
         <SectionDivider />
+        <OurProducts />
+        <SectionDivider />
         <OfficeAnywhere />
         <SectionDivider />
         <Testimonials />
@@ -53,8 +55,6 @@ const HomePage: React.FC = () => {
         <RealMoments />
         <SectionDivider />
         <Pricing />
-        <SectionDivider />
-        <FAQ />
         <SectionDivider />
 
         {/* Large Product Reveal */}
@@ -67,9 +67,10 @@ const HomePage: React.FC = () => {
           />
           <div className="absolute inset-0 bg-black/10 pointer-events-none"></div>
         </div>
+        <SectionDivider />
 
-        {/* Other Products Section */}
-        <OurProducts />
+        {/* FAQ Section at the end of all sections above Footer */}
+        <FAQ />
       </main>
       <VideoModal />
     </div>

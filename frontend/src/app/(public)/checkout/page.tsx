@@ -93,7 +93,7 @@ const StepIndicator = ({ currentStep }: { currentStep: number }) => {
 
 // --- Checkout Main Page ---
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const { currentStep, shippingAddress, paymentMethod, isProcessing, error } =
@@ -1372,5 +1372,19 @@ export default function CheckoutPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <React.Suspense
+      fallback={
+        <div className="min-h-screen bg-[#FAF7F2] flex items-center justify-center">
+          <Loader2 className="w-8 h-8 text-[#6B4A2D] animate-spin" />
+        </div>
+      }
+    >
+      <CheckoutContent />
+    </React.Suspense>
   );
 }
