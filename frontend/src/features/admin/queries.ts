@@ -116,6 +116,20 @@ export const useBulkDeleteProducts = () => {
   });
 };
 
+export const useBulkImportProducts = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: productsAdminApi.bulkImport,
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'products'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'stats'] });
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to import products');
+    },
+  });
+};
+
 // Orders Queries
 export const useAdminOrders = (params?: PaginationParams) => {
   return useQuery({
@@ -138,6 +152,9 @@ export const useUpdateOrderStatus = () => {
     mutationFn: ({ id, status }: { id: string; status: string }) => ordersAdminApi.updateStatus(id, status),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'activity'] });
       toast.success('Order status updated');
     },
     onError: (error: any) => {
@@ -152,6 +169,9 @@ export const useUpdatePaymentStatus = () => {
     mutationFn: ({ id, paymentStatus }: { id: string; paymentStatus: string }) => ordersAdminApi.updatePaymentStatus(id, paymentStatus),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'activity'] });
       toast.success('Payment status updated');
     },
     onError: (error: any) => {
@@ -167,7 +187,10 @@ export const useAddTracking = () => {
       ordersAdminApi.addTracking(id, trackingNumber, carrier),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['admin', 'orders'] });
-      toast.success('Tracking number added');
+      queryClient.invalidateQueries({ queryKey: ['orders'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'stats'] });
+      queryClient.invalidateQueries({ queryKey: ['admin', 'dashboard', 'activity'] });
+      toast.success('Tracking information updated');
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Failed to add tracking');

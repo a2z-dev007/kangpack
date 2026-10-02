@@ -17,15 +17,16 @@ import {
   AlertCircle,
   CreditCard,
   ShoppingBag,
-  Tag,
   Mail,
   Calendar,
   ArrowUpRight,
-  RefreshCw,
   RotateCcw,
-  Trash2,
   ChevronLeft,
   ChevronRight,
+  LayoutGrid,
+  LayoutList,
+  ExternalLink,
+  Hash,
 } from "lucide-react";
 import { formatPrice, formatDateTime } from "@/lib/utils";
 import {
@@ -37,14 +38,13 @@ import {
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu";
 import { OrderDetailsModal } from "@/features/admin/components/OrderDetailsModal";
-import { ORDER_STATUS } from "@/lib/constants";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
-import { useAdminOrders, useUpdateOrderStatus } from "@/features/admin/queries";
+import { useAdminOrders, useUpdateOrderStatus, useUpdatePaymentStatus } from "@/features/admin/queries";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Select,
@@ -54,6 +54,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { CopyToClipboard } from "@/components/ui/CopyToClipboard";
 
 export default function AdminOrders() {
   const router = useRouter();
@@ -67,7 +68,9 @@ export default function AdminOrders() {
   };
 
   const [page, setPage] = useState(Number(getInitialParam("page", "1")) || 1);
+  const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState(getInitialParam("search", ""));
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [isDetailsModalOpen, setDetailsModalOpen] = useState(false);
 
@@ -86,16 +89,7 @@ export default function AdminOrders() {
     ([k, v]) => k !== "status" && v !== "all" && v !== ""
   ).length;
 
-  const [isFilterOpen, setFilterOpen] = useState(
-    Boolean(
-      (getInitialParam("paymentStatus", "all") !== "all") ||
-      (getInitialParam("paymentMethod", "all") !== "all") ||
-      getInitialParam("startDate", "") ||
-      getInitialParam("endDate", "") ||
-      getInitialParam("minAmount", "") ||
-      getInitialParam("maxAmount", "")
-    )
-  );
+  const [isFilterOpen, setFilterOpen] = useState(true);
 
   // Sync state to URL whenever filters change
   useEffect(() => {
@@ -133,7 +127,7 @@ export default function AdminOrders() {
 
   const { data, isLoading } = useAdminOrders({
     page,
-    limit: 12,
+    limit,
     search: search || undefined,
     status: activeFilters.status !== "all" ? activeFilters.status : undefined,
     paymentStatus:
@@ -151,6 +145,7 @@ export default function AdminOrders() {
   });
 
   const { mutate: updateStatus } = useUpdateOrderStatus();
+  const { mutate: updatePaymentStatus } = useUpdatePaymentStatus();
 
   const orders = data?.data || [];
   const pagination = data?.pagination;
@@ -159,6 +154,8 @@ export default function AdminOrders() {
     switch (status) {
       case "pending":
         return "bg-amber-50 text-amber-700 border-amber-200";
+      case "confirmed":
+        return "bg-cyan-50 text-cyan-700 border-cyan-200";
       case "processing":
         return "bg-blue-50 text-blue-700 border-blue-200";
       case "shipped":
@@ -176,6 +173,8 @@ export default function AdminOrders() {
     switch (status) {
       case "pending":
         return <AlertCircle className="h-3 w-3 mr-1" />;
+      case "confirmed":
+        return <CheckCircle2 className="h-3 w-3 mr-1" />;
       case "processing":
         return <Package className="h-3 w-3 mr-1" />;
       case "shipped":
@@ -198,6 +197,8 @@ export default function AdminOrders() {
         return "bg-amber-50 text-amber-600 border-amber-100";
       case "failed":
         return "bg-rose-50 text-rose-600 border-rose-100 text-rose-500";
+      case "refunded":
+        return "bg-purple-50 text-purple-600 border-purple-100";
       default:
         return "bg-slate-50 text-slate-600 border-slate-100";
     }
@@ -261,36 +262,63 @@ export default function AdminOrders() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-4">
+      {/* Top Header */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight text-[#6B4A2D]">
             Orders
           </h1>
           <p className="text-muted-foreground mt-1 text-sm sm:text-base md:text-lg">
-            Manage your store's sales and fulfillment cycle
+            Manage your store's sales, status updates, and fulfillment cycle
           </p>
         </div>
-        <div className="flex flex-wrap gap-2 sm:gap-3">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* View Toggle */}
+          <div className="bg-slate-100 p-1 rounded-full flex items-center border border-slate-200">
+            <button
+              onClick={() => setViewMode("table")}
+              className={cn(
+                "h-9 px-3.5 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all",
+                viewMode === "table"
+                  ? "bg-[#6B4A2D] text-white shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              )}
+            >
+              <LayoutList className="h-4 w-4" />
+              <span className="hidden sm:inline">Table View</span>
+            </button>
+            <button
+              onClick={() => setViewMode("grid")}
+              className={cn(
+                "h-9 px-3.5 rounded-full text-xs font-bold flex items-center gap-1.5 transition-all",
+                viewMode === "grid"
+                  ? "bg-[#6B4A2D] text-white shadow-sm"
+                  : "text-slate-600 hover:text-slate-900"
+              )}
+            >
+              <LayoutGrid className="h-4 w-4" />
+              <span className="hidden sm:inline">Grid View</span>
+            </button>
+          </div>
+
           <Button
             variant="outline"
-            className="rounded-full shadow-sm bg-white border-slate-200 h-10 sm:h-11 px-3 sm:px-6 text-xs sm:text-sm"
+            className="rounded-full shadow-sm bg-white border-slate-200 h-10 sm:h-11 px-3 sm:px-6 text-xs sm:text-sm font-bold text-slate-700"
           >
-            <Download className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="hidden xs:inline">Export</span>
-            <span className="xs:hidden">Export</span>
+            <Download className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" />
+            <span>Export</span>
           </Button>
           <Button
             onClick={() => setFilterOpen((prev) => !prev)}
             className={cn(
-              "rounded-full shadow-md border-none h-10 sm:h-11 px-3 sm:px-6 text-xs sm:text-sm flex items-center gap-2 transition-all",
+              "rounded-full shadow-md border-none h-10 sm:h-11 px-3 sm:px-6 text-xs sm:text-sm font-bold flex items-center gap-2 transition-all",
               isFilterOpen || activeFilterCount > 0
                 ? "bg-[#5A3E25] text-white"
-                : "bg-[#6B4A2D] hover:bg-[#5A3E25] text-white",
+                : "bg-[#6B4A2D] hover:bg-[#5A3E25] text-white"
             )}
           >
-            <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
-            <span className="hidden xs:inline">Filters</span>
-            <span className="xs:hidden">Filters</span>
+            <Filter className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" />
+            <span>Filters</span>
             {activeFilterCount > 0 && (
               <Badge className="h-5 min-w-5 px-1.5 flex items-center justify-center rounded-full bg-white text-[#6B4A2D] text-[10px] font-bold">
                 {activeFilterCount}
@@ -298,68 +326,72 @@ export default function AdminOrders() {
             )}
           </Button>
 
-          {(search ||
-            statusFilter !== "all" ||
-            activeFilterCount > 0) && (
+          {(search || statusFilter !== "all" || activeFilterCount > 0) && (
             <Button
               variant="outline"
               onClick={resetFilters}
-              className="rounded-full shadow-sm bg-white border-red-200 h-10 sm:h-11 px-3 sm:px-6 text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300 transition-all text-xs sm:text-sm"
+              className="rounded-full shadow-sm bg-white border-red-200 h-10 sm:h-11 px-3 sm:px-6 text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-300 transition-all text-xs sm:text-sm font-bold"
               title="Reset all filters"
             >
-              <RotateCcw className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+              <RotateCcw className="h-3.5 w-3.5 sm:h-4 sm:w-4 mr-1.5" />
               Reset
             </Button>
           )}
         </div>
       </div>
 
-      {/* Main Search & Status Filters */}
-      <div className="bg-white/50 backdrop-blur-sm border border-slate-200 rounded-3xl p-4 sm:p-6 shadow-sm space-y-4">
-        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
-          <div className="relative flex-1">
-            <Search className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
+      {/* Main Search & Status Tabs */}
+      <div className="bg-white/80 backdrop-blur-sm border border-slate-200 rounded-3xl p-4 sm:p-6 shadow-sm space-y-4">
+        <div className="flex flex-col xl:flex-row gap-4 xl:items-center justify-between">
+          {/* Search Bar */}
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-3.5 sm:left-4 top-1/2 -translate-y-1/2 h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
             <Input
-              placeholder="Search by order #, email..."
+              placeholder="Search by order #, customer name, email..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="pl-10 sm:pl-12 h-12 sm:h-14 rounded-2xl border-slate-200 bg-white shadow-inner text-sm sm:text-base lg:text-lg focus-visible:ring-[#6B4A2D]"
+              className="pl-10 sm:pl-12 h-11 sm:h-12 rounded-2xl border-slate-200 bg-white shadow-xs text-xs sm:text-sm font-medium focus-visible:ring-[#6B4A2D] w-full"
             />
           </div>
-          <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 bg-slate-100 p-1 sm:p-1.5 rounded-2xl h-fit self-center w-full lg:w-auto overflow-x-auto">
-            {[
-              "all",
-              "pending",
-              "processing",
-              "shipped",
-              "delivered",
-              "cancelled",
-            ].map((status) => (
-              <button
-                key={status}
-                onClick={() => {
-                  setStatusFilter(status);
-                  setPage(1);
-                }}
-                className={cn(
-                  "px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-xl text-xs sm:text-sm font-bold capitalize transition-all whitespace-nowrap",
-                  statusFilter === status
-                    ? "bg-white text-[#6B4A2D] shadow-sm transform-none"
-                    : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50",
-                )}
-              >
-                {status}
-              </button>
-            ))}
+
+          {/* Status Tabs Filter */}
+          <div className="w-full xl:w-auto overflow-x-auto no-scrollbar py-0.5">
+            <div className="flex items-center gap-1 sm:gap-1.5 bg-slate-100/90 p-1.5 rounded-2xl min-w-max">
+              {[
+                "all",
+                "pending",
+                "confirmed",
+                "processing",
+                "shipped",
+                "delivered",
+                "cancelled",
+              ].map((status) => (
+                <button
+                  key={status}
+                  onClick={() => {
+                    setStatusFilter(status);
+                    setPage(1);
+                  }}
+                  className={cn(
+                    "px-3 sm:px-4 py-2 rounded-xl text-xs sm:text-sm font-bold capitalize transition-all whitespace-nowrap",
+                    statusFilter === status
+                      ? "bg-white text-[#6B4A2D] shadow-sm"
+                      : "text-slate-500 hover:text-slate-700 hover:bg-slate-200/50"
+                  )}
+                >
+                  {status}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Inline Advanced Filters */}
         {isFilterOpen && (
-          <div className="pt-4 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-in fade-in duration-200">
+          <div className="pt-4 border-t border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-4 sm:gap-5 animate-in fade-in duration-200">
             {/* Payment Status */}
             <div className="space-y-1.5">
               <Label className="text-[11px] font-black uppercase text-slate-400 tracking-wider flex items-center gap-1.5">
@@ -426,7 +458,7 @@ export default function AdminOrders() {
                     }));
                     setPage(1);
                   }}
-                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs"
+                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs px-2.5 sm:px-3"
                 />
                 <Input
                   type="date"
@@ -438,7 +470,7 @@ export default function AdminOrders() {
                     }));
                     setPage(1);
                   }}
-                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs"
+                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs px-2.5 sm:px-3"
                 />
               </div>
             </div>
@@ -460,7 +492,7 @@ export default function AdminOrders() {
                     }));
                     setPage(1);
                   }}
-                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs"
+                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs px-3"
                 />
                 <Input
                   placeholder="Max"
@@ -473,7 +505,7 @@ export default function AdminOrders() {
                     }));
                     setPage(1);
                   }}
-                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs"
+                  className="h-11 rounded-2xl border-slate-200 bg-white font-medium text-xs px-3"
                 />
               </div>
             </div>
@@ -481,38 +513,252 @@ export default function AdminOrders() {
         )}
       </div>
 
-      {/* Orders Grid */}
+      {/* Main Content Area */}
       <div>
         {isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
-              <Skeleton key={i} className="h-[320px] w-full rounded-3xl" />
-            ))}
-          </div>
-        ) : orders.length === 0 ? (
-          <div className="bg-white border rounded-3xl p-20 text-center flex flex-col items-center justify-center shadow-sm">
-            <div className="h-24 w-24 bg-slate-50 rounded-full flex items-center justify-center mb-6">
-              <Package className="h-12 w-12 text-slate-300" />
+          viewMode === "table" ? (
+            <div className="bg-white border border-slate-200 rounded-3xl p-6 space-y-4 shadow-sm">
+              {[1, 2, 3, 4, 5].map((i) => (
+                <Skeleton key={i} className="h-14 w-full rounded-2xl" />
+              ))}
             </div>
-            <h3 className="text-2xl font-bold text-slate-800">
-              No orders found
-            </h3>
-            <p className="text-muted-foreground max-w-xs mx-auto mt-2">
-              We couldn't find any orders matching your current filters.
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <Skeleton key={i} className="h-[320px] w-full rounded-3xl" />
+              ))}
+            </div>
+          )
+        ) : orders.length === 0 ? (
+          <div className="bg-white border border-slate-200 rounded-3xl p-16 text-center flex flex-col items-center justify-center shadow-sm">
+            <div className="h-20 w-20 bg-slate-50 rounded-full flex items-center justify-center mb-4">
+              <Package className="h-10 w-10 text-slate-300" />
+            </div>
+            <h3 className="text-xl font-bold text-slate-800">No orders found</h3>
+            <p className="text-muted-foreground max-w-xs mx-auto mt-1 text-sm">
+              We couldn't find any orders matching your current search or filters.
             </p>
             <Button
               variant="outline"
-              className="mt-6 rounded-full"
+              className="mt-5 rounded-full text-xs font-bold border-slate-200"
               onClick={resetFilters}
             >
               Clear all filters
             </Button>
           </div>
+        ) : viewMode === "table" ? (
+          /* Default Table View */
+          <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-slate-100 bg-slate-50/70 text-[11px] font-black uppercase tracking-wider text-slate-400">
+                    <th className="py-4 px-5">Order #</th>
+                    <th className="py-4 px-5">Customer</th>
+                    <th className="py-4 px-5">Date & Time</th>
+                    <th className="py-4 px-5">Amount</th>
+                    <th className="py-4 px-5">Payment</th>
+                    <th className="py-4 px-5">Order Status</th>
+                    <th className="py-4 px-5">Fulfillment</th>
+                    <th className="py-4 px-5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100 text-sm">
+                  {orders.map((order: any) => (
+                    <tr
+                      key={order.id || order._id}
+                      className="hover:bg-slate-50/80 transition-colors group"
+                    >
+                      {/* Order # */}
+                      <td className="py-4 px-5 font-bold text-slate-900 whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono text-xs sm:text-sm font-black text-slate-900">
+                            #{order.orderNumber}
+                          </span>
+                          <CopyToClipboard text={order.orderNumber} variant="minimal" />
+                        </div>
+                        <span className="text-[10px] text-slate-400 font-bold block mt-0.5">
+                          {order.items?.length || 0} {order.items?.length === 1 ? "item" : "items"}
+                        </span>
+                      </td>
+
+                      {/* Customer */}
+                      <td className="py-4 px-5">
+                        <div className="flex items-center gap-3">
+                          <Avatar className="h-9 w-9 border border-slate-100 shadow-xs">
+                            <AvatarFallback className="bg-[#6B4A2D] text-white font-bold text-xs uppercase">
+                              {(
+                                order.user?.name ||
+                                order.shippingAddress?.firstName ||
+                                "G"
+                              ).charAt(0)}
+                            </AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col min-w-0">
+                            <span className="font-bold text-xs sm:text-sm text-slate-800 truncate leading-tight">
+                              {order.user?.name ||
+                                `${order.shippingAddress?.firstName || ""} ${order.shippingAddress?.lastName || ""}`.trim() ||
+                                "Guest Customer"}
+                            </span>
+                            <span className="text-[11px] text-slate-400 truncate font-medium">
+                              {order.email || order.user?.email || "No email"}
+                            </span>
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* Date & Time */}
+                      <td className="py-4 px-5 text-xs font-bold text-slate-600 whitespace-nowrap">
+                        <div className="flex items-center gap-1.5">
+                          <Clock className="h-3.5 w-3.5 text-slate-400" />
+                          <span>{formatDateTime(order.createdAt)}</span>
+                        </div>
+                        {order.shippingAddress?.city && (
+                          <span className="text-[10px] text-slate-400 font-normal block mt-0.5">
+                            {order.shippingAddress.city}, {order.shippingAddress.state}
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Amount */}
+                      <td className="py-4 px-5 whitespace-nowrap">
+                        <span className="font-black text-[#6B4A2D] text-base">
+                          {formatPrice(order.totalAmount || order.total)}
+                        </span>
+                      </td>
+
+                      {/* Payment */}
+                      <td className="py-4 px-5 whitespace-nowrap">
+                        <div className="flex flex-col gap-1 items-start">
+                          <Badge
+                            variant="outline"
+                            className={cn(
+                              "rounded-full border py-0 text-[10px] h-5 px-2 font-bold uppercase shadow-none",
+                              getPaymentStatusStyles(order.paymentStatus)
+                            )}
+                          >
+                            {order.paymentStatus || "pending"}
+                          </Badge>
+                          <span className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
+                            {order.paymentMethod === "cod" ? "COD" : "Online"}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Order Status (With Quick Selector) */}
+                      <td className="py-4 px-5 whitespace-nowrap">
+                        <Select
+                          value={order.status}
+                          onValueChange={(newStatus) =>
+                            updateStatus({ id: order.id || order._id, status: newStatus })
+                          }
+                        >
+                          <SelectTrigger
+                            className={cn(
+                              "h-8 rounded-full border px-3 text-[11px] font-bold uppercase shadow-none transition-all w-32",
+                              getStatusStyles(order.status)
+                            )}
+                          >
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="rounded-2xl border-slate-200 bg-white shadow-xl">
+                            <SelectItem value="pending">Pending</SelectItem>
+                            <SelectItem value="confirmed">Confirmed</SelectItem>
+                            <SelectItem value="processing">Processing</SelectItem>
+                            <SelectItem value="shipped">Shipped</SelectItem>
+                            <SelectItem value="delivered">Delivered</SelectItem>
+                            <SelectItem value="cancelled">Cancelled</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </td>
+
+                      {/* Fulfillment / Tracking */}
+                      <td className="py-4 px-5 whitespace-nowrap">
+                        {order.trackingNumber ? (
+                          <div className="flex flex-col text-xs">
+                            <span className="font-bold text-slate-800 flex items-center gap-1">
+                              <Truck className="h-3 w-3 text-indigo-500" />
+                              {order.carrier || "Courier"}
+                            </span>
+                            <span className="font-mono text-[11px] text-slate-500 font-bold">
+                              {order.trackingNumber}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="text-[11px] font-medium text-slate-400 italic">
+                            Unfulfilled
+                          </span>
+                        )}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="py-4 px-5 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-2">
+                          <Button
+                            variant="default"
+                            size="sm"
+                            onClick={() => openDetailsModal(order)}
+                            className="rounded-xl bg-[#6B4A2D] hover:bg-[#5A3E25] text-white shadow-xs h-8 px-3 text-xs font-bold border-none"
+                          >
+                            <Eye className="h-3.5 w-3.5 mr-1" /> Details
+                          </Button>
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                className="w-8 h-8 rounded-xl p-0 bg-white border-slate-200 shadow-xs"
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent
+                              align="end"
+                              className="rounded-2xl p-2 min-w-[190px] shadow-2xl border-slate-200 bg-white"
+                            >
+                              <DropdownMenuLabel className="text-[10px] font-bold uppercase text-slate-400 px-3 py-2">
+                                Change Status
+                              </DropdownMenuLabel>
+                              <DropdownMenuSeparator className="bg-slate-100 mx-2" />
+                              {[
+                                "pending",
+                                "confirmed",
+                                "processing",
+                                "shipped",
+                                "delivered",
+                                "cancelled",
+                              ].map((st) => (
+                                <DropdownMenuItem
+                                  key={st}
+                                  onClick={() =>
+                                    updateStatus({ id: order.id || order._id, status: st })
+                                  }
+                                  className={cn(
+                                    "capitalize rounded-xl px-3 py-2 cursor-pointer font-bold mb-1 last:mb-0 text-xs",
+                                    order.status === st
+                                      ? "opacity-40 pointer-events-none"
+                                      : "hover:bg-slate-50"
+                                  )}
+                                >
+                                  Mark as {st}
+                                </DropdownMenuItem>
+                              ))}
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         ) : (
+          /* Grid View Mode */
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 gap-6">
             {orders.map((order: any) => (
               <Card
-                key={order.id}
+                key={order.id || order._id}
                 className="group border-none shadow-sm hover:shadow-xl transition-all duration-300 rounded-[2rem] overflow-hidden bg-white flex flex-col"
               >
                 <div className="p-6 pb-2">
@@ -528,7 +774,7 @@ export default function AdminOrders() {
                     <Badge
                       className={cn(
                         "rounded-full border px-3 py-1 text-[10px] font-bold uppercase shadow-none transition-none transform-none",
-                        getStatusStyles(order.status),
+                        getStatusStyles(order.status)
                       )}
                     >
                       {getStatusIcon(order.status)}
@@ -553,7 +799,7 @@ export default function AdminOrders() {
                       <div className="flex flex-col overflow-hidden">
                         <span className="font-bold text-sm text-slate-800 truncate leading-tight">
                           {order.user?.name ||
-                            `${order.shippingAddress?.firstName} ${order.shippingAddress?.lastName}` ||
+                            `${order.shippingAddress?.firstName || ""} ${order.shippingAddress?.lastName || ""}`.trim() ||
                             "Guest User"}
                         </span>
                         <span className="text-[11px] text-slate-500 truncate flex items-center gap-1 mt-0.5">
@@ -588,7 +834,6 @@ export default function AdminOrders() {
                   {/* Image and Metrics Section */}
                   <div className="mt-auto pt-5 border-t border-slate-100 flex items-start justify-between gap-4">
                     <div className="flex items-start gap-3 flex-1 overflow-hidden">
-                      {/* Small product thumbnail */}
                       <div className="h-12 w-12 rounded-xl bg-slate-50 border border-slate-100 overflow-hidden flex-shrink-0 relative">
                         {order.items?.[0]?.image ? (
                           <img
@@ -620,8 +865,8 @@ export default function AdminOrders() {
                           <Badge
                             variant="outline"
                             className={cn(
-                              "rounded-full border py-0 text-[10px] h-5 px-2 font-bold uppercase shadow-none transition-none transform-none",
-                              getPaymentStatusStyles(order.paymentStatus),
+                              "rounded-full border py-0 text-[10px] h-5 px-2 font-bold uppercase shadow-none",
+                              getPaymentStatusStyles(order.paymentStatus)
                             )}
                           >
                             {order.paymentStatus || "pending"}
@@ -657,7 +902,7 @@ export default function AdminOrders() {
                       <Button
                         variant="outline"
                         size="sm"
-                        className="w-11 h-11 rounded-2xl p-0 bg-white border-slate-200 shadow-sm transition-none"
+                        className="w-11 h-11 rounded-2xl p-0 bg-white border-slate-200 shadow-sm"
                       >
                         <MoreHorizontal className="h-4 w-4" />
                       </Button>
@@ -672,6 +917,7 @@ export default function AdminOrders() {
                       <DropdownMenuSeparator className="bg-slate-100 mx-2" />
                       {[
                         "pending",
+                        "confirmed",
                         "processing",
                         "shipped",
                         "delivered",
@@ -680,21 +926,15 @@ export default function AdminOrders() {
                         <DropdownMenuItem
                           key={status}
                           onClick={() =>
-                            updateStatus({ id: order.id, status })
+                            updateStatus({ id: order.id || order._id, status })
                           }
                           className={cn(
-                            "capitalize rounded-xl px-3 py-2.5 cursor-pointer font-bold mb-1 last:mb-0 text-xs transition-none",
+                            "capitalize rounded-xl px-3 py-2.5 cursor-pointer font-bold mb-1 last:mb-0 text-xs",
                             order.status === status
                               ? "opacity-30 pointer-events-none"
-                              : "hover:bg-slate-50",
+                              : "hover:bg-slate-50"
                           )}
                         >
-                          <div
-                            className={cn(
-                              "h-2 w-2 rounded-full mr-3",
-                              getStatusStyles(status).split(" ")[0],
-                            )}
-                          />
                           Mark as {status}
                         </DropdownMenuItem>
                       ))}
@@ -706,28 +946,53 @@ export default function AdminOrders() {
           </div>
         )}
 
-        {/* Pagination */}
+        {/* Pagination Section */}
         {pagination && pagination.pages > 1 && (
-          <div className="flex flex-col sm:flex-row items-center justify-between mt-6 p-6 bg-white rounded-[2rem] border border-slate-200 shadow-sm gap-4">
-            <p className="text-sm font-medium text-slate-500">
-              Showing{" "}
-              <span className="text-slate-800 font-bold">
-                {(page - 1) * (pagination.limit || 12) + 1}
-              </span>{" "}
-              to{" "}
-              <span className="text-slate-800 font-bold">
-                {Math.min(page * (pagination.limit || 12), pagination.total)}
-              </span>{" "}
-              of{" "}
-              <span className="text-slate-800 font-bold">
-                {pagination.total}
-              </span>{" "}
-              orders
-            </p>
+          <div className="flex flex-col sm:flex-row items-center justify-between mt-6 p-5 bg-white rounded-[2rem] border border-slate-200 shadow-sm gap-4">
+            <div className="flex items-center gap-3">
+              <p className="text-xs font-bold text-slate-500">
+                Showing{" "}
+                <span className="text-slate-900 font-black">
+                  {(page - 1) * limit + 1}
+                </span>{" "}
+                to{" "}
+                <span className="text-slate-900 font-black">
+                  {Math.min(page * limit, pagination.total)}
+                </span>{" "}
+                of{" "}
+                <span className="text-slate-900 font-black">
+                  {pagination.total}
+                </span>{" "}
+                orders
+              </p>
+
+              {/* Rows Per Page Selector */}
+              <div className="hidden md:flex items-center gap-1.5 ml-4">
+                <span className="text-[11px] font-bold text-slate-400 uppercase">Rows:</span>
+                <Select
+                  value={limit.toString()}
+                  onValueChange={(val) => {
+                    setLimit(Number(val));
+                    setPage(1);
+                  }}
+                >
+                  <SelectTrigger className="h-8 w-16 rounded-xl border-slate-200 text-xs font-bold bg-slate-50">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl border-slate-200 bg-white">
+                    <SelectItem value="10">10</SelectItem>
+                    <SelectItem value="20">20</SelectItem>
+                    <SelectItem value="50">50</SelectItem>
+                    <SelectItem value="100">100</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+
             <div className="flex flex-wrap items-center gap-2">
               <Button
                 variant="outline"
-                className="rounded-full w-10 h-10 p-0 border-slate-200 hover:bg-slate-50 text-slate-600"
+                className="rounded-full w-9 h-9 p-0 border-slate-200 hover:bg-slate-50 text-slate-600"
                 onClick={() => setPage((p) => Math.max(1, p - 1))}
                 disabled={page === 1}
               >
@@ -740,7 +1005,7 @@ export default function AdminOrders() {
                   pageNum === "..." ? (
                     <div
                       key={`ellipsis-${idx}`}
-                      className="flex items-center justify-center w-8 h-10 text-slate-400 font-black tracking-widest"
+                      className="flex items-center justify-center w-8 h-9 text-slate-400 font-black tracking-widest text-xs"
                     >
                       ...
                     </div>
@@ -749,22 +1014,22 @@ export default function AdminOrders() {
                       key={`page-${pageNum}`}
                       variant={page === pageNum ? "default" : "outline"}
                       className={cn(
-                        "rounded-full w-10 h-10 p-0 font-bold text-sm transition-all duration-200",
+                        "rounded-full w-9 h-9 p-0 font-bold text-xs transition-all duration-200",
                         page === pageNum
-                          ? "bg-[#6B4A2D] hover:bg-[#5A3E25] text-white border-none shadow-md scale-110"
-                          : "border-slate-200 hover:bg-slate-50 text-slate-600 hover:scale-105",
+                          ? "bg-[#6B4A2D] hover:bg-[#5A3E25] text-white border-none shadow-md scale-105"
+                          : "border-slate-200 hover:bg-slate-50 text-slate-600 hover:scale-105"
                       )}
                       onClick={() => setPage(pageNum as number)}
                     >
                       {pageNum}
                     </Button>
-                  ),
+                  )
                 )}
               </div>
 
               <Button
                 variant="outline"
-                className="rounded-full w-10 h-10 p-0 border-slate-200 hover:bg-slate-50 text-slate-600"
+                className="rounded-full w-9 h-9 p-0 border-slate-200 hover:bg-slate-50 text-slate-600"
                 onClick={() => setPage((p) => p + 1)}
                 disabled={page >= pagination.pages}
               >

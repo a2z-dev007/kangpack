@@ -25,8 +25,11 @@ import {
   Eye,
   RefreshCw,
   RotateCcw,
+  FileSpreadsheet,
+  UploadCloud,
+  Clock,
 } from "lucide-react";
-import { formatPrice, cn } from "@/lib/utils";
+import { formatPrice, formatDateTime, formatDate, cn } from "@/lib/utils";
 import Image from "next/image";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useAdminCategories } from "@/features/admin/queries";
@@ -121,6 +124,8 @@ export default function AdminProducts() {
     page,
     limit: 10,
     search,
+    sort: "updatedAt",
+    order: "desc",
     category: activeFilters.category !== "all" ? activeFilters.category : undefined,
     status: activeFilters.status !== "all" ? activeFilters.status : undefined,
     stockStatus: activeFilters.stockStatus !== "all" ? activeFilters.stockStatus : undefined,
@@ -282,9 +287,14 @@ export default function AdminProducts() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" size="sm" className="hidden sm:flex">
-              <Download className="mr-2 h-4 w-4" />
-              Export
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => router.push("/admin/products/import")}
+              className="border-primary/30 text-primary hover:bg-primary/5 font-semibold"
+            >
+              <FileSpreadsheet className="mr-2 h-4 w-4" />
+              Import Excel
             </Button>
             <Button
               onClick={openAddModal}
@@ -630,13 +640,23 @@ export default function AdminProducts() {
                     : "Get started by creating your first product."}
                 </p>
                 {!search && (
-                  <Button
-                    onClick={openAddModal}
-                    className="bg-gradient-variant-2 text-primary-foreground hover:opacity-90 border-0"
-                  >
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add Your First Product
-                  </Button>
+                  <div className="flex items-center justify-center gap-3">
+                    <Button
+                      onClick={openAddModal}
+                      className="bg-gradient-variant-2 text-primary-foreground hover:opacity-90 border-0"
+                    >
+                      <Plus className="mr-2 h-4 w-4" />
+                      Add Your First Product
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => router.push("/admin/products/import")}
+                      className="border-primary/30 text-primary hover:bg-primary/5 font-semibold"
+                    >
+                      <FileSpreadsheet className="mr-2 h-4 w-4" />
+                      Bulk Import from Excel
+                    </Button>
+                  </div>
                 )}
               </div>
             ) : (
@@ -651,11 +671,12 @@ export default function AdminProducts() {
                     onCheckedChange={handleSelectAll}
                     className="border-input"
                   />
-                  <div className="flex-1 grid grid-cols-5 gap-4 text-sm font-semibold text-muted-foreground">
+                  <div className="flex-1 grid grid-cols-6 gap-4 text-sm font-semibold text-muted-foreground">
                     <div className="col-span-2">Product Details</div>
                     <div>Pricing</div>
                     <div>Inventory</div>
                     <div>Status</div>
+                    <div>Last Updated</div>
                   </div>
                   <div className="w-20 text-center text-sm font-semibold text-muted-foreground">
                     Actions
@@ -807,6 +828,13 @@ export default function AdminProducts() {
                           </Badge>
                         </div>
                       </div>
+
+                      {product.updatedAt && (
+                        <div className="flex items-center gap-1.5 pl-9 text-[11px] text-muted-foreground pt-1">
+                          <Clock className="h-3 w-3" />
+                          <span>Updated: {formatDateTime(product.updatedAt)}</span>
+                        </div>
+                      )}
                     </div>
 
                     {/* Desktop Table Layout */}
@@ -815,7 +843,7 @@ export default function AdminProducts() {
                       onCheckedChange={() => handleSelect(product._id || product.id)}
                       className="border-input hidden md:block"
                     />
-                    <div className="hidden md:grid flex-1 grid-cols-5 gap-4 items-center">
+                    <div className="hidden md:grid flex-1 grid-cols-6 gap-4 items-center">
                       {/* Product Info */}
                       <div className="col-span-2 flex items-center gap-4 cursor-pointer" onClick={() => openViewPage(product._id || product.id)}>
                         <div className="relative">
@@ -897,6 +925,23 @@ export default function AdminProducts() {
                         >
                           {product.isActive ? "Active" : "Inactive"}
                         </Badge>
+                      </div>
+
+                      {/* Last Updated Timestamp */}
+                      <div>
+                        <p className="text-xs font-semibold text-foreground">
+                          {product.updatedAt ? formatDate(product.updatedAt) : "—"}
+                        </p>
+                        {product.updatedAt && (
+                          <p className="text-[11px] text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <Clock className="h-3 w-3" />
+                            {new Intl.DateTimeFormat("en-IN", {
+                              hour: "numeric",
+                              minute: "numeric",
+                              hour12: true,
+                            }).format(new Date(product.updatedAt))}
+                          </p>
+                        )}
                       </div>
                     </div>
 

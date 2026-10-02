@@ -109,6 +109,11 @@ export const productsAdminApi = {
     const { data } = await api.delete('/products/bulk/delete', { data: { ids } });
     return data;
   },
+
+  bulkImport: async (products: any[]) => {
+    const { data } = await api.post('/products/bulk/import', { products });
+    return data;
+  },
 };
 
 // Orders Admin APIs

@@ -39,7 +39,7 @@ export default function EditProductPage() {
   }
 
   return (
-    <div className="container py-10">
+    <div className="w-full">
       <ProductForm product={product} />
     </div>
   );

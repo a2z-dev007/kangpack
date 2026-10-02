@@ -14,6 +14,7 @@ router.get('/slug/:slug', optionalAuth, ProductsController.getProductBySlug);
 // Admin/Staff routes
 router.get('/admin/stats', authenticate, requireAdminOrStaff, ProductsController.getProductStats);
 router.post('/', uploadMultiple, authenticate, requireAdminOrStaff, ProductsController.createProduct);
+router.post('/bulk/import', authenticate, requireAdminOrStaff, ProductsController.bulkImportProducts);
 router.put('/bulk/update', authenticate, requireAdminOrStaff, ProductsController.bulkUpdateProducts);
 router.delete('/bulk/delete', authenticate, requireAdminOrStaff, ProductsController.bulkDeleteProducts);
 

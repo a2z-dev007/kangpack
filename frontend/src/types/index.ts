@@ -256,6 +256,8 @@ export interface PaginationParams {
   page?: number;
   limit?: number;
   search?: string;
+  sort?: string;
+  order?: 'asc' | 'desc';
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   status?: string;

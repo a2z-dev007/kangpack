@@ -4,8 +4,14 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { formatPrice, formatDateTime, getImageUrl } from "@/lib/utils";
-import { useAddTracking, useUpdateOrderStatus } from "../queries";
+import { useAddTracking, useUpdateOrderStatus, useUpdatePaymentStatus } from "../queries";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Loader2,
   Package,
@@ -25,7 +31,7 @@ import {
 } from "lucide-react";
 import { SideDrawer } from "@/components/ui/SideDrawer";
 import { CopyToClipboard } from "@/components/ui/CopyToClipboard";
-import { cn } from "@/lib/utils";
+import { cn, formatPrice, formatDateTime, getImageUrl } from "@/lib/utils";
 import api from "@/lib/api";
 import { toast } from "sonner";
 
@@ -63,14 +69,20 @@ export function OrderDetailsModal({
   order,
   isAdmin = true,
 }: OrderDetailsModalProps) {
+  const [currentOrder, setCurrentOrder] = useState<any>(order);
   const [trackingNumber, setTrackingNumber] = useState("");
   const [carrier, setCarrier] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
+  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState("");
   const [isTimelineOpen, setIsTimelineOpen] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
 
   useEffect(() => {
     if (order && isOpen) {
+      setCurrentOrder(order);
+      setSelectedStatus(order.status || "pending");
+      setSelectedPaymentStatus(order.paymentStatus || "pending");
       setTrackingNumber(order.trackingNumber || "");
       setCarrier(order.carrier || "");
       setShowCancelConfirm(false);
@@ -78,22 +90,64 @@ export function OrderDetailsModal({
   }, [order, isOpen]);
 
   const { mutate: addTracking, isPending: isAddingTracking } = useAddTracking();
-  const { mutate: updateStatus, isPending: isUpdatingStatus } =
-    useUpdateOrderStatus();
+  const { mutate: updateStatus, isPending: isUpdatingStatus } = useUpdateOrderStatus();
+  const { mutate: updatePaymentStatus, isPending: isUpdatingPayment } = useUpdatePaymentStatus();
+
+  const handleUpdateStatus = (newStatus: string) => {
+    setSelectedStatus(newStatus);
+    const orderId = currentOrder.id || currentOrder._id;
+    updateStatus(
+      { id: orderId, status: newStatus },
+      {
+        onSuccess: () => {
+          setCurrentOrder((prev: any) => ({ ...prev, status: newStatus }));
+        },
+      }
+    );
+  };
+
+  const handleUpdatePayment = (newPaymentStatus: string) => {
+    setSelectedPaymentStatus(newPaymentStatus);
+    const orderId = currentOrder.id || currentOrder._id;
+    updatePaymentStatus(
+      { id: orderId, paymentStatus: newPaymentStatus },
+      {
+        onSuccess: () => {
+          setCurrentOrder((prev: any) => ({ ...prev, paymentStatus: newPaymentStatus }));
+        },
+      }
+    );
+  };
 
   const handleUpdateTracking = () => {
     if (!trackingNumber) return;
-    addTracking({ id: order.id || order._id, trackingNumber, carrier });
+    const orderId = currentOrder.id || currentOrder._id;
+    addTracking(
+      { id: orderId, trackingNumber, carrier },
+      {
+        onSuccess: () => {
+          setCurrentOrder((prev: any) => ({
+            ...prev,
+            trackingNumber,
+            carrier,
+            status:
+              prev.status === "pending" || prev.status === "confirmed" || prev.status === "processing"
+                ? "shipped"
+                : prev.status,
+          }));
+        },
+      }
+    );
   };
 
   const handleCancelOrder = async () => {
     try {
       setIsCancelling(true);
-      await api.post(`/orders/${order.id || order._id}/cancel`);
+      const orderId = currentOrder.id || currentOrder._id;
+      await api.post(`/orders/${orderId}/cancel`);
       toast.success("Order cancelled successfully");
       setShowCancelConfirm(false);
-      onClose();
-      window.location.reload();
+      setCurrentOrder((prev: any) => ({ ...prev, status: "cancelled" }));
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Failed to cancel order");
     } finally {
@@ -101,25 +155,34 @@ export function OrderDetailsModal({
     }
   };
 
-  if (!order) return null;
+  if (!currentOrder) return null;
+
+  const stepsList = [
+    { key: "pending", label: "Placed" },
+    { key: "confirmed", label: "Confirmed" },
+    { key: "processing", label: "Processing" },
+    { key: "shipped", label: "Shipped" },
+    { key: "delivered", label: "Delivered" },
+  ];
+  const stepIdx = stepsList.findIndex((s) => s.key === currentOrder.status);
 
   return (
     <>
       <SideDrawer
         isOpen={isOpen}
         onClose={onClose}
-        title={order.orderNumber}
-        description={`Placed on ${formatDateTime(order.createdAt)}`}
+        title={currentOrder.orderNumber}
+        description={`Placed on ${formatDateTime(currentOrder.createdAt)}`}
         icon={<Hash className="h-5 w-5 sm:h-6 sm:w-6" />}
         maxWidth="sm:max-w-[620px]"
       >
         <div className="space-y-6 sm:space-y-8 pb-10 px-0 sm:px-1">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <Badge
-              variant={order.status === "delivered" ? "default" : "secondary"}
+              variant={currentOrder.status === "delivered" ? "default" : "secondary"}
               className="capitalize rounded-full px-4 py-1.5 font-bold text-[10px] sm:text-xs w-fit"
             >
-              Order {order.status}
+              Order {currentOrder.status}
             </Badge>
             <Button
               variant="outline"
@@ -130,6 +193,74 @@ export function OrderDetailsModal({
               <History className="h-3.5 w-3.5 mr-2" />
               View Timeline
             </Button>
+          </div>
+
+          {/* Order Progress Stepper */}
+          <div className="bg-slate-50 border border-slate-100 rounded-2xl p-4 sm:p-5 space-y-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <h4 className="text-[11px] font-black uppercase tracking-[0.15em] text-slate-500 flex items-center gap-1.5">
+                <Truck className="h-3.5 w-3.5 text-[#6B4A2D]" /> Live Order Status
+              </h4>
+              <span className="text-xs font-bold text-[#6B4A2D] capitalize">
+                {currentOrder.status}
+              </span>
+            </div>
+
+            {currentOrder.status === "cancelled" ? (
+              <div className="bg-rose-50 border border-rose-200 rounded-xl p-3 text-center text-xs font-bold text-rose-700">
+                This order was cancelled.
+              </div>
+            ) : currentOrder.status === "refunded" ? (
+              <div className="bg-purple-50 border border-purple-200 rounded-xl p-3 text-center text-xs font-bold text-purple-700">
+                This order was refunded.
+              </div>
+            ) : (
+              <div className="pt-2 pb-1">
+                <div className="relative flex items-center justify-between w-full">
+                  <div className="absolute top-1/2 left-4 right-4 h-1 bg-slate-200 -translate-y-1/2 z-0" />
+                  <div
+                    className="absolute top-1/2 left-4 h-1 bg-[#6B4A2D] -translate-y-1/2 z-0 transition-all duration-500"
+                    style={{
+                      width: `calc(${
+                        (Math.max(0, stepIdx < 0 ? 0 : stepIdx) / 4) * 100
+                      }% - 8px)`,
+                    }}
+                  />
+
+                  {stepsList.map((step, idx) => {
+                    const isDone = stepIdx >= 0 && idx <= stepIdx;
+                    const isCurrent = idx === stepIdx;
+
+                    return (
+                      <div
+                        key={step.key}
+                        className="relative z-10 flex flex-col items-center group cursor-default"
+                      >
+                        <div
+                          className={cn(
+                            "h-7 w-7 rounded-full flex items-center justify-center text-[10px] font-black transition-all duration-300",
+                            isDone
+                              ? "bg-[#6B4A2D] text-white shadow-md shadow-[#6B4A2D]/30"
+                              : "bg-white border-2 border-slate-300 text-slate-400",
+                            isCurrent && "ring-4 ring-[#6B4A2D]/20 scale-110"
+                          )}
+                        >
+                          {isDone ? <CheckCircle2 className="h-4 w-4 text-white" /> : idx + 1}
+                        </div>
+                        <span
+                          className={cn(
+                            "text-[10px] font-bold mt-1.5 whitespace-nowrap hidden sm:block",
+                            isDone ? "text-[#6B4A2D]" : "text-slate-400"
+                          )}
+                        >
+                          {step.label}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Customer & Info Section */}
@@ -409,63 +540,116 @@ export function OrderDetailsModal({
             </div>
           </div>
 
-          {/* Fulfillment Section - Only for Admin */}
+          {/* Fulfillment & Status Control Section - Only for Admin */}
           {isAdmin && (
-            <div className="space-y-6 bg-slate-50/50 p-8 rounded-[2rem] border border-slate-100 shadow-sm">
+            <div className="space-y-6 bg-slate-50/50 p-6 sm:p-8 rounded-[2rem] border border-slate-100 shadow-sm">
               <h3 className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-400 flex items-center gap-2">
-                <Truck className="h-3.5 w-3.5" /> Fulfillment Pipeline
+                <Truck className="h-3.5 w-3.5 text-[#6B4A2D]" /> Order Status & Fulfillment Control
               </h3>
 
               <div className="space-y-5">
-                <div className="grid grid-cols-1 gap-5">
+                {/* Status Dropdowns */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">
-                      Tracking Identifier
+                      Order Status
                     </label>
-                    <div className="relative group">
-                      <Hash className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#6B4A2D] transition-colors" />
-                      <Input
-                        placeholder="Enter tracking number..."
-                        value={trackingNumber}
-                        className="h-14 pl-12 rounded-2xl border-slate-200 bg-white font-black text-slate-900 focus-visible:ring-[#6B4A2D] transition-all"
-                        onChange={(e) => setTrackingNumber(e.target.value)}
-                      />
-                    </div>
+                    <Select
+                      value={selectedStatus}
+                      onValueChange={handleUpdateStatus}
+                      disabled={isUpdatingStatus}
+                    >
+                      <SelectTrigger className="h-12 rounded-2xl border-slate-200 bg-white font-bold text-xs text-slate-900 focus:ring-[#6B4A2D]">
+                        <SelectValue placeholder="Select Status" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl border-slate-200 bg-white shadow-xl">
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="confirmed">Confirmed</SelectItem>
+                        <SelectItem value="processing">Processing</SelectItem>
+                        <SelectItem value="shipped">Shipped</SelectItem>
+                        <SelectItem value="delivered">Delivered</SelectItem>
+                        <SelectItem value="cancelled">Cancelled</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
 
                   <div className="space-y-2">
                     <label className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">
-                      Logistics Partner
+                      Payment Status
                     </label>
-                    <div className="relative group">
-                      <Truck className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#6B4A2D] transition-colors" />
-                      <Input
-                        placeholder="e.g. BlueDart, FedEx"
-                        value={carrier}
-                        className="h-14 pl-12 rounded-2xl border-slate-200 bg-white font-black text-slate-900 focus-visible:ring-[#6B4A2D] transition-all"
-                        onChange={(e) => setCarrier(e.target.value)}
-                      />
-                    </div>
+                    <Select
+                      value={selectedPaymentStatus}
+                      onValueChange={handleUpdatePayment}
+                      disabled={isUpdatingPayment}
+                    >
+                      <SelectTrigger className="h-12 rounded-2xl border-slate-200 bg-white font-bold text-xs text-slate-900 focus:ring-[#6B4A2D]">
+                        <SelectValue placeholder="Select Payment Status" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl border-slate-200 bg-white shadow-xl">
+                        <SelectItem value="pending">Pending</SelectItem>
+                        <SelectItem value="completed">Completed / Paid</SelectItem>
+                        <SelectItem value="failed">Failed</SelectItem>
+                        <SelectItem value="refunded">Refunded</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </div>
 
-                <Button
-                  onClick={handleUpdateTracking}
-                  disabled={isAddingTracking || !trackingNumber}
-                  className="w-full h-14 rounded-2xl bg-[#6B4A2D] hover:bg-[#5A3E25] text-white font-black text-base shadow-xl shadow-[#6B4A2D]/20 transition-all active:scale-[0.98]"
-                >
-                  {isAddingTracking ? (
-                    <>
-                      <Loader2 className="h-5 w-5 mr-3 animate-spin" />
-                      Syncing Data...
-                    </>
-                  ) : (
-                    <>
-                      <ExternalLink className="h-5 w-5 mr-3" />
-                      Update Fulfillment Status
-                    </>
-                  )}
-                </Button>
+                {/* Logistics Info */}
+                <div className="pt-3 border-t border-slate-200/60 space-y-4">
+                  <h4 className="text-[10px] font-black uppercase text-slate-400 tracking-widest ml-1">
+                    Logistics & Tracking Info
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase text-slate-400 tracking-wider ml-1">
+                        Logistics Partner
+                      </label>
+                      <div className="relative group">
+                        <Truck className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#6B4A2D] transition-colors" />
+                        <Input
+                          placeholder="e.g. BlueDart, Delhivery, DTDC"
+                          value={carrier}
+                          className="h-12 pl-12 rounded-2xl border-slate-200 bg-white font-bold text-slate-900 text-xs focus-visible:ring-[#6B4A2D] transition-all"
+                          onChange={(e) => setCarrier(e.target.value)}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-[10px] font-bold uppercase text-slate-400 tracking-wider ml-1">
+                        Tracking Identifier / AWB
+                      </label>
+                      <div className="relative group">
+                        <Hash className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-300 group-focus-within:text-[#6B4A2D] transition-colors" />
+                        <Input
+                          placeholder="Enter tracking number..."
+                          value={trackingNumber}
+                          className="h-12 pl-12 rounded-2xl border-slate-200 bg-white font-bold text-slate-900 text-xs focus-visible:ring-[#6B4A2D] transition-all"
+                          onChange={(e) => setTrackingNumber(e.target.value)}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={handleUpdateTracking}
+                    disabled={isAddingTracking || !trackingNumber}
+                    className="w-full h-12 rounded-2xl bg-[#6B4A2D] hover:bg-[#5A3E25] text-white font-bold text-xs shadow-lg shadow-[#6B4A2D]/20 transition-all active:scale-[0.98]"
+                  >
+                    {isAddingTracking ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                        Syncing Logistics Data...
+                      </>
+                    ) : (
+                      <>
+                        <ExternalLink className="h-4 w-4 mr-2" />
+                        Save Tracking Info & Notify Customer
+                      </>
+                    )}
+                  </Button>
+                </div>
               </div>
             </div>
           )}

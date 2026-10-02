@@ -47,8 +47,10 @@ import {
   Search,
   Tag,
   Info,
+  Star,
 } from "lucide-react";
 import Image from "next/image";
+import { toast } from "@/lib/toast";
 
 const productSchema = z.object({
   // Basic Info
@@ -161,8 +163,10 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
 
   const { mutate: createProduct, isPending: isCreating } = useCreateProduct();
   const { mutate: updateProduct, isPending: isUpdating } = useUpdateProduct();
+  const [existingImages, setExistingImages] = useState<string[]>([]);
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [previewUrls, setPreviewUrls] = useState<string[]>([]);
+  const [coverIsNew, setCoverIsNew] = useState<boolean>(false);
 
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productSchema),
@@ -201,12 +205,21 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
 
   useEffect(() => {
     if (product) {
+      if (product.images && Array.isArray(product.images)) {
+        setExistingImages(product.images);
+      } else {
+        setExistingImages([]);
+      }
+      setCoverIsNew(false);
       form.reset({
         name: product.name,
         description: product.description,
         shortDescription: product.shortDescription || "",
         sku: product.sku,
-        category: product.category?._id || product.category,
+        category:
+          product.category?._id ||
+          product.category?.id ||
+          (typeof product.category === "string" ? product.category : ""),
         brand: product.brand || "",
         condition: product.condition || "new",
         price: product.price,
@@ -257,6 +270,8 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
           : "",
       });
     } else {
+      setExistingImages([]);
+      setCoverIsNew(false);
       form.reset();
     }
   }, [product, form]);
@@ -359,6 +374,12 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
     if (values.availableUntil)
       formData.append("availableUntil", values.availableUntil);
 
+    // Append existing images and cover flag
+    if (isEditing) {
+      formData.append("existingImages", JSON.stringify(existingImages));
+      formData.append("coverIsNew", String(coverIsNew));
+    }
+
     // Append files
     selectedFiles.forEach((file) => {
       formData.append("files", file);
@@ -382,6 +403,8 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
             onClose();
             setSelectedFiles([]);
             setPreviewUrls([]);
+            setExistingImages([]);
+            setCoverIsNew(false);
           },
         },
       );
@@ -392,6 +415,8 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
           onClose();
           setSelectedFiles([]);
           setPreviewUrls([]);
+          setExistingImages([]);
+          setCoverIsNew(false);
         },
       });
     }
@@ -403,15 +428,79 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
       setSelectedFiles((prev) => [...prev, ...files]);
       const urls = files.map((file) => URL.createObjectURL(file));
       setPreviewUrls((prev) => [...prev, ...urls]);
+      if (existingImages.length === 0 && selectedFiles.length === 0) {
+        setCoverIsNew(true);
+      }
     }
+  };
+
+  const removeExistingImage = (index: number) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
+    if (index === 0 && existingImages.length === 1 && selectedFiles.length > 0) {
+      setCoverIsNew(true);
+    }
+  };
+
+  const setExistingAsCover = (index: number) => {
+    setCoverIsNew(false);
+    setExistingImages((prev) => {
+      const updated = [...prev];
+      const [img] = updated.splice(index, 1);
+      updated.unshift(img);
+      return updated;
+    });
   };
 
   const removeFile = (index: number) => {
     setSelectedFiles((prev) => prev.filter((_, i) => i !== index));
     setPreviewUrls((prev) => prev.filter((_, i) => i !== index));
+    if (index === 0 && selectedFiles.length === 1) {
+      setCoverIsNew(false);
+    }
+  };
+
+  const setNewAsCover = (index: number) => {
+    setCoverIsNew(true);
+    setSelectedFiles((prev) => {
+      const updated = [...prev];
+      const [file] = updated.splice(index, 1);
+      updated.unshift(file);
+      return updated;
+    });
+    setPreviewUrls((prev) => {
+      const updated = [...prev];
+      const [url] = updated.splice(index, 1);
+      updated.unshift(url);
+      return updated;
+    });
   };
 
   const isLoading = isCreating || isUpdating;
+
+  const onInvalid = (errors: any) => {
+    console.warn("Product modal validation errors:", errors);
+    const errorKeys = Object.keys(errors);
+    if (errorKeys.length > 0) {
+      const tabFieldMap: Record<string, string[]> = {
+        basic: ["name", "description", "shortDescription", "sku", "category", "brand", "condition", "isActive", "isFeatured", "isNew", "isBestseller"],
+        pricing: ["price", "compareAtPrice", "cost", "discountType", "discountValue", "discountStartDate", "discountEndDate"],
+        inventory: ["stock", "lowStockThreshold", "trackQuantity", "allowBackorder", "backorderLimit", "inventoryPolicy"],
+        shipping: ["requiresShipping", "freeShipping", "shippingClass", "taxable", "taxClass", "isDigital", "weight", "weightUnit", "dimensionsLength", "dimensionsWidth", "dimensionsHeight", "dimensionsUnit"],
+        seo: ["seoMetaTitle", "seoMetaDescription", "seoMetaKeywords", "seoCanonicalUrl"],
+        additional: ["warranty", "returnPolicy", "reviewsEnabled", "availableFrom", "availableUntil"]
+      };
+
+      const firstErrorField = errorKeys[0];
+      const targetTab = Object.keys(tabFieldMap).find((tab) =>
+        tabFieldMap[tab].includes(firstErrorField)
+      );
+
+      if (targetTab) {
+        setActiveTab(targetTab);
+      }
+      toast.error(`Please check required field: ${errors[firstErrorField]?.message || firstErrorField}`);
+    }
+  };
 
   return (
     <Sheet open={isOpen} onOpenChange={onClose}>
@@ -424,7 +513,7 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
 
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit(onSubmit)}
+            onSubmit={form.handleSubmit(onSubmit, onInvalid)}
             className="space-y-6 mt-6"
           >
             <Tabs
@@ -620,49 +709,103 @@ export function ProductModal({ isOpen, onClose, product }: ProductModalProps) {
                   )}
                 />
 
-                <div className="space-y-2">
-                  <FormLabel>Product Images</FormLabel>
-                  <div className="grid grid-cols-4 gap-4">
-                    {product?.images?.map((url: string, index: number) => (
-                      <div
-                        key={`existing-${index}`}
-                        className="relative aspect-square rounded-md overflow-hidden border"
-                      >
-                        <Image
-                          src={
-                            url.startsWith("http")
-                              ? url
-                              : `http://localhost:8000/${url}`
-                          }
-                          alt={`Existing ${index}`}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                    ))}
-                    {previewUrls.map((url, index) => (
-                      <div
-                        key={`new-${index}`}
-                        className="relative aspect-square rounded-md overflow-hidden border"
-                      >
-                        <Image
-                          src={url}
-                          alt={`Preview ${index}`}
-                          fill
-                          className="object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeFile(index)}
-                          className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <FormLabel>Product Images</FormLabel>
+                    <span className="text-xs text-muted-foreground">
+                      Marked <strong className="text-amber-600">Cover</strong> shows first
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-4 gap-3">
+                    {/* Existing Saved Images */}
+                    {existingImages.map((url: string, index: number) => {
+                      const isCover = !coverIsNew && index === 0;
+                      return (
+                        <div
+                          key={`existing-${url}-${index}`}
+                          className={`relative aspect-square rounded-lg overflow-hidden border bg-muted group transition-all ${
+                            isCover ? "ring-2 ring-amber-500 ring-offset-2" : "hover:border-primary/50"
+                          }`}
                         >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </div>
-                    ))}
-                    <label className="flex flex-col items-center justify-center aspect-square rounded-md border-2 border-dashed cursor-pointer hover:border-primary/50">
-                      <Plus className="h-6 w-6 text-muted-foreground" />
-                      <span className="text-xs text-muted-foreground mt-1">
+                          <Image
+                            src={
+                              url.startsWith("http")
+                                ? url
+                                : `http://localhost:8000/${url}`
+                            }
+                            alt={`Existing ${index}`}
+                            fill
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeExistingImage(index)}
+                            className="absolute top-1 right-1 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow-sm"
+                            title="Remove image"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                          {isCover ? (
+                            <span className="absolute top-1 left-1 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold shadow-md flex items-center gap-0.5 z-10">
+                              <Star className="h-2 w-2 fill-current text-yellow-200" /> Cover
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setExistingAsCover(index)}
+                              className="absolute bottom-1 left-1 right-1 bg-black/80 hover:bg-amber-600 text-white text-[9px] py-0.5 rounded font-semibold opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-0.5 shadow-lg z-10 backdrop-blur-sm"
+                            >
+                              <Star className="h-2 w-2 text-yellow-300" /> Cover
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    {/* Newly Uploaded Images */}
+                    {previewUrls.map((url, index) => {
+                      const isCover = (coverIsNew && index === 0) || (existingImages.length === 0 && index === 0);
+                      return (
+                        <div
+                          key={`new-${index}`}
+                          className={`relative aspect-square rounded-lg overflow-hidden border bg-muted group transition-all ${
+                            isCover ? "ring-2 ring-amber-500 ring-offset-2" : "hover:border-primary/50"
+                          }`}
+                        >
+                          <Image
+                            src={url}
+                            alt={`Preview ${index}`}
+                            fill
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeFile(index)}
+                            className="absolute top-1 right-1 bg-destructive text-destructive-foreground hover:bg-destructive/90 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-20 shadow-sm"
+                            title="Remove image"
+                          >
+                            <X className="h-3 w-3" />
+                          </button>
+                          {isCover ? (
+                            <span className="absolute top-1 left-1 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-[9px] px-1.5 py-0.5 rounded-full font-bold shadow-md flex items-center gap-0.5 z-10">
+                              <Star className="h-2 w-2 fill-current text-yellow-200" /> Cover
+                            </span>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => setNewAsCover(index)}
+                              className="absolute bottom-1 left-1 right-1 bg-black/80 hover:bg-amber-600 text-white text-[9px] py-0.5 rounded font-semibold opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center gap-0.5 shadow-lg z-10 backdrop-blur-sm"
+                            >
+                              <Star className="h-2 w-2 text-yellow-300" /> Cover
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+
+                    <label className="flex flex-col items-center justify-center aspect-square rounded-lg border-2 border-dashed cursor-pointer hover:border-primary/50 hover:bg-primary/5 transition-all group">
+                      <Plus className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+                      <span className="text-[11px] text-muted-foreground group-hover:text-primary mt-0.5 font-medium">
                         Add
                       </span>
                       <input

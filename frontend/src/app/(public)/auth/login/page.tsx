@@ -23,6 +23,11 @@ function LoginForm() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [checkingAuth, setCheckingAuth] = useState(true);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Clean up URL if ?redirect= was passed so the browser address bar stays clean
   useEffect(() => {
@@ -147,7 +152,7 @@ function LoginForm() {
   };
 
   // If currently authenticated or checking stored token, avoid flashing login form
-  if (checkingAuth && (isAuthenticated || (typeof window !== "undefined" && localStorage.getItem("token")))) {
+  if (mounted && checkingAuth && (isAuthenticated || (typeof window !== "undefined" && localStorage.getItem("token")))) {
     return (
       <div className="min-h-screen bg-brand-beige flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-[#6B4A2D] border-t-transparent rounded-full animate-spin" />

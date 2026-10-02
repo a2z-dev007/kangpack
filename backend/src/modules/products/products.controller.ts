@@ -9,7 +9,7 @@ export class ProductsController {
     const pagination = {
       page: parseInt(req.query.page as string) || 1,
       limit: parseInt(req.query.limit as string) || 10,
-      sort: req.query.sort as string || 'createdAt',
+      sort: req.query.sort as string || 'updatedAt',
       order: req.query.order as 'asc' | 'desc' || 'desc',
     };
 
@@ -131,6 +131,26 @@ export class ProductsController {
 
     res.status(HTTP_STATUS.OK).json(
       ResponseUtils.success(`${count} products updated successfully`, { count })
+    );
+  });
+
+  public static bulkImportProducts = asyncHandler(async (req: Request, res: Response) => {
+    const productsData = req.body.products || req.body;
+
+    if (!Array.isArray(productsData) || productsData.length === 0) {
+      res.status(HTTP_STATUS.BAD_REQUEST).json(
+        ResponseUtils.error('Please provide an array of products to import', HTTP_STATUS.BAD_REQUEST)
+      );
+      return;
+    }
+
+    const result = await ProductsService.bulkImportProducts(productsData);
+
+    res.status(HTTP_STATUS.CREATED).json(
+      ResponseUtils.success(
+        `Successfully imported ${result.importedCount} products (${result.failedCount} failed)`,
+        result
+      )
     );
   });
 

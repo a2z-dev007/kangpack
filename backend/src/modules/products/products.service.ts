@@ -266,12 +266,45 @@ export class ProductsService {
     }
 
 
-    // Upload images to S3
-    if (files && Array.isArray(files) && files.length > 0) {
-      const imageUrls = await S3Service.uploadMultiple(files, 'products');
-      console.log('✓ Uploaded', imageUrls.length, 'images to S3');
-      (data as any).images = imageUrls;
+    // Handle images (existing images preservation, reordering, and new uploads)
+    let finalImages: string[] | undefined = undefined;
+    if ((data as any).existingImages !== undefined && (data as any).existingImages !== null) {
+      try {
+        const parsed = typeof (data as any).existingImages === 'string'
+          ? JSON.parse((data as any).existingImages)
+          : (data as any).existingImages;
+        if (Array.isArray(parsed)) {
+          finalImages = parsed;
+        }
+      } catch {
+        finalImages = Array.isArray((data as any).existingImages) ? (data as any).existingImages : undefined;
+      }
+    } else if (data.images) {
+      if (Array.isArray(data.images)) {
+        finalImages = data.images;
+      }
     }
+
+    // Upload new image files if any
+    if (files && Array.isArray(files) && files.length > 0) {
+      const newImageUrls = await S3Service.uploadMultiple(files, 'products');
+      console.log('✓ Uploaded', newImageUrls.length, 'new images to S3');
+      
+      const currentList = finalImages || [];
+      const coverIsNew = (data as any).coverIsNew === 'true' || (data as any).coverIsNew === true;
+      if (coverIsNew) {
+        finalImages = [...newImageUrls, ...currentList];
+      } else {
+        finalImages = [...currentList, ...newImageUrls];
+      }
+    }
+
+    if (finalImages !== undefined) {
+      (data as any).images = finalImages;
+    }
+
+    delete (data as any).existingImages;
+    delete (data as any).coverIsNew;
 
     const product = await Product.findByIdAndUpdate(
       productId,
@@ -367,6 +400,138 @@ export class ProductsService {
     );
 
     return result.matchedCount || result.modifiedCount || 0;
+  }
+
+  public static async bulkImportProducts(productsData: CreateProductData[]): Promise<{
+    importedCount: number;
+    failedCount: number;
+    createdProducts: any[];
+    errors: { index: number; sku?: string; name?: string; error: string }[];
+  }> {
+    if (!Array.isArray(productsData) || productsData.length === 0) {
+      throw new AppError('Products array is required and cannot be empty', HTTP_STATUS.BAD_REQUEST);
+    }
+
+    // Pre-fetch all categories for quick resolution by ID, name, or slug
+    const allCategories = await Category.find({}).lean();
+    const categoryMap = new Map<string, any>();
+    allCategories.forEach(cat => {
+      categoryMap.set(cat._id.toString(), cat);
+      categoryMap.set(cat.name.toLowerCase().trim(), cat);
+      categoryMap.set(cat.slug.toLowerCase().trim(), cat);
+    });
+
+    // Pre-fetch existing SKUs and Slugs to validate collisions
+    const [existingSkusList, existingSlugsList] = await Promise.all([
+      Product.find({}, 'sku variants.sku').lean(),
+      Product.find({}, 'slug').lean(),
+    ]);
+
+    const existingSkus = new Set<string>();
+    existingSkusList.forEach((p: any) => {
+      if (p.sku) existingSkus.add(p.sku.toLowerCase().trim());
+      if (Array.isArray(p.variants)) {
+        p.variants.forEach((v: any) => {
+          if (v.sku) existingSkus.add(v.sku.toLowerCase().trim());
+        });
+      }
+    });
+
+    const existingSlugs = existingSlugsList.map((p: any) => p.slug);
+
+    const createdProducts: any[] = [];
+    const errors: { index: number; sku?: string; name?: string; error: string }[] = [];
+    const batchSkus = new Set<string>();
+
+    for (let i = 0; i < productsData.length; i++) {
+      const item = productsData[i];
+      try {
+        if (!item.name || !item.name.trim()) {
+          throw new Error('Product name is required');
+        }
+        if (!item.sku || !item.sku.trim()) {
+          throw new Error('SKU is required');
+        }
+        if (item.price === undefined || item.price === null || isNaN(Number(item.price)) || Number(item.price) < 0) {
+          throw new Error('Valid positive price is required');
+        }
+        if (item.stock === undefined || item.stock === null || isNaN(Number(item.stock)) || Number(item.stock) < 0) {
+          throw new Error('Valid positive stock quantity is required');
+        }
+
+        const skuNormalized = item.sku.toLowerCase().trim();
+        if (existingSkus.has(skuNormalized)) {
+          throw new Error(`SKU "${item.sku}" already exists in the catalog`);
+        }
+        if (batchSkus.has(skuNormalized)) {
+          throw new Error(`Duplicate SKU "${item.sku}" found within the import file`);
+        }
+
+        // Resolve Category
+        let categoryId: string | null = null;
+        if (item.category) {
+          const catKey = String(item.category).trim();
+          const matchedCategory = categoryMap.get(catKey) || categoryMap.get(catKey.toLowerCase());
+          if (matchedCategory) {
+            categoryId = matchedCategory._id.toString();
+          }
+        }
+
+        if (!categoryId) {
+          throw new Error(`Category "${item.category || 'Empty'}" is invalid or not found`);
+        }
+
+        // Generate unique slug
+        const slug = SlugUtils.generateUnique(item.name, existingSlugs);
+        existingSlugs.push(slug);
+        batchSkus.add(skuNormalized);
+
+        // Normalize data
+        const productDocData: any = {
+          ...item,
+          category: categoryId,
+          slug,
+          price: Number(item.price),
+          compareAtPrice: item.compareAtPrice ? Number(item.compareAtPrice) : undefined,
+          cost: item.cost ? Number(item.cost) : undefined,
+          stock: Number(item.stock),
+          lowStockThreshold: item.lowStockThreshold !== undefined ? Number(item.lowStockThreshold) : 5,
+          weight: item.weight !== undefined ? Number(item.weight) : undefined,
+          description: item.description || item.shortDescription || item.name,
+          isActive: item.isActive !== undefined ? Boolean(item.isActive) : true,
+          isFeatured: item.isFeatured !== undefined ? Boolean(item.isFeatured) : false,
+          isNew: item.isNew !== undefined ? Boolean(item.isNew) : false,
+          isBestseller: item.isBestseller !== undefined ? Boolean(item.isBestseller) : false,
+          isDigital: item.isDigital !== undefined ? Boolean(item.isDigital) : false,
+          requiresShipping: item.requiresShipping !== undefined ? Boolean(item.requiresShipping) : true,
+          freeShipping: item.freeShipping !== undefined ? Boolean(item.freeShipping) : false,
+          taxable: item.taxable !== undefined ? Boolean(item.taxable) : true,
+        };
+
+        if (item.images && Array.isArray(item.images)) {
+          productDocData.images = item.images.filter(Boolean);
+        }
+
+        const newProduct = new Product(productDocData);
+        await newProduct.save();
+        existingSkus.add(skuNormalized);
+        createdProducts.push(newProduct);
+      } catch (err: any) {
+        errors.push({
+          index: i + 1,
+          sku: item.sku,
+          name: item.name,
+          error: err.message || 'Validation or database error',
+        });
+      }
+    }
+
+    return {
+      importedCount: createdProducts.length,
+      failedCount: errors.length,
+      createdProducts,
+      errors,
+    };
   }
 
   public static async bulkDeleteProducts(productIds: string[]): Promise<number> {
