@@ -12,6 +12,7 @@ import {
 } from "@/lib/store/features/checkout/checkoutSlice";
 import { clearCart } from "@/lib/store/features/cart/cartSlice";
 import Navbar from "@/components/home/Navbar";
+import { setRedirectCookie } from "@/lib/auth-cookie";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   ChevronRight,
@@ -626,7 +627,14 @@ function CheckoutContent() {
               {/* Top Quick Actions */}
               <div className="mt-8 flex flex-wrap items-center justify-center gap-3 sm:gap-4 print:hidden">
                 <Button
-                  onClick={() => router.push(isAuthenticated ? "/profile/orders" : "/auth/login?redirect=/profile/orders")}
+                  onClick={() => {
+                    if (isAuthenticated) {
+                      router.push("/profile/orders");
+                    } else {
+                      setRedirectCookie("/profile/orders");
+                      router.push("/auth/login");
+                    }
+                  }}
                   className="bg-[#6B4A2D] hover:bg-[#533922] text-white px-7 h-12 rounded-xl text-xs sm:text-sm font-bold uppercase tracking-wider shadow-md shadow-[#6B4A2D]/20 transition-all hover:scale-[1.02] flex items-center gap-2"
                 >
                   {isAuthenticated ? (

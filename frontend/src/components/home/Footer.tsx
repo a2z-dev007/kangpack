@@ -7,7 +7,7 @@ import { useAuth } from '@/hooks/use-auth';
 const Footer: React.FC = () => {
     const [newsletterEmail, setNewsletterEmail] = useState('');
     const [isSubscribing, setIsSubscribing] = useState(false);
-    const { isAuthenticated } = useAuth();
+    const { user, isAuthenticated } = useAuth();
 
     const handleSubscribe = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -46,7 +46,7 @@ const Footer: React.FC = () => {
                             <li><Link href="/about" className="hover:text-brand-brown transition-colors">About Us</Link></li>
                             <li><Link href="/products" className="hover:text-brand-brown transition-colors">Products</Link></li>
                             {isAuthenticated && (
-                                <li><Link href="/profile/orders" className="hover:text-brand-brown transition-colors font-medium">Track Order</Link></li>
+                                <li><Link href={user?.role === "admin" || user?.role === "staff" ? "/admin/orders" : "/profile/orders"} className="hover:text-brand-brown transition-colors font-medium">Track Order</Link></li>
                             )}
                             <li><Link href="/contact" className="hover:text-brand-brown transition-colors">Contact us</Link></li>
                             <li><Link href="/faqs" className="hover:text-brand-brown transition-colors">FAQ's</Link></li>
@@ -57,7 +57,7 @@ const Footer: React.FC = () => {
                                 </>
                             )}
                             {isAuthenticated && (
-                                <li><Link href="/profile/dashboard" className="hover:text-brand-brown transition-colors font-medium">My Account</Link></li>
+                                <li><Link href={user?.role === "admin" || user?.role === "staff" ? "/admin/dashboard" : "/profile/dashboard"} className="hover:text-brand-brown transition-colors font-medium">My Account</Link></li>
                             )}
                         </ul>
                     </div>

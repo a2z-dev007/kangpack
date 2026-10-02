@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/use-auth";
+import { setRedirectCookie } from "@/lib/auth-cookie";
 import api from "@/lib/api";
 import { QUERY_KEYS, ROUTES } from "@/lib/constants";
 import { formatPrice, formatDate, getImageUrl } from "@/lib/utils";
@@ -327,7 +328,8 @@ export default function ProductDetailPage({
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isAuthenticated) {
-      router.push(`/auth/login?redirect=/product/${slug}`);
+      setRedirectCookie(`/product/${slug}`);
+      router.push("/auth/login");
       return;
     }
     if (!reviewTitle.trim() || !reviewComment.trim()) {
@@ -830,7 +832,8 @@ export default function ProductDetailPage({
                     type="button"
                     onClick={() => {
                       if (!isAuthenticated) {
-                        router.push(`/auth/login?redirect=/product/${slug}`);
+                        setRedirectCookie(`/product/${slug}`);
+                        router.push("/auth/login");
                       } else {
                         setIsReviewModalOpen(true);
                       }
@@ -905,7 +908,8 @@ export default function ProductDetailPage({
                       type="button"
                       onClick={() => {
                         if (!isAuthenticated) {
-                          router.push(`/auth/login?redirect=/product/${slug}`);
+                          setRedirectCookie(`/product/${slug}`);
+                          router.push("/auth/login");
                         } else {
                           setIsReviewModalOpen(true);
                         }

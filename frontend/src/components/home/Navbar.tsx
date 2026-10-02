@@ -73,7 +73,14 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
 
   const navLinks = [
     { name: "Our Products", href: "/products" },
-    ...(isAuthenticated ? [{ name: "Track Order", href: "/profile/orders" }] : []),
+    ...(isAuthenticated
+      ? [
+          {
+            name: "Track Order",
+            href: user?.role === "admin" || user?.role === "staff" ? "/admin/orders" : "/profile/orders",
+          },
+        ]
+      : []),
     { name: "About Us", href: "/about" },
     // { name: "Kangpack Variants", href: "#variants" },
     { name: "FAQ's", href: "/faqs" },

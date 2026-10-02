@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, Suspense } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "@/lib/toast";
@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { ArrowLeft, Mail, Lock, AlertCircle, Eye, EyeOff } from "lucide-react";
 import api from "@/lib/api";
 import { useAuth } from "@/hooks/use-auth";
-import { setAuthCookie } from "@/lib/auth-cookie";
+import { setAuthCookie, getAndClearRedirectCookie } from "@/lib/auth-cookie";
 import Navbar from "@/components/home/Navbar";
 import { ASSETS } from "@/constants/assets";
 import { ParallaxImage } from "@/components/common/ScrollSection";
@@ -17,11 +17,38 @@ function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirectParam = searchParams.get("redirect");
-  const { setUser } = useAuth();
+  const { user, isAuthenticated, setUser } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [checkingAuth, setCheckingAuth] = useState(true);
+
+  // Clean up URL if ?redirect= was passed so the browser address bar stays clean
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.search) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  // If already authenticated, redirect immediately away from login
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (token) {
+      setAuthCookie(token);
+    }
+
+    if (isAuthenticated) {
+      const destination =
+        user?.role === "admin" || user?.role === "staff"
+          ? "/admin/dashboard"
+          : (redirectParam || getAndClearRedirectCookie() || "/");
+      router.replace(destination);
+      return;
+    }
+
+    setCheckingAuth(false);
+  }, [isAuthenticated, user, redirectParam, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -73,10 +100,11 @@ function LoginForm() {
 
       // Wait a bit for toast to show, then redirect
       setTimeout(() => {
+        const destination = redirectParam || getAndClearRedirectCookie();
         if (user.role === "admin" || user.role === "staff") {
           window.location.href = "/admin/dashboard";
-        } else if (redirectParam && redirectParam.startsWith("/")) {
-          window.location.href = redirectParam;
+        } else if (destination && destination.startsWith("/")) {
+          window.location.href = destination;
         } else {
           window.location.href = "/";
         }
@@ -117,6 +145,15 @@ function LoginForm() {
       setLoading(false);
     }
   };
+
+  // If currently authenticated or checking stored token, avoid flashing login form
+  if (checkingAuth && (isAuthenticated || (typeof window !== "undefined" && localStorage.getItem("token")))) {
+    return (
+      <div className="min-h-screen bg-brand-beige flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-[#6B4A2D] border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-brand-beige font-sans flex flex-col">

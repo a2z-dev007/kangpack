@@ -7,6 +7,7 @@ import { ProfileSidebar } from "@/components/profile/Sidebar";
 import { BottomNav } from "@/components/profile/BottomNav";
 import { useAuth } from "@/hooks/use-auth";
 import { authApi } from "@/lib/auth";
+import { setAuthCookie, setRedirectCookie } from "@/lib/auth-cookie";
 import { Loader2 } from "lucide-react";
 
 export default function ProfileLayout({
@@ -25,9 +26,13 @@ export default function ProfileLayout({
       const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
       if (!token) {
-        router.replace(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+        setRedirectCookie(pathname);
+        router.replace("/auth/login");
         return;
       }
+
+      // Keep cookie in sync with localStorage
+      setAuthCookie(token);
 
       try {
         const user = await authApi.getCurrentUser();
@@ -35,7 +40,8 @@ export default function ProfileLayout({
       } catch {
         // Token is invalid/expired and refresh also failed — force login
         setUser(null);
-        router.replace(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+        setRedirectCookie(pathname);
+        router.replace("/auth/login");
         return;
       }
 

@@ -7,7 +7,7 @@ import type { NextRequest } from 'next/server';
  * Unauthenticated visitors are redirected to /auth/login with a redirect param.
  */
 
-const protectedPaths = ['/profile'];
+const protectedPaths = ['/profile', '/admin'];
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -26,13 +26,19 @@ export function middleware(request: NextRequest) {
 
   if (!token) {
     const loginUrl = new URL('/auth/login', request.url);
-    loginUrl.searchParams.set('redirect', pathname);
-    return NextResponse.redirect(loginUrl);
+    // Keep URL clean without ?redirect=...
+    const response = NextResponse.redirect(loginUrl);
+    response.cookies.set('redirect_after_login', pathname, {
+      path: '/',
+      maxAge: 600, // 10 minutes
+      sameSite: 'lax',
+    });
+    return response;
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/profile/:path*'],
+  matcher: ['/profile/:path*', '/admin/:path*'],
 };

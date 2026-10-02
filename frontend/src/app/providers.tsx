@@ -3,10 +3,19 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StoreProvider from "@/providers/StoreProvider";
+import { setAuthCookie } from "@/lib/auth-cookie";
 
 export function Providers({ children }: { children: React.ReactNode }) {
+  // Sync client-side auth token to cookies so Next.js server middleware is always aware of the session
+  useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (token) {
+      setAuthCookie(token);
+    }
+  }, []);
+
   const [queryClient] = useState(
     () =>
       new QueryClient({
