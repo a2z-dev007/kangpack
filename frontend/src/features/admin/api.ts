@@ -517,4 +517,64 @@ export const testimonialsAdminApi = {
   },
 };
 
+// Bulk Inquiries Admin APIs
+export interface AdminBulkInquiry {
+  id: string;
+  _id?: string;
+  name: string;
+  companyName?: string;
+  email: string;
+  phone: string;
+  productInterest: string;
+  quantity: string;
+  timeline?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  customizationRequired: boolean;
+  message?: string;
+  status: 'pending' | 'in_review' | 'contacted' | 'quoted' | 'closed' | 'cancelled';
+  adminNotes?: string;
+  estimatedBudget?: string;
+  contactedAt?: string;
+  quotedAt?: string;
+  closedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const bulkInquiriesAdminApi = {
+  getAll: async (params?: PaginationParams & { status?: string; search?: string }) => {
+    const { data } = await api.get('/bulk-inquiries', { params });
+    return data;
+  },
+
+  getStats: async () => {
+    const { data } = await api.get('/bulk-inquiries/stats');
+    return data.data;
+  },
+
+  getById: async (id: string) => {
+    const { data } = await api.get(`/bulk-inquiries/${id}`);
+    return data.data;
+  },
+
+  updateStatus: async (
+    id: string,
+    updateData: {
+      status?: string;
+      adminNotes?: string;
+      estimatedBudget?: string;
+    }
+  ) => {
+    const { data } = await api.patch(`/bulk-inquiries/${id}`, updateData);
+    return data.data;
+  },
+
+  delete: async (id: string) => {
+    const { data } = await api.delete(`/bulk-inquiries/${id}`);
+    return data;
+  },
+};
+
 

@@ -73,6 +73,7 @@ const Navbar: React.FC<NavbarProps> = ({ darkText = false, solid = false }) => {
 
   const navLinks = [
     { name: "Our Products", href: "/products" },
+    { name: "Bulk Orders", href: "/bulk-orders" },
     ...(isAuthenticated
       ? [
           {

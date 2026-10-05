@@ -30,12 +30,14 @@ const shopLinks = [
   { label: "Smart Workstations", href: "/products" },
   { label: "Mobile Desks", href: "/products" },
   { label: "Ergonomic Gear", href: "/products" },
+  { label: "Bulk & Corporate Orders", href: "/bulk-orders" },
   { label: "All Products", href: "/products" },
 ];
 
 const companyLinks = [
   { label: "About Us", href: "/about" },
   { label: "Contact Us", href: "/contact" },
+  { label: "Bulk Purchasing", href: "/bulk-orders" },
   { label: "FAQs", href: "/faqs" },
   { label: "Journal", href: "/blog" },
 ];

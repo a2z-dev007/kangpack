@@ -14,6 +14,7 @@ export const ROUTES = {
   ORDERS: '/profile/orders',
   ADDRESSES: '/profile/addresses',
   WISHLIST: '/profile/wishlist',
+  BULK_ORDERS: '/bulk-orders',
 
   // Admin routes
   ADMIN_DASHBOARD: '/admin/dashboard',
@@ -26,6 +27,7 @@ export const ROUTES = {
   ADMIN_REVIEWS: '/admin/reviews',
   ADMIN_PAYMENTS: '/admin/payments',
   ADMIN_CONTACTS: '/admin/contacts',
+  ADMIN_BULK_INQUIRIES: '/admin/bulk-inquiries',
   ADMIN_FAQS: '/admin/faqs',
   ADMIN_TESTIMONIALS: '/admin/testimonials',
 } as const;
@@ -41,6 +43,7 @@ export const QUERY_KEYS = {
   CUSTOMERS: 'customers',
   COUPONS: 'coupons',
   CONTACTS: 'contacts',
+  BULK_INQUIRIES: 'bulk_inquiries',
   WISHLIST: 'wishlist',
   FAQS: 'faqs',
   TESTIMONIALS: 'testimonials',

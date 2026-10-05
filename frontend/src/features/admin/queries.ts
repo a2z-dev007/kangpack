@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { adminApi, productsAdminApi, ordersAdminApi, usersAdminApi, couponsAdminApi, inventoryAdminApi, cmsAdminApi, settingsAdminApi, categoriesAdminApi, reviewsAdminApi, paymentsAdminApi, contactsAdminApi, faqsAdminApi, testimonialsAdminApi, AdminFaq, AdminTestimonial } from './api';
+import { adminApi, productsAdminApi, ordersAdminApi, usersAdminApi, couponsAdminApi, inventoryAdminApi, cmsAdminApi, settingsAdminApi, categoriesAdminApi, reviewsAdminApi, paymentsAdminApi, contactsAdminApi, bulkInquiriesAdminApi, AdminBulkInquiry, faqsAdminApi, testimonialsAdminApi, AdminFaq, AdminTestimonial } from './api';
 import { PaginationParams } from '@/types';
 import { toast } from '@/lib/toast';
 
@@ -847,6 +847,67 @@ export const useDeleteTestimonial = () => {
     },
     onError: (error: any) => {
       toast.error(error.response?.data?.message || 'Failed to delete testimonial');
+    },
+  });
+};
+
+// Bulk Inquiries Queries & Mutations
+export const useAdminBulkInquiries = (params?: PaginationParams & { status?: string; search?: string }) => {
+  return useQuery({
+    queryKey: ['admin', 'bulk-inquiries', params],
+    queryFn: () => bulkInquiriesAdminApi.getAll(params),
+  });
+};
+
+export const useAdminBulkInquiryStats = () => {
+  return useQuery({
+    queryKey: ['admin', 'bulk-inquiries', 'stats'],
+    queryFn: bulkInquiriesAdminApi.getStats,
+  });
+};
+
+export const useAdminBulkInquiry = (id: string) => {
+  return useQuery({
+    queryKey: ['admin', 'bulk-inquiries', id],
+    queryFn: () => bulkInquiriesAdminApi.getById(id),
+    enabled: !!id,
+  });
+};
+
+export const useUpdateBulkInquiryStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({
+      id,
+      status,
+      adminNotes,
+      estimatedBudget,
+    }: {
+      id: string;
+      status?: string;
+      adminNotes?: string;
+      estimatedBudget?: string;
+    }) => bulkInquiriesAdminApi.updateStatus(id, { status, adminNotes, estimatedBudget }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'bulk-inquiries'] });
+      toast.success('Bulk inquiry updated successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to update bulk inquiry');
+    },
+  });
+};
+
+export const useDeleteBulkInquiry = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => bulkInquiriesAdminApi.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['admin', 'bulk-inquiries'] });
+      toast.success('Bulk inquiry deleted successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error.response?.data?.message || 'Failed to delete bulk inquiry');
     },
   });
 };

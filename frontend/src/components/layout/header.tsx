@@ -60,6 +60,9 @@ export function Header() {
             <Link href="/categories" className="text-sm font-medium transition-colors hover:text-primary">
               Categories
             </Link>
+            <Link href="/bulk-orders" className="text-sm font-medium transition-colors hover:text-primary">
+              Bulk Orders
+            </Link>
             <Link href="/deals" className="text-sm font-medium transition-colors hover:text-primary">
               Deals
             </Link>

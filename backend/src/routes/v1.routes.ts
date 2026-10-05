@@ -15,6 +15,7 @@ import { faqsRoutes } from '../modules/faqs/faqs.routes';
 import { testimonialsRoutes } from '../modules/testimonials/testimonials.routes';
 import { newsletterRoutes } from '../modules/newsletter/newsletter.routes';
 import { contactRoutes } from '../modules/contact/contact.routes';
+import { bulkInquiryRoutes } from '../modules/bulk-inquiries/bulk-inquiry.routes';
 import { dashboardRoutes } from '../modules/dashboard/dashboard.routes';
 
 const router = Router();
@@ -36,6 +37,7 @@ router.use('/faqs', faqsRoutes);
 router.use('/testimonials', testimonialsRoutes);
 router.use('/newsletter', newsletterRoutes);
 router.use('/contact', contactRoutes);
+router.use('/bulk-inquiries', bulkInquiryRoutes);
 router.use('/dashboard', dashboardRoutes);
 
 // Health check

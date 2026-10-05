@@ -12,6 +12,8 @@ export { Payment, IPayment } from './models/Payment';
 export { CmsPage, ICmsPage } from './models/CmsPage';
 export { Faq, IFaq } from './models/Faq';
 export { Testimonial, ITestimonial } from './models/Testimonial';
+export { Contact, IContact, ContactStatus } from './models/Contact';
+export { BulkInquiry, IBulkInquiry, BulkInquiryStatus } from './models/BulkInquiry';
 
 // Export database connection
 export { database } from '../config/db';
